@@ -1,7 +1,5 @@
 ---
-title: "About me"
+title: "Cassia's GitHub Repository"
 ---
 
-Add some text and a figure describing myself.
-
-For details, see the exercise instructions. 
+Please see my website at [Cassia's GitHub Website][https://cp-roth.github.io/cassiaroth-MADA-portfolio/]
