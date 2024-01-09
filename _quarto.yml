@@ -20,7 +20,7 @@ website:
             file: tidytuesday-exercise/tidytuesday-exercise.qmd
     right:
       - icon: github 
-        href: https://github.com/cp-roth/cassiaroth-MADA-portfolio.git        
+        href: https://github.com/cp-roth/cassiaroth-MADA-portfolio.git     
 
 format:
   html:
