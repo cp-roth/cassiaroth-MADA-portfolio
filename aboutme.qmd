@@ -12,4 +12,4 @@ I have experience with Stata and SAS, as well as some experience with R and RStu
 
 I would like to come out of this class with an intermediate working knowledge of R and RStudio, as I hope to run all future statistical tests in R. After completing the activities for this first week, I also realize how much I want to learn about streamlined workflows and best practices in data management, including best naming practices.
 
-Quirky fact about me: I love digging up invasive species in my yard.
+Quirky fact about me: I love digging up invasive species in my yard. Other than that, I enjoy running and hiking with my dog. I also do aerial silks and aerial rope at Canopy in Athens.
