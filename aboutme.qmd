@@ -1,5 +1,15 @@
 ---
-title: "Cassia's GitHub Repository"
+title: "About Me"
 ---
 
-Please see my website at [Cassia's GitHub Website][https://cp-roth.github.io/cassiaroth-MADA-portfolio/]
+![Professional Photo](IMG_Professional.jpeg)
+
+I received my PhD in Latin American History with a Concentration in Gender Studies from the University of California, Los Angeles (UCLA) in 2016. I study the history of reproductive health in Latin America, in particular Brazil. In 2021, I decided to start an MPH in Epidemiology to learn data analysis skills that I could employ in my study of the historical roots to current trends in cesarean section rates in Brazil.
+
+Historians use data too! I teach on the history of medicine and slavery. See how historians use data to visualize the transatlantic slave trade with this 2-minute video from _Slate_: [The Atlantic Slave Trade in Two Minutes](https://youtu.be/SKo-_Xxfywk?si=19MM8quH4umR7JD_)
+
+I have experience with Stata and SAS, as well as some experience with R and RStudio. I have statistical knowledge in linear and logistic regressions as well as epidemiological measures of association.
+
+I would like to come out of this class with an intermediate working knowledge of R and RStudio, as I hope to run all future statistical tests in R. After completing the activities for this first week, I also realize how much I want to learn about streamlined workflows and best practices in data management, including best naming practices.
+
+Quirky fact about me: I love digging up invasive species in my yard.
