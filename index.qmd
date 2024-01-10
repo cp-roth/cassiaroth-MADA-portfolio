@@ -5,8 +5,6 @@ title: "Cassia's Data Analysis Website"
 
 # Welcome!
 
-### About Me
-
 I am an MPH student in Epidemiology in the College of Public Health at the University of Georgia (UGA). I am also an Associate Professor of History and Latin American and Caribbean Studies in the Franklin College of Arts and Sciences at UGA.
 
 * Please use the `Menu Bar` above to look around.
