@@ -113,6 +113,11 @@ All done, data is clean now.
 Let's assign at the end to some final variable, this makes it easier to add further cleaning steps above.
 
 ```{r}
+d4$Party <- as.factor(d4$Party)  
+skimr::skim(d4)
+```
+
+```{r}
 processeddata <- d4
 ```
 
