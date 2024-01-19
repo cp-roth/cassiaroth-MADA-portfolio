@@ -111,12 +111,12 @@ ggsave(filename = figure_file, plot=p4)
 
 For your own explorations, tables and figures can be "quick and dirty". As long as you can see what's going on, there is no need to polish them. That's in contrast to figures you'll produce for your final products (paper, report, presentation, website, etc.). Those should look as nice, polished and easy to understand as possible.
 
-#Box plot comparing political party (x) and height (y) using ggplot function geom_boxplot(). The image is named politicalparty-height.png
+#Box plot comparing political party (x) and height (y) using ggplot function geom_boxplot(). The image is named party-height.png
 
 ```{r}
-p5 <- mydata %>% ggplot(aes(x="Political Party", y=Height)) + geom_boxplot() 
+p5 <- mydata %>% ggplot(aes(x=Party, y=Height)) + geom_boxplot() 
 plot(p5)
-figure_file = here("starter-analysis-exercise","results","figures","politicalparty-height.png")
+figure_file = here("starter-analysis-exercise","results","figures","party-height.png")
 ggsave(filename = figure_file, plot= p5) 
 ```
 

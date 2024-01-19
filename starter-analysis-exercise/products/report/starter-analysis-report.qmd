@@ -1,8 +1,8 @@
 ---
 title: "Manuscript/Report Template for a Data Analysis Project"
 subtitle: ""
-author: Your Name
-date: today
+author: Cassia Roth
+date: 18 January 2024
 format:
   html:
     toc: false
@@ -11,9 +11,7 @@ format:
 bibliography: ../dataanalysis-template-references.bib
 csl: ../apa.csl
 ---
-
-The structure below is one possible setup for a data analysis project (including the course project). For a manuscript, adjust as needed. 
-You don't need to have exactly these sections, but the content covering those sections should be addressed.
+**Rachel Robertson** contributed to this exercise.
 
 This uses MS Word as output format. [See here](https://quarto.org/docs/output-formats/ms-word.html) for more information. You can switch to other formats, like html or pdf. See [the Quarto documentation](https://quarto.org/) for other formats.
 
@@ -147,6 +145,29 @@ Note that this cited reference will show up at the end of the document, the refe
 
 {{< pagebreak >}}
 
+# Class Exercise
+
+This dataset comprises heights, weights, and gender identification of nine individuals. In my additions, I included two new column variables with the age and political party affiliation of these individuals. 
+
+@fig-result2 shows a boxplot figure produced by one of the R scripts.
+
+```{r}
+#| label: fig-result2
+#| fig-cap: "Boxplot of political party affiliation and height."
+#| echo: FALSE
+knitr::include_graphics(here("starter-analysis-exercise","results","figures","party-height.png"))
+```
+Democratic party affiliation appears to be overrepresented in our sample, as Green party and Republican party affiliations are fewer, and thus don't have enough datapoints to fully show a boxplot. Nonetheless, it appears that the more conservative the party affiliation, Libertarian and Republican, the taller the person. It would be interesting to further differentiate this boxplot based on sex, as males tend to be taller and also tend to affiliate with the Republican party.
+
+@fig-result3 shows a scatterplot figure produced by one of the R scripts.
+
+```{r}
+#| label: fig-result3
+#| fig-cap: "Scatterplot of weight by age."
+#| echo: FALSE
+knitr::include_graphics(here("starter-analysis-exercise","results","figures","weight-age.png"))
+```
+It appears that there is an inverse relationship between age and weight, with older individuals weighing less and younger individuals weighing more. This is not what we would normally expect, so perhaps our sampling methods have resulted in a biased sample. Perhaps we have a group of obese children and malnourished adults.
 # References
 
 
