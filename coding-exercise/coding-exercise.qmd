@@ -1,5 +1,206 @@
 ---
 title: "R Coding Exercise"
 ---
+In this first section I am making sure the main package is installed by trying to refresh my memory on how to do that in R.
 
-Placeholder file for the future R coding exercise.
+```{r}
+#Getting started
+
+#Check to see that dslabs package is installed
+package_name <- "dslabs"
+
+#Check if the package is in the list of installed packages
+is_installed <- package_name %in% rownames(installed.packages())
+
+#Print the result
+print(is_installed)
+
+#In this chunk of code I used ChatGPT to help with the installed.packages command. I am still very new to R.
+```
+In this second section, I am loading the appropriate packages and checking the data.
+```{r}
+#Loading and checking data
+
+#Choosing a CRAN mirror URL based on your location
+cran_mirror <- "https://cloud.r-project.org"
+
+#Setting the chosen CRAN mirror
+options(repos = c(CRAN = cran_mirror))
+
+# Install the 'renv' package
+install.packages("renv")
+
+# Load the 'renv' package
+library(renv)
+
+#Installing renv to help keep track of packages
+install.packages("renv")
+
+#Loading dslabs and dplyr packages
+library(dslabs)
+library(dplyr)
+library(ggplot2)
+library(here)
+
+#Looking at help file for gapminder data
+help(gapminder)
+
+#Getting overview of data structure
+str(gapminder)
+
+#Getting summary of data
+summary(gapminder)
+
+#Determining type of object
+class(gapminder)
+```
+
+
+In this third section, I am learning to create new objects.
+```{r}
+#Processing data
+
+#Writing code that assigns only African countries to a new object/variable called africadata
+africadata <- gapminder %>% 
+  filter(continent == "Africa")
+
+#Getting overview of data structure for africadata
+str(africadata)
+
+#Getting summary of africadata
+summary(africadata)
+
+#In this chunk, I used ChatGPT. I asked it the following question: Using the tidyverse packages in R, how can I write code that assigns only the African countries to a new object/variable called africadata. The name of my data.frame is gapminder.
+
+#Writing code that only contains infant_mortality and life_expectancy within africadata
+infant_life <- africadata %>% select(infant_mortality, life_expectancy)
+
+#Getting overview of data structure for infant_life
+str(infant_life)
+
+#Getting summary of infant_life
+summary(infant_life)
+
+#Writing code that only contains population and life_expectancy within africadata
+population_life <- africadata %>% select(population, life_expectancy)
+
+#Getting overview of data structure for population_life
+str(population_life)
+
+#Getting summary of population_life
+summary(population_life)
+
+#For this chunk of code, I first incorrectly used the filter() command, and I had to troubleshoot my code with ChatGPT, which pointed me to the select() command.
+
+```
+Now I will plot life expectancy as a function of infant mortality and as a function of population size.
+```{r}
+#Plotting
+
+#Plotting life expectancy as a function of infant mortality
+plot_1 <- ggplot(infant_life, aes(x = infant_mortality, y = life_expectancy)) +
+  geom_point(alpha = 2.0) +
+  labs(title = "Life Expectancy as a Function of Infant Mortality",
+       x = "Infant Mortality",
+       y = "Life Expectancy")
+
+#Displaying
+print(plot_1)
+
+#Saving as a figure
+figure_file = here("coding-exercise","results", "figures","life_exp_inf_mort_all.png")
+ggsave(filename = figure_file, plot=plot_1)
+
+#I used ChatGPT with the following command: Using the variables infant_life and population_life, plot life expectancy as a function of infant mortality. I changed the alpha level from 0.7 to 2.0, but I'm not sure if that actually did anything
+
+#Plotting life expectancy as a function of population size on the log scale
+plot_2 <- ggplot(population_life, aes(x = population, y = life_expectancy)) +
+  geom_point(alpha = 2.0) +
+  scale_x_log10() +
+  labs(title = "Life Expectancy as a Function of Population Size",
+       x = "Population Size",
+       y = "Life Expectancy")
+
+#Displaying
+print(plot_2)
+
+#Saving as a figure
+figure_file = here("coding-exercise","results", "figures","life_exp_pop_all.png")
+ggsave(filename = figure_file, plot=plot_2) 
+```
+
+It appears there is clustering of data by country and year, since the original dataset had information between 1960 and 2016.
+
+```{r}
+#More data processing
+
+#Identifying years with missing data for infant mortality
+missing_years <- unique(africadata[is.na(africadata$infant_mortality), "year"])
+
+#Excluding missing years (up to 1981 and 2016) and select data for the year 2000
+data_2000 <- subset(africadata, !(year %in% c(missing_years, 1981, 2016)) & year == 2000)
+
+#Checking the structure and summary
+str(data_2000)
+summary(data_2000)
+
+#In this chunk, I used ChatGPT to help with my coding. I used the following prompt: Write code that figures out which years have missing data for infant mortality. Create a new object by extracting only the data for the year 2000 from the africadata object. You should end up with 51 observations and 9 variables. Check it with str and summary.
+
+
+```
+Here, we will plot infant mortality for the year 2000. Based on these plots, we still see a negative correlation between infant mortality and life expectancy. There is no noticeable correlation between poulation size and life expectancy.
+```{r}
+#More plotting
+
+#Plotting life expectancy as a function of infant mortality for the year 2000
+plot_3 <- ggplot(data_2000, aes(x = infant_mortality, y = life_expectancy)) +
+  geom_point(alpha = 2.0) +
+  labs(title = "Life Expectancy as a Function of Infant Mortality, 2000",
+       x = "Infant Mortality",
+       y = "Life Expectancy")
+
+#Displaying
+print(plot_3)
+
+#Saving as a figure
+figure_file = here("coding-exercise","results", "figures","life_exp_inf_mort_2000.png")
+ggsave(filename = figure_file, plot=plot_3)
+
+#Plotting life expectancy as a function of population size for the year 2000
+plot_4 <- ggplot(data_2000, aes(x = population, y = life_expectancy)) +
+  geom_point(alpha = 2.0) +
+  scale_x_log10() +
+  labs(title = "Life Expectancy as a Function of Population Size, 2000",
+       x = "Population Size",
+       y = "Life Expectancy")
+
+#Displaying
+print(plot_4)
+
+#Saving as a figure
+figure_file = here("coding-exercise","results", "figures","life_exp_pop_2000.png")
+ggsave(filename = figure_file, plot=plot_4) 
+```
+Now, we will us a linear model to fit the relationship between life expectancy (outcome) and infant mortality (predictor).
+
+```{r}
+#Simple model fits1
+
+#Fitting linear regression model for life expectancy (outcome) and infant mortality (predictor)
+fit1 <- lm(life_expectancy ~ infant_mortality, data = data_2000)
+
+#Printing summary of the regression model
+summary(fit1)
+```
+```{r}
+#Simple model fit2
+
+#Fitting linear regression model for life expectancy (outcome) and population (predictor)
+fit2 <- lm(life_expectancy ~ population, data = data_2000)
+
+#Printing summary of the regression model
+summary(fit2)
+
+#For this chunk of code, I asked ChatGPT the following:Use the lm function and fit life expectancy as the outcome, and infant mortality as the predictor. Use the data_2000 dataframe.
+```
+Based on the p-values for ```{fit1}``` of p = 2 x 10^-8 < p = 0.05, we can reject the null hypothesis for our first model, and conclude that life expectancy is correlated with infant mortality rates. For ``` {fit2}``` of p = 0.6159 > p = 0.05, we fail to reject the null hypothesis that life expectancy is not correlated with population size.
