@@ -204,3 +204,381 @@ summary(fit2)
 #For this chunk of code, I asked ChatGPT the following:Use the lm function and fit life expectancy as the outcome, and infant mortality as the predictor. Use the data_2000 dataframe.
 ```
 Based on the p-values for ```{fit1}``` of p = 2 x 10^-8 < p = 0.05, we can reject the null hypothesis for our first model, and conclude that life expectancy is correlated with infant mortality rates. For ``` {fit2}``` of p = 0.6159 > p = 0.05, we fail to reject the null hypothesis that life expectancy is not correlated with population size.
+
+# <span style="color:blue;"> This section contributed by Cora Hirst </span>
+
+In this section, we will be examining the `stars` dataset from the `dslabs` package. The dataset contains information about the physical properties of different stars. 
+
+## Loading and checking the data
+
+The following code chunk loads the `stars` dataset from the `dslabs` package and prints its structure and contents. 
+
+Note that I tend to "comment out" the command to install a package. This is to ensure that I don't *always* install the package when I load the libraries, because (other than the annoying case of updating R) you should only have to install a package once on a local device. In any new session, however, you need to *load the required libraries*. 
+
+```{r load-stars-dataset}
+## installing and loading required packages 
+
+#install.packages("dslabs") #install dslabs package 
+library(dslabs) #load dslabs package
+
+## load in `stars` dataset from `dslabs` package and view its structure and contents
+# load the dataset into object `stars`
+stars = dslabs::stars #loads dataset from dslabs package
+
+# what type of object is `stars`?
+class(stars) #checks the class of `stars`
+
+# what is the structure of the data frame `stars`
+str(stars)
+
+# print a summary of the variables in the data frame `stars`
+summary(stars)
+
+
+
+```
+
+`stars` is a data frame with 96 observations and 4 variables. Each observation is a star, and the name of the star is given by the factor variable `star`. For each observation of each star, the size, `magnitude`; temperature, `temp`; and type, `type`, are listed as variables. 
+
+Let's clean the data a little. I noticed three potential bugs. 
+
+## Cleaning the data
+
+First, there are 96 observations, but only 95 levels of the factor variable `star`. This means that physical information on 95 different stars is available, but one star has two observations. This could mean that there are two significantly different entries for this star, although there is no "time" variable indicating when the different observations were taken; more likely, this means that there are two different stars whose names were incorrectly entered the same, or that one observation was duplicated. 
+
+Second, the variable `temp` has character values, but elements should be numeric. That's an easy enough fix with the function `as.numeric()`!
+
+Lastly, the `type` variable seems to be categorical, with multiple observations of the same type. However, the variable is not factored in the dataframe. We will need to replace the `type` variable with a factored version of it. 
+
+The following code chunk will accomplish 3 things: 
+
+1) Check to see which star has multiple observations, and whether the observations are duplicates. 
+2) Change the `temp` variable from class `chr` to class `num`. This way, R will recognize these values as numberic, rather than character. 
+3) Factor the `type` variable.
+
+```{r clean-stars}
+## which star has two entries? 
+stars %>% 
+  dplyr::count(star)  %>% #create a dataframe with variable `star` as first column, listing the levels of factor variable `star`, and number of observations with that factor as the second column, `n`
+  dplyr::filter(n > 1) # filter this new dataframe to only show row where the value of variable `n` is greater than 1. This will print the name of the factor level of `star` with more than one observation in the dataframe `stars`
+
+## what do these observations look like?
+stars %>% 
+  dplyr::filter(star == "Altair")
+
+## clean the dataset and save as a new data frame, `stars_cleaned`
+stars_cleaned = stars %>% 
+  dplyr::filter(star != "Altair") %>% #remove entries for star with two observations
+  dplyr::mutate(temp = as.numeric(temp)) %>% #coerce character variable `temp` to class numeric
+  dplyr::mutate(type = factor(type))
+
+## double check these worked! 
+str(stars_cleaned)
+
+```
+
+I used the `count()` and `filter()` functions within the `dplyr` package to identify the level of factor `star` with two observations. It turns out that the star "Altair" was the factor with two observations, and the observations are duplicates. Whether these observations were taken at different times or are the result of a naming misentry, and thus contain different information, is unknown; so, I chose to remove these observations. 
+
+I saved the cleaned dataframe, with observations for the star "Altair" removed and the `temp` variable changed from class `chr` to class `num`, to the data frame `stars_cleaned`.
+
+## Processing the data
+
+`stars_cleaned` is a data frame with 94 observations and 4 variables. Each observation is a star, and the name of the star is given by the factor variable `star`. For each observation of each star, the size, `magnitude`; temperature, `temp`; and type, `type`, are listed as variables. 
+
+The following code chunk creates two box plots: one describing `magnitude` by each type, and one describing `temp` by each type. 
+
+```{r stars-boxplots}
+##plotting 
+# boxplot of magnitude by type
+plot1 = ggplot() + geom_boxplot(data = stars_cleaned, aes(x = type, y = magnitude, col = type))
+
+# boxpot of temperature by type
+plot2 = ggplot() + geom_boxplot(data = stars_cleaned, aes(x = type, y = temp))
+```
+
+I'm saving those plots in this code chunk so that I get in the habit now! They will be located in the "results" folder, within the "coding-exercise" folder. 
+
+```{r save-first-plots}
+# save plot 1
+figure_file = here("coding-exercise","results", "figures","mag_by_type_box.png") # file name and location
+ggsave(filename = figure_file, plot=plot1) # save plot 1 to that file name and location
+
+# save plot 2
+figure_file = here("coding-exercise","results", "figures", "temp_by_type_box.png")
+ggsave(filename = figure_file, plot=plot2) 
+```
+
+And now I am loading them as @fig-mag-by-type-box and @fig-temp-by-type-box! 
+
+```{r load-mag-by-type-box}
+#| label: fig-mag-by-type-box
+#| fig-cap: "Summary of magnitude distributions by star type."
+#| echo: FALSE
+knitr::include_graphics(here("coding-exercise","results","figures","mag_by_type_box.png"))
+```
+
+```{r load-temp-by-type-box}
+#| label: fig-temp-by-type-box
+#| fig-cap: "Summary of temperature distributions by star type."
+#| echo: FALSE
+knitr::include_graphics(here("coding-exercise","results","figures","temp_by_type_box.png"))
+```
+
+I notice that some of the types show little variation in temperature and magnitude. I want to check to see how even our observations of different types are. So, I am going to create a table which shows the number of observations recorded for each factor level of `type`. 
+
+```{r freqtable-observations-by-type}
+#generate a table of the number of observations of each type of star
+freqTable.by.type = t(as.matrix(table(stars_cleaned$type))) #generate table of the number of observations of each type with table(), transfrom it into a 10x1 matrix, and transpose into a 1x10 matrix
+table1 = as.data.frame(freqTable.by.type) #convert from matrix to dataframe for ease of naming and saving table
+rownames(table1) = c("Number of Observations") #name the frequency row for presentation
+```
+
+The following code chunk saves the table of counts of each type of star:
+```{r save-type-count-table}
+# save count tables
+summarytable_file = here("coding-exercise","results", "tables-files", "type_count_table.rds")
+saveRDS(table1, file = summarytable_file)
+```
+
+And this code chunk loads it as @tbl-type-count-table!
+
+```{r load-type-count-table}
+#| label: tbl-type-count-table
+#| tbl-cap: "Number of observations of each type of star."
+#| echo: FALSE
+resulttable=readRDS(here("coding-exercise","results","tables-files", "type_count_table.rds"))
+knitr::kable(resulttable)
+```
+
+Clearly, there are very few observations of stars of `type` "DA", "DB", "DF", "G", and "O". I would like to look at the trends in `temp` and `magnitude` based on type, so I only want to consider types with more than a certain number of observations. 
+
+## More Processing 
+
+For the sake of this activity, I have required that each `type` represented in my dataset have greater than or equal to 5 observations.
+
+The code chunk below filters out observations by the `type`s which have fewer than 5 observations. 
+
+```{r filter-by-count-type}
+#remove stars of type with fewer than 5 observations
+stars_cleaned_2 = stars_cleaned %>%
+  group_by(type) %>% #group by type
+  filter(n() >= 5) #filter for type with greater than or equal to 5 observations
+
+#lets double check that all remaining types have grater than 7 observations
+stars_cleaned_2 %>% count(type)
+```
+
+## More plotting 
+
+Now, I would like to investigate 3 things: 
+
+1) How does temperature correlate with magnitude?
+2) Do these correlations depend on type? 
+3) What is the nature of these correlations? Are they significiant? 
+
+```{r plot-magnitude-temp-scatter}
+#scatterplot of magnitude by temperature
+plot3 = ggplot() + geom_point(data = stars_cleaned_2, aes(x = magnitude, y = temp)) + labs(title = "Association of star temperatures with their magnitude")
+
+#scatterplot of magnitude by temperature on log scale
+plot4 = ggplot() + geom_point(data = stars_cleaned_2, aes(x = magnitude, y = temp)) + 
+  scale_y_continuous(trans = "log") +
+  labs(title = "Association of star temperatures with their magnitude")
+
+#save plots to figures file 
+figure_file = here("coding-exercise","results", "figures", "magnitude-temp-scatter.png")
+ggsave(filename = figure_file, plot=plot3) 
+
+figure_file = here("coding-exercise","results", "figures", "magnitude-logtemp-scatter.png")
+ggsave(filename = figure_file, plot=plot4) 
+```
+
+```{r load-magnitude-temp-scatter}
+#| label: fig-magnitude-temp-scatter
+#| fig-cap: "Scatterplot of star magnitudes by temperature."
+#| echo: FALSE
+
+knitr::include_graphics(here("coding-exercise","results","figures","magnitude-temp-scatter.png"))
+```
+
+```{r load-magnitude-logtemp-scatter}
+#| label: fig-magnitude-logtemp-scatter
+#| fig-cap: "Scatterplot of star magnitudes by temperature (log scale)."
+#| echo: FALSE
+
+knitr::include_graphics(here("coding-exercise","results","figures","magnitude-logtemp-scatter.png"))
+```
+
+There appears to be a negative association between the temperature of a star and its size (@fig-magnitude-temp-scatter), and this relationship appears more linear on a log-linear plot (@fig-magnitude-logtemp-scatter). 
+
+Grouping by type in @fig-magnitude-logtemp-scatter-grouped, we see that stars of the same type tend to group together according to the variable `temp`, and to a lesser extent, also by the variable `magnitude`. This is somewhat reflected in our boxplots (@fig-mag-by-type-box and @fig-temp-by-type-box.)
+
+```{r plot-magnitude-logtemp-scatter-by-type}
+
+#scatterplot of magnitude by temperature on log scale
+plot6 = ggplot() + geom_point(data = stars_cleaned_2, aes(x = magnitude, y = temp, col=type)) + 
+  scale_y_continuous(trans = "log") +
+  labs(title = "Association of star temperatures with their magnitude")
+
+#save plots to figures file 
+figure_file = here("coding-exercise","results", "figures", "grouped-magnitude-logtemp-scatter.png")
+ggsave(filename = figure_file, plot=plot6) 
+```
+
+```{r load-magnitude-temp-scatter-grouped}
+#| label: fig-magnitude-logtemp-scatter-grouped
+#| fig-cap: "Scatterplot of star magnitudes by temperature (log scale), grouped by star type."
+#| echo: FALSE
+
+knitr::include_graphics(here("coding-exercise","results","figures","grouped-magnitude-logtemp-scatter.png"))
+```
+
+## Regression analysis
+Based on these plots, I would like to examine three things: 
+
+1) Disregarding star type, is there a strong linear association between temperature and magnitude? 
+2) Disregarding star type, is the log-linear association between `temp`~`magnitude` stronger? 
+3) Are the within-type regressions even stronger fits? 
+
+Note on part (3) that the smaller within-group sample sizes will reduce the power of the fit. But for simple exploration, let's set this consideration aside. 
+
+First, let's examine the linear model relating the `magnitude` of all stars with their `temp` on a linear scale. 
+
+The following code chunks find the best-fit linear model, save the model summary to a table, and load the table. 
+```{r mag-temp-lm-ungrouped}
+## saving linear regression model tables will require the flextable and gtsummary packages
+
+# install.packages("flextable") # if you don't have this package already installed, uncomment and run this line
+library(flextable) #load flextable library
+# install.packages("gtsummary") # if you don't have this package already installed, uncomment and run this line
+library(gtsummary) #load gtsummary library
+
+## Linear Model 1 - temp and magnitude, ungrouped, linear scale
+#linear regression, fixed effect, temp ~ magnitude
+lm.1 = lm(data = stars_cleaned_2, temp ~ magnitude)
+summary(lm.1) # what does our model look like? 
+
+table1 = lm.1 %>% gtsummary::tbl_regression() #save summaries as tables using tbl_regression() function from gtsummary package
+
+
+# save summary tables
+summarytable_file = here("coding-exercise","results", "tables-files", "linear_model_temp_mag_ungrouped.rds")
+saveRDS(table1, file = summarytable_file)
+
+#extract p-value and save for plot
+p.mag.linear = unname(summary(lm.1)$coefficients[,"Pr(>|t|)"])[2]
+```
+
+```{r load-mag-temp-lm-ungrouped-table}
+#| label: tbl-mag-temp-lm-ungrouped
+#| tbl-cap: "Linear model of star temperature predicted by magnitude."
+#| echo: FALSE
+resulttable=readRDS(here("coding-exercise","results","tables-files", "linear_model_temp_mag_ungrouped.rds"))
+knitr::kable(resulttable)
+
+```
+
+The following code chunks plot the linear model against our observations, and load the figure. 
+```{r scatterplot-temp-mag-lm}
+#scatterplot of magnitude by temperature
+plot7 = ggplot() + geom_point(data = stars_cleaned_2, aes(x = magnitude, y = temp)) + 
+  geom_smooth(data = stars_cleaned_2, aes(y = temp, x = magnitude), method = 'lm') +
+   annotate(geom = "text", x = 10, y = 25000, label = paste("p-value =", signif(p.mag.linear, digits = 3)), color = "maroon") +
+  labs(title = "Association of star temperatures with their magnitude")
+
+#save plots to figures file 
+figure_file = here("coding-exercise","results", "figures", "magnitude-temp-scatter-lm.png")
+ggsave(filename = figure_file, plot=plot7) 
+```
+
+```{r load-magnitude-temp-scatter-lm}
+#| label: fig-magnitude-temp-scatter-lm
+#| fig-cap: "Scatterplot of star magnitudes by temperature (log scale)."
+#| echo: FALSE
+
+knitr::include_graphics(here("coding-exercise","results","figures","magnitude-temp-scatter-lm.png"))
+```
+
+According to @tbl-mag-temp-lm-ungrouped, a linear model of temperature predicted by magnitude has a significant fit, that is, $p<0.05$. However, @fig-magnitude-temp-scatter-lm demonstrates that there is a clear curve in the relationship that may be somewhat attenuated by plotting temperature on a log scale (@fig-magnitude-logtemp-scatter). 
+
+Let's examine the regression on a log-linear scale.
+
+```{r mag-logtemp-lm-ungrouped}
+## saving linear regression model tables will require the flextable and gtsummary packages
+
+# install.packages("flextable") # if you don't have this package already installed, uncomment and run this line
+library(flextable) #load flextable library
+# install.packages("gtsummary") # if you don't have this package already installed, uncomment and run this line
+library(gtsummary) #load gtsummary library
+
+## Linear Model 1 - temp and magnitude, ungrouped, linear scale
+#linear regression, fixed effect, temp ~ magnitude
+lm.2 = lm(data = stars_cleaned_2, log(temp) ~ magnitude)
+summary(lm.2) # what does our model look like? 
+
+table2 = lm.2 %>% gtsummary::tbl_regression() #save summaries as tables using tbl_regression() function from gtsummary package
+
+
+# save summary tables
+summarytable_file = here("coding-exercise","results", "tables-files", "log_linear_model_temp_mag_ungrouped.rds")
+saveRDS(table1, file = summarytable_file)
+
+#extract p-value and save for plot
+p.mag.loglinear = unname(summary(lm.2)$coefficients[,"Pr(>|t|)"])[2]
+```
+
+```{r load-mag-logtemp-lm-ungrouped-table}
+#| label: tbl-mag-logtemp-lm-ungrouped
+#| tbl-cap: "Linear model of star log(temperature) predicted by magnitude."
+#| echo: FALSE
+resulttable=readRDS(here("coding-exercise","results","tables-files", "log_linear_model_temp_mag_ungrouped.rds"))
+knitr::kable(resulttable)
+
+```
+
+```{r scatterplot-logtemp-mag-lm}
+#scatterplot of magnitude by temperature
+plot8 = ggplot() + geom_point(data = stars_cleaned_2, aes(x = magnitude, y = log(temp))) + 
+  geom_smooth(data = stars_cleaned_2, aes(y = log(temp), x = magnitude), method = 'lm') +
+   annotate(geom = "text", x = 10, y = 9.5, label = paste("p-value =", signif(p.mag.loglinear, digits = 3)), color = "forestgreen") +
+  labs(title = "Association of star temperatures with their magnitude", y = "log(temp)")
+
+#save plots to figures file 
+figure_file = here("coding-exercise","results", "figures", "magnitude-logtemp-scatter-lm.png")
+ggsave(filename = figure_file, plot=plot8) 
+
+```
+
+```{r load-magnitude-logtemp-scatter-lm}
+#| label: fig-magnitude-logtemp-scatter-lm
+#| fig-cap: "Scatterplot of temperature (log scale) by magnitude."
+#| echo: FALSE
+
+knitr::include_graphics(here("coding-exercise","results","figures","magnitude-logtemp-scatter-lm.png"))
+```
+
+According to @tbl-mag-logtemp-lm-ungrouped, a linear model of log(temperature) predicted by magnitude has a significant fit, that is, $p<0.05$, just like its linear-linear precursor. However, this p-value is multiple orders of magnitude smaller, and @fig-magnitude-logtemp-scatter-lm demonstrates that the curve in the temperature-magnitude association is significantly reduced by plotting temperature on a log scale. 
+
+Without running our regression models, lets see what our regressions look like by type. 
+
+```{r plot-magnitude-logtemp-scatter-by-type-lm}
+#scatterplot of magnitude by temperature on log scale
+plot9 = ggplot() + geom_point(data = stars_cleaned_2, aes(x = magnitude, y = temp, col=type)) + 
+  scale_y_continuous(trans = "log") +
+   geom_smooth(data = stars_cleaned_2, aes(y = temp, x = magnitude, col = type), method = 'lm') +
+  labs(title = "Association of star temperatures with their magnitude")
+
+#save plots to figures file 
+figure_file = here("coding-exercise","results", "figures", "grouped-magnitude-logtemp-scatter-lm.png")
+ggsave(filename = figure_file, plot=plot9) 
+```
+
+```{r load-magnitude-temp-scatter-grouped}
+#| label: fig-magnitude-logtemp-scatter-grouped-lm
+#| fig-cap: "Scatterplot of star magnitudes by temperature (log scale), grouped by star type."
+#| echo: FALSE
+
+knitr::include_graphics(here("coding-exercise","results","figures","grouped-magnitude-logtemp-scatter-lm.png"))
+```
+
+@fig-magnitude-logtemp-scatter-grouped-lm reveals that the associations between magnitude and log(temperature) are different across star types, some demonstrating strong negative correlations (like type "B"), and some with more neutral correlations (like type "F"). 
