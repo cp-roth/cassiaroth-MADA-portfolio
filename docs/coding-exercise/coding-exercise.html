@@ -176,6 +176,10 @@ window.Quarto = {
     <a class="dropdown-item" href="../tidytuesday-exercise/tidytuesday-exercise.html">
  <span class="dropdown-text">Tidy Tuesday Exercise</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../data-exercise/data-exercise.html">
+ <span class="dropdown-text">Complex Data Exercise - Module 4</span></a>
+  </li>  
     </ul>
   </li>
 </ul>
@@ -251,7 +255,7 @@ window.Quarto = {
 <div class="cell-output cell-output-stdout">
 <pre><code>
 The downloaded binary packages are in
-    /var/folders/by/xf620qf90gzg976bjrnzd4p40000gn/T//RtmpbPpPWp/downloaded_packages</code></pre>
+    /var/folders/by/xf620qf90gzg976bjrnzd4p40000gn/T//Rtmp1Yiwym/downloaded_packages</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the 'renv' package</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(renv)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -279,7 +283,7 @@ Attaching package: 'renv'</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 The downloaded binary packages are in
-    /var/folders/by/xf620qf90gzg976bjrnzd4p40000gn/T//RtmpbPpPWp/downloaded_packages</code></pre>
+    /var/folders/by/xf620qf90gzg976bjrnzd4p40000gn/T//Rtmp1Yiwym/downloaded_packages</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Loading dslabs and dplyr packages</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
@@ -1022,9 +1026,6 @@ Figure&nbsp;5: Scatterplot of star magnitudes by temperature (log scale), groupe
 <span id="cb91-5"><a href="#cb91-5" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("gtsummary") # if you don't have this package already installed, uncomment and run this line</span></span>
 <span id="cb91-6"><a href="#cb91-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gtsummary) <span class="co">#load gtsummary library</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>#BlackLivesMatter</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
 <pre><code>
 Attaching package: 'gtsummary'</code></pre>
 </div>
@@ -1033,10 +1034,10 @@ Attaching package: 'gtsummary'</code></pre>
 
     as_flextable, continuous_summary</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Linear Model 1 - temp and magnitude, ungrouped, linear scale</span></span>
-<span id="cb95-2"><a href="#cb95-2" aria-hidden="true" tabindex="-1"></a><span class="co">#linear regression, fixed effect, temp ~ magnitude</span></span>
-<span id="cb95-3"><a href="#cb95-3" aria-hidden="true" tabindex="-1"></a>lm<span class="fl">.1</span> <span class="ot">=</span> <span class="fu">lm</span>(<span class="at">data =</span> stars_cleaned_2, temp <span class="sc">~</span> magnitude)</span>
-<span id="cb95-4"><a href="#cb95-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm<span class="fl">.1</span>) <span class="co"># what does our model look like? </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Linear Model 1 - temp and magnitude, ungrouped, linear scale</span></span>
+<span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a><span class="co">#linear regression, fixed effect, temp ~ magnitude</span></span>
+<span id="cb94-3"><a href="#cb94-3" aria-hidden="true" tabindex="-1"></a>lm<span class="fl">.1</span> <span class="ot">=</span> <span class="fu">lm</span>(<span class="at">data =</span> stars_cleaned_2, temp <span class="sc">~</span> magnitude)</span>
+<span id="cb94-4"><a href="#cb94-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm<span class="fl">.1</span>) <span class="co"># what does our model look like? </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -1057,15 +1058,15 @@ Residual standard error: 5668 on 83 degrees of freedom
 Multiple R-squared:  0.4612,    Adjusted R-squared:  0.4547 
 F-statistic: 71.06 on 1 and 83 DF,  p-value: 9.045e-13</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a>table1 <span class="ot">=</span> lm<span class="fl">.1</span> <span class="sc">%&gt;%</span> gtsummary<span class="sc">::</span><span class="fu">tbl_regression</span>() <span class="co">#save summaries as tables using tbl_regression() function from gtsummary package</span></span>
-<span id="cb97-2"><a href="#cb97-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb97-3"><a href="#cb97-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb97-4"><a href="#cb97-4" aria-hidden="true" tabindex="-1"></a><span class="co"># save summary tables</span></span>
-<span id="cb97-5"><a href="#cb97-5" aria-hidden="true" tabindex="-1"></a>summarytable_file <span class="ot">=</span> <span class="fu">here</span>(<span class="st">"coding-exercise"</span>,<span class="st">"results"</span>, <span class="st">"tables-files"</span>, <span class="st">"linear_model_temp_mag_ungrouped.rds"</span>)</span>
-<span id="cb97-6"><a href="#cb97-6" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(table1, <span class="at">file =</span> summarytable_file)</span>
-<span id="cb97-7"><a href="#cb97-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb97-8"><a href="#cb97-8" aria-hidden="true" tabindex="-1"></a><span class="co">#extract p-value and save for plot</span></span>
-<span id="cb97-9"><a href="#cb97-9" aria-hidden="true" tabindex="-1"></a>p.mag.linear <span class="ot">=</span> <span class="fu">unname</span>(<span class="fu">summary</span>(lm<span class="fl">.1</span>)<span class="sc">$</span>coefficients[,<span class="st">"Pr(&gt;|t|)"</span>])[<span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a>table1 <span class="ot">=</span> lm<span class="fl">.1</span> <span class="sc">%&gt;%</span> gtsummary<span class="sc">::</span><span class="fu">tbl_regression</span>() <span class="co">#save summaries as tables using tbl_regression() function from gtsummary package</span></span>
+<span id="cb96-2"><a href="#cb96-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb96-3"><a href="#cb96-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb96-4"><a href="#cb96-4" aria-hidden="true" tabindex="-1"></a><span class="co"># save summary tables</span></span>
+<span id="cb96-5"><a href="#cb96-5" aria-hidden="true" tabindex="-1"></a>summarytable_file <span class="ot">=</span> <span class="fu">here</span>(<span class="st">"coding-exercise"</span>,<span class="st">"results"</span>, <span class="st">"tables-files"</span>, <span class="st">"linear_model_temp_mag_ungrouped.rds"</span>)</span>
+<span id="cb96-6"><a href="#cb96-6" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(table1, <span class="at">file =</span> summarytable_file)</span>
+<span id="cb96-7"><a href="#cb96-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb96-8"><a href="#cb96-8" aria-hidden="true" tabindex="-1"></a><span class="co">#extract p-value and save for plot</span></span>
+<span id="cb96-9"><a href="#cb96-9" aria-hidden="true" tabindex="-1"></a>p.mag.linear <span class="ot">=</span> <span class="fu">unname</span>(<span class="fu">summary</span>(lm<span class="fl">.1</span>)<span class="sc">$</span>coefficients[,<span class="st">"Pr(&gt;|t|)"</span>])[<span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div id="tbl-mag-temp-lm-ungrouped" class="cell quarto-float anchored">
@@ -1100,15 +1101,15 @@ Table&nbsp;2: Linear model of star temperature predicted by magnitude.
 </div>
 <p>The following code chunks plot the linear model against our observations, and load the figure.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a><span class="co">#scatterplot of magnitude by temperature</span></span>
-<span id="cb98-2"><a href="#cb98-2" aria-hidden="true" tabindex="-1"></a>plot7 <span class="ot">=</span> <span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">data =</span> stars_cleaned_2, <span class="fu">aes</span>(<span class="at">x =</span> magnitude, <span class="at">y =</span> temp)) <span class="sc">+</span> </span>
-<span id="cb98-3"><a href="#cb98-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">data =</span> stars_cleaned_2, <span class="fu">aes</span>(<span class="at">y =</span> temp, <span class="at">x =</span> magnitude), <span class="at">method =</span> <span class="st">'lm'</span>) <span class="sc">+</span></span>
-<span id="cb98-4"><a href="#cb98-4" aria-hidden="true" tabindex="-1"></a>   <span class="fu">annotate</span>(<span class="at">geom =</span> <span class="st">"text"</span>, <span class="at">x =</span> <span class="dv">10</span>, <span class="at">y =</span> <span class="dv">25000</span>, <span class="at">label =</span> <span class="fu">paste</span>(<span class="st">"p-value ="</span>, <span class="fu">signif</span>(p.mag.linear, <span class="at">digits =</span> <span class="dv">3</span>)), <span class="at">color =</span> <span class="st">"maroon"</span>) <span class="sc">+</span></span>
-<span id="cb98-5"><a href="#cb98-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Association of star temperatures with their magnitude"</span>)</span>
-<span id="cb98-6"><a href="#cb98-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb98-7"><a href="#cb98-7" aria-hidden="true" tabindex="-1"></a><span class="co">#save plots to figures file </span></span>
-<span id="cb98-8"><a href="#cb98-8" aria-hidden="true" tabindex="-1"></a>figure_file <span class="ot">=</span> <span class="fu">here</span>(<span class="st">"coding-exercise"</span>,<span class="st">"results"</span>, <span class="st">"figures"</span>, <span class="st">"magnitude-temp-scatter-lm.png"</span>)</span>
-<span id="cb98-9"><a href="#cb98-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="at">filename =</span> figure_file, <span class="at">plot=</span>plot7) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a><span class="co">#scatterplot of magnitude by temperature</span></span>
+<span id="cb97-2"><a href="#cb97-2" aria-hidden="true" tabindex="-1"></a>plot7 <span class="ot">=</span> <span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">data =</span> stars_cleaned_2, <span class="fu">aes</span>(<span class="at">x =</span> magnitude, <span class="at">y =</span> temp)) <span class="sc">+</span> </span>
+<span id="cb97-3"><a href="#cb97-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">data =</span> stars_cleaned_2, <span class="fu">aes</span>(<span class="at">y =</span> temp, <span class="at">x =</span> magnitude), <span class="at">method =</span> <span class="st">'lm'</span>) <span class="sc">+</span></span>
+<span id="cb97-4"><a href="#cb97-4" aria-hidden="true" tabindex="-1"></a>   <span class="fu">annotate</span>(<span class="at">geom =</span> <span class="st">"text"</span>, <span class="at">x =</span> <span class="dv">10</span>, <span class="at">y =</span> <span class="dv">25000</span>, <span class="at">label =</span> <span class="fu">paste</span>(<span class="st">"p-value ="</span>, <span class="fu">signif</span>(p.mag.linear, <span class="at">digits =</span> <span class="dv">3</span>)), <span class="at">color =</span> <span class="st">"maroon"</span>) <span class="sc">+</span></span>
+<span id="cb97-5"><a href="#cb97-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Association of star temperatures with their magnitude"</span>)</span>
+<span id="cb97-6"><a href="#cb97-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb97-7"><a href="#cb97-7" aria-hidden="true" tabindex="-1"></a><span class="co">#save plots to figures file </span></span>
+<span id="cb97-8"><a href="#cb97-8" aria-hidden="true" tabindex="-1"></a>figure_file <span class="ot">=</span> <span class="fu">here</span>(<span class="st">"coding-exercise"</span>,<span class="st">"results"</span>, <span class="st">"figures"</span>, <span class="st">"magnitude-temp-scatter-lm.png"</span>)</span>
+<span id="cb97-9"><a href="#cb97-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="at">filename =</span> figure_file, <span class="at">plot=</span>plot7) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Saving 7 x 5 in image
 `geom_smooth()` using formula = 'y ~ x'</code></pre>
@@ -1131,17 +1132,17 @@ Figure&nbsp;6: Scatterplot of star magnitudes by temperature (log scale).
 <p>According to <a href="#tbl-mag-temp-lm-ungrouped" class="quarto-xref">Table&nbsp;2</a>, a linear model of temperature predicted by magnitude has a significant fit, that is, <span class="math inline">\(p&lt;0.05\)</span>. However, <a href="#fig-magnitude-temp-scatter-lm" class="quarto-xref">Figure&nbsp;6</a> demonstrates that there is a clear curve in the relationship that may be somewhat attenuated by plotting temperature on a log scale (<a href="#fig-magnitude-logtemp-scatter" class="quarto-xref">Figure&nbsp;4</a>).</p>
 <p>Let’s examine the regression on a log-linear scale.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a><span class="do">## saving linear regression model tables will require the flextable and gtsummary packages</span></span>
-<span id="cb100-2"><a href="#cb100-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb100-3"><a href="#cb100-3" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("flextable") # if you don't have this package already installed, uncomment and run this line</span></span>
-<span id="cb100-4"><a href="#cb100-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(flextable) <span class="co">#load flextable library</span></span>
-<span id="cb100-5"><a href="#cb100-5" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("gtsummary") # if you don't have this package already installed, uncomment and run this line</span></span>
-<span id="cb100-6"><a href="#cb100-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gtsummary) <span class="co">#load gtsummary library</span></span>
-<span id="cb100-7"><a href="#cb100-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb100-8"><a href="#cb100-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Linear Model 1 - temp and magnitude, ungrouped, linear scale</span></span>
-<span id="cb100-9"><a href="#cb100-9" aria-hidden="true" tabindex="-1"></a><span class="co">#linear regression, fixed effect, temp ~ magnitude</span></span>
-<span id="cb100-10"><a href="#cb100-10" aria-hidden="true" tabindex="-1"></a>lm<span class="fl">.2</span> <span class="ot">=</span> <span class="fu">lm</span>(<span class="at">data =</span> stars_cleaned_2, <span class="fu">log</span>(temp) <span class="sc">~</span> magnitude)</span>
-<span id="cb100-11"><a href="#cb100-11" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm<span class="fl">.2</span>) <span class="co"># what does our model look like? </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a><span class="do">## saving linear regression model tables will require the flextable and gtsummary packages</span></span>
+<span id="cb99-2"><a href="#cb99-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb99-3"><a href="#cb99-3" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("flextable") # if you don't have this package already installed, uncomment and run this line</span></span>
+<span id="cb99-4"><a href="#cb99-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(flextable) <span class="co">#load flextable library</span></span>
+<span id="cb99-5"><a href="#cb99-5" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("gtsummary") # if you don't have this package already installed, uncomment and run this line</span></span>
+<span id="cb99-6"><a href="#cb99-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gtsummary) <span class="co">#load gtsummary library</span></span>
+<span id="cb99-7"><a href="#cb99-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb99-8"><a href="#cb99-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Linear Model 1 - temp and magnitude, ungrouped, linear scale</span></span>
+<span id="cb99-9"><a href="#cb99-9" aria-hidden="true" tabindex="-1"></a><span class="co">#linear regression, fixed effect, temp ~ magnitude</span></span>
+<span id="cb99-10"><a href="#cb99-10" aria-hidden="true" tabindex="-1"></a>lm<span class="fl">.2</span> <span class="ot">=</span> <span class="fu">lm</span>(<span class="at">data =</span> stars_cleaned_2, <span class="fu">log</span>(temp) <span class="sc">~</span> magnitude)</span>
+<span id="cb99-11"><a href="#cb99-11" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm<span class="fl">.2</span>) <span class="co"># what does our model look like? </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -1162,15 +1163,15 @@ Residual standard error: 0.4677 on 83 degrees of freedom
 Multiple R-squared:  0.6467,    Adjusted R-squared:  0.6425 
 F-statistic:   152 on 1 and 83 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a>table2 <span class="ot">=</span> lm<span class="fl">.2</span> <span class="sc">%&gt;%</span> gtsummary<span class="sc">::</span><span class="fu">tbl_regression</span>() <span class="co">#save summaries as tables using tbl_regression() function from gtsummary package</span></span>
-<span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb102-3"><a href="#cb102-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb102-4"><a href="#cb102-4" aria-hidden="true" tabindex="-1"></a><span class="co"># save summary tables</span></span>
-<span id="cb102-5"><a href="#cb102-5" aria-hidden="true" tabindex="-1"></a>summarytable_file <span class="ot">=</span> <span class="fu">here</span>(<span class="st">"coding-exercise"</span>,<span class="st">"results"</span>, <span class="st">"tables-files"</span>, <span class="st">"log_linear_model_temp_mag_ungrouped.rds"</span>)</span>
-<span id="cb102-6"><a href="#cb102-6" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(table1, <span class="at">file =</span> summarytable_file)</span>
-<span id="cb102-7"><a href="#cb102-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb102-8"><a href="#cb102-8" aria-hidden="true" tabindex="-1"></a><span class="co">#extract p-value and save for plot</span></span>
-<span id="cb102-9"><a href="#cb102-9" aria-hidden="true" tabindex="-1"></a>p.mag.loglinear <span class="ot">=</span> <span class="fu">unname</span>(<span class="fu">summary</span>(lm<span class="fl">.2</span>)<span class="sc">$</span>coefficients[,<span class="st">"Pr(&gt;|t|)"</span>])[<span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a>table2 <span class="ot">=</span> lm<span class="fl">.2</span> <span class="sc">%&gt;%</span> gtsummary<span class="sc">::</span><span class="fu">tbl_regression</span>() <span class="co">#save summaries as tables using tbl_regression() function from gtsummary package</span></span>
+<span id="cb101-2"><a href="#cb101-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb101-3"><a href="#cb101-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb101-4"><a href="#cb101-4" aria-hidden="true" tabindex="-1"></a><span class="co"># save summary tables</span></span>
+<span id="cb101-5"><a href="#cb101-5" aria-hidden="true" tabindex="-1"></a>summarytable_file <span class="ot">=</span> <span class="fu">here</span>(<span class="st">"coding-exercise"</span>,<span class="st">"results"</span>, <span class="st">"tables-files"</span>, <span class="st">"log_linear_model_temp_mag_ungrouped.rds"</span>)</span>
+<span id="cb101-6"><a href="#cb101-6" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(table1, <span class="at">file =</span> summarytable_file)</span>
+<span id="cb101-7"><a href="#cb101-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb101-8"><a href="#cb101-8" aria-hidden="true" tabindex="-1"></a><span class="co">#extract p-value and save for plot</span></span>
+<span id="cb101-9"><a href="#cb101-9" aria-hidden="true" tabindex="-1"></a>p.mag.loglinear <span class="ot">=</span> <span class="fu">unname</span>(<span class="fu">summary</span>(lm<span class="fl">.2</span>)<span class="sc">$</span>coefficients[,<span class="st">"Pr(&gt;|t|)"</span>])[<span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div id="tbl-mag-logtemp-lm-ungrouped" class="cell quarto-float anchored">
@@ -1204,15 +1205,15 @@ Table&nbsp;3: Linear model of star log(temperature) predicted by magnitude.
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a><span class="co">#scatterplot of magnitude by temperature</span></span>
-<span id="cb103-2"><a href="#cb103-2" aria-hidden="true" tabindex="-1"></a>plot8 <span class="ot">=</span> <span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">data =</span> stars_cleaned_2, <span class="fu">aes</span>(<span class="at">x =</span> magnitude, <span class="at">y =</span> <span class="fu">log</span>(temp))) <span class="sc">+</span> </span>
-<span id="cb103-3"><a href="#cb103-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">data =</span> stars_cleaned_2, <span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">log</span>(temp), <span class="at">x =</span> magnitude), <span class="at">method =</span> <span class="st">'lm'</span>) <span class="sc">+</span></span>
-<span id="cb103-4"><a href="#cb103-4" aria-hidden="true" tabindex="-1"></a>   <span class="fu">annotate</span>(<span class="at">geom =</span> <span class="st">"text"</span>, <span class="at">x =</span> <span class="dv">10</span>, <span class="at">y =</span> <span class="fl">9.5</span>, <span class="at">label =</span> <span class="fu">paste</span>(<span class="st">"p-value ="</span>, <span class="fu">signif</span>(p.mag.loglinear, <span class="at">digits =</span> <span class="dv">3</span>)), <span class="at">color =</span> <span class="st">"forestgreen"</span>) <span class="sc">+</span></span>
-<span id="cb103-5"><a href="#cb103-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Association of star temperatures with their magnitude"</span>, <span class="at">y =</span> <span class="st">"log(temp)"</span>)</span>
-<span id="cb103-6"><a href="#cb103-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb103-7"><a href="#cb103-7" aria-hidden="true" tabindex="-1"></a><span class="co">#save plots to figures file </span></span>
-<span id="cb103-8"><a href="#cb103-8" aria-hidden="true" tabindex="-1"></a>figure_file <span class="ot">=</span> <span class="fu">here</span>(<span class="st">"coding-exercise"</span>,<span class="st">"results"</span>, <span class="st">"figures"</span>, <span class="st">"magnitude-logtemp-scatter-lm.png"</span>)</span>
-<span id="cb103-9"><a href="#cb103-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="at">filename =</span> figure_file, <span class="at">plot=</span>plot8) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a><span class="co">#scatterplot of magnitude by temperature</span></span>
+<span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a>plot8 <span class="ot">=</span> <span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">data =</span> stars_cleaned_2, <span class="fu">aes</span>(<span class="at">x =</span> magnitude, <span class="at">y =</span> <span class="fu">log</span>(temp))) <span class="sc">+</span> </span>
+<span id="cb102-3"><a href="#cb102-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">data =</span> stars_cleaned_2, <span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">log</span>(temp), <span class="at">x =</span> magnitude), <span class="at">method =</span> <span class="st">'lm'</span>) <span class="sc">+</span></span>
+<span id="cb102-4"><a href="#cb102-4" aria-hidden="true" tabindex="-1"></a>   <span class="fu">annotate</span>(<span class="at">geom =</span> <span class="st">"text"</span>, <span class="at">x =</span> <span class="dv">10</span>, <span class="at">y =</span> <span class="fl">9.5</span>, <span class="at">label =</span> <span class="fu">paste</span>(<span class="st">"p-value ="</span>, <span class="fu">signif</span>(p.mag.loglinear, <span class="at">digits =</span> <span class="dv">3</span>)), <span class="at">color =</span> <span class="st">"forestgreen"</span>) <span class="sc">+</span></span>
+<span id="cb102-5"><a href="#cb102-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Association of star temperatures with their magnitude"</span>, <span class="at">y =</span> <span class="st">"log(temp)"</span>)</span>
+<span id="cb102-6"><a href="#cb102-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb102-7"><a href="#cb102-7" aria-hidden="true" tabindex="-1"></a><span class="co">#save plots to figures file </span></span>
+<span id="cb102-8"><a href="#cb102-8" aria-hidden="true" tabindex="-1"></a>figure_file <span class="ot">=</span> <span class="fu">here</span>(<span class="st">"coding-exercise"</span>,<span class="st">"results"</span>, <span class="st">"figures"</span>, <span class="st">"magnitude-logtemp-scatter-lm.png"</span>)</span>
+<span id="cb102-9"><a href="#cb102-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="at">filename =</span> figure_file, <span class="at">plot=</span>plot8) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Saving 7 x 5 in image
 `geom_smooth()` using formula = 'y ~ x'</code></pre>
@@ -1235,15 +1236,15 @@ Figure&nbsp;7: Scatterplot of temperature (log scale) by magnitude.
 <p>According to <a href="#tbl-mag-logtemp-lm-ungrouped" class="quarto-xref">Table&nbsp;3</a>, a linear model of log(temperature) predicted by magnitude has a significant fit, that is, <span class="math inline">\(p&lt;0.05\)</span>, just like its linear-linear precursor. However, this p-value is multiple orders of magnitude smaller, and <a href="#fig-magnitude-logtemp-scatter-lm" class="quarto-xref">Figure&nbsp;7</a> demonstrates that the curve in the temperature-magnitude association is significantly reduced by plotting temperature on a log scale.</p>
 <p>Without running our regression models, lets see what our regressions look like by type.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a><span class="co">#scatterplot of magnitude by temperature on log scale</span></span>
-<span id="cb105-2"><a href="#cb105-2" aria-hidden="true" tabindex="-1"></a>plot9 <span class="ot">=</span> <span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">data =</span> stars_cleaned_2, <span class="fu">aes</span>(<span class="at">x =</span> magnitude, <span class="at">y =</span> temp, <span class="at">col=</span>type)) <span class="sc">+</span> </span>
-<span id="cb105-3"><a href="#cb105-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">trans =</span> <span class="st">"log"</span>) <span class="sc">+</span></span>
-<span id="cb105-4"><a href="#cb105-4" aria-hidden="true" tabindex="-1"></a>   <span class="fu">geom_smooth</span>(<span class="at">data =</span> stars_cleaned_2, <span class="fu">aes</span>(<span class="at">y =</span> temp, <span class="at">x =</span> magnitude, <span class="at">col =</span> type), <span class="at">method =</span> <span class="st">'lm'</span>) <span class="sc">+</span></span>
-<span id="cb105-5"><a href="#cb105-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Association of star temperatures with their magnitude"</span>)</span>
-<span id="cb105-6"><a href="#cb105-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb105-7"><a href="#cb105-7" aria-hidden="true" tabindex="-1"></a><span class="co">#save plots to figures file </span></span>
-<span id="cb105-8"><a href="#cb105-8" aria-hidden="true" tabindex="-1"></a>figure_file <span class="ot">=</span> <span class="fu">here</span>(<span class="st">"coding-exercise"</span>,<span class="st">"results"</span>, <span class="st">"figures"</span>, <span class="st">"grouped-magnitude-logtemp-scatter-lm.png"</span>)</span>
-<span id="cb105-9"><a href="#cb105-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="at">filename =</span> figure_file, <span class="at">plot=</span>plot9) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb104"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a><span class="co">#scatterplot of magnitude by temperature on log scale</span></span>
+<span id="cb104-2"><a href="#cb104-2" aria-hidden="true" tabindex="-1"></a>plot9 <span class="ot">=</span> <span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">data =</span> stars_cleaned_2, <span class="fu">aes</span>(<span class="at">x =</span> magnitude, <span class="at">y =</span> temp, <span class="at">col=</span>type)) <span class="sc">+</span> </span>
+<span id="cb104-3"><a href="#cb104-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">trans =</span> <span class="st">"log"</span>) <span class="sc">+</span></span>
+<span id="cb104-4"><a href="#cb104-4" aria-hidden="true" tabindex="-1"></a>   <span class="fu">geom_smooth</span>(<span class="at">data =</span> stars_cleaned_2, <span class="fu">aes</span>(<span class="at">y =</span> temp, <span class="at">x =</span> magnitude, <span class="at">col =</span> type), <span class="at">method =</span> <span class="st">'lm'</span>) <span class="sc">+</span></span>
+<span id="cb104-5"><a href="#cb104-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Association of star temperatures with their magnitude"</span>)</span>
+<span id="cb104-6"><a href="#cb104-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb104-7"><a href="#cb104-7" aria-hidden="true" tabindex="-1"></a><span class="co">#save plots to figures file </span></span>
+<span id="cb104-8"><a href="#cb104-8" aria-hidden="true" tabindex="-1"></a>figure_file <span class="ot">=</span> <span class="fu">here</span>(<span class="st">"coding-exercise"</span>,<span class="st">"results"</span>, <span class="st">"figures"</span>, <span class="st">"grouped-magnitude-logtemp-scatter-lm.png"</span>)</span>
+<span id="cb104-9"><a href="#cb104-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="at">filename =</span> figure_file, <span class="at">plot=</span>plot9) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Saving 7 x 5 in image
 `geom_smooth()` using formula = 'y ~ x'</code></pre>

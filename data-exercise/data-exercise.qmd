@@ -10,6 +10,9 @@ I found this dataset through [Emil Hvitfeldt](https://github.com/EmilHvitfeldt)'
 
 First, we will install and load the dataset.
 ```{r}
+#suppressing log messages
+#| message: false
+
 #installing dataset and other needed packages
 devtools::install_github("EmilHvitfeldt/sherlock")
 
