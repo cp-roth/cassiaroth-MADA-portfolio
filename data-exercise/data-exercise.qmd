@@ -1,0 +1,75 @@
+---
+title: "Complex Data Exercise"
+---
+
+This exercise is designed to give you practice with exploring text datasets (a _complex data type_). We will load, process, and engage in some discriptive/exploratory analysis of the data.
+
+This dataset, titled `Sherlock`, is a package that includes text from the *Sherlock Holmes* book series by Sir Arthur Conan Doyle. All 48 texts are in the public domain. Information regarding copyright laws is available [here](https://sherlock-holm.es/ascii/).
+
+I found this dataset through [Emil Hvitfeldt](https://github.com/EmilHvitfeldt)'s [R-text-data compilation repository](https://github.com/EmilHvitfeldt/R-text-data.git). I also am using [Paul Vanderlaken's website](https://paulvanderlaken.com/2017/08/03/harry-plotter-celebrating-the-20-year-anniversary-with-tidytext-the-tidyverse-and-r/) as guidance.
+
+First, we will install and load the dataset.
+```{r}
+#installing dataset and other needed packages
+devtools::install_github("EmilHvitfeldt/sherlock")
+
+#loading dataset and other necessary packages
+library(sherlock)
+library(tidytext)
+library(dplyr)
+library(tidyverse)
+library(stringr)
+library(tibble)
+library(knitr)
+library(here)
+```
+Next, we will explore the dataset. We will start by looking at the structure.
+```{r}
+#Exploring the dataset
+dplyr::glimpse(holmes)
+
+#Viewing the first few rows (variable names "text" and "book")
+head(holmes)
+
+#Understanding all books in the data
+book_titles <- holmes %>% distinct(book)
+print(book_titles)
+
+#Ordering the entries alphabetically by book title
+book_titles <- book_titles[order(book_titles$book), ]
+
+#Creating a table using kable
+table1 <- kable(book_titles, caption = "Book Titles")
+print(table1)
+```
+
+Now let's see how many times some of the most important people's names appears in the texts.
+```{r}
+#Searching for specific words
+specific_words <- c("sherlock", "holmes", "moriarty", "watson", "john")
+
+#Creating a word frequency table for specific words
+word_freq_table <- holmes %>%
+  unnest_tokens(word, text) %>%
+  filter(word %in% specific_words) %>%
+  count(word, sort = TRUE)
+
+word_freq_df <- as.data.frame(word_freq_table)
+print(word_freq_df)
+```
+
+Mistakenly, many people attribute the quote ["Elementary, my dear Watson,"](https://www.ihearofsherlock.com/2016/08/elementary-my-dear-watson-birth-of.html) to the *Sherlock Holmes* series. So let's check how many times the phrase appears in the data. For fun, we will also see if Sherlock Holmes ever calls his sidekick "John Watson" by his full name.
+```{r}
+#Searching for phrases about Watson
+phrases <- c("John Watson", "Elementary, my dear Watson")
+
+holmes_filtered <- holmes %>%
+  filter(str_detect(text, fixed(phrases[1])) | 
+         str_detect(text, fixed(phrases[2])))
+
+#Viewing the filtered dataset
+print(holmes_filtered)
+```
+We can see that "John Watson" appears only twice, when he is writing about his own experiences. The phrase "Elementary, my dear Watson," appears *zero* times. So, it's a myth that Sherlock Holmes ever said this phrase in the original texts.
+
+I was going to try to create a word cloud, but I was having trouble loading the package; RStudio kept crashing. Despite this not showing that much information, I've spent almost 3 hours on the exercise. I need to get better with R!

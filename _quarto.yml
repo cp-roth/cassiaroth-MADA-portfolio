@@ -18,6 +18,8 @@ website:
             file: presentation-exercise/presentation-exercise.qmd
           - text: "Tidy Tuesday Exercise"
             file: tidytuesday-exercise/tidytuesday-exercise.qmd
+          - text: "Complex Data Exercise - Module 4"
+            file: data-exercise/data-exercise.qmd
     right:
       - icon: github 
         href: https://github.com/cp-roth/cassiaroth-MADA-portfolio.git     
