@@ -12,6 +12,8 @@ First, we will install and load the dataset.
 ```{r}
 #suppressing log messages
 #| message: false
+#| warning: false
+#| include: false
 
 #installing dataset and other needed packages
 devtools::install_github("EmilHvitfeldt/sherlock")

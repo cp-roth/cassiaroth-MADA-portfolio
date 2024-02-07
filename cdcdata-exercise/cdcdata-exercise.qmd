@@ -1,0 +1,225 @@
+---
+title: "cdcdata-exercise"
+author: "Cassia Roth"
+editor: visual
+---
+
+# CDC Data Exploration: Quarterly Provisional Estimates for Selected Birth Indicators
+
+### Description of the data
+
+This dataset comes from the National Center for Health Statistics (NCHS) and is a part of the CDC's National Vital Statistics System. The data is a quarterly release of provisional estimates of selected reproductive indicators including general fertility rates, age-specific birth rates, total and low-risk cesarean delivery rates, preterm birth rates, and other gestational age categories.
+
+The dataset is available at the [CDC website](https://data.cdc.gov/NCHS/NCHS-VSRR-Quarterly-provisional-estimates-for-sele/76vv-a7x8/about_data).
+
+### Reading in the data
+
+Here, I loaded all the packages I will use for this data exercise, listed below. I also read in the data from the csv file, and I called the data `cdcdata`. We can see that there are 8 variables and 1100 observations. This dataset has multiple indicators stacked on top of each other. For example, within the "Topic" column, there are metrics for "Birth Rate", "Gestational Age," etc., each measuring a very different outcome. Instead of widening the dataset (splitting the data into multiple tables, one for each metric), I am going to make things easier by looking at one metric, "Age-specific Birth Rates," which I will get to below.
+
+```{r}
+#Loading packages
+library(tidyverse) #This includes ggplot2, tidyr, readr, dplyr, stringr, purr, forcats
+library(knitr)
+library(here)
+library(kableExtra)
+
+#Reading in the csv file
+cdcdata <- read_csv(here("cdcdata-exercise", "NCHS_VSRR_Quarterly_provisional_estimates_for_selected_birth_indicators_20240205.csv"))
+
+#Checking the packaging (displaying first and last few rows of data)
+nrow(cdcdata)
+ncol(cdcdata)
+
+#Showing the structure
+str(cdcdata)
+
+#Looking at top/bottom of data
+head(cdcdata)[, c(1:8)]
+tail(cdcdata)[, c(1:8)]
+```
+
+This dataset is pretty untidy. The "Year and Quarter" column is a combination of the year and the quarter. I will separate this column into two columns, "Year" and "Quarter", and convert them to numeric. In addition, the "Topic" and "Topic Subgroup" columns have multiple indicators listed in the same column. I will be looking at the observations only for "Birth Rates" and will remove all other observations. I will also replace the space with an underscore in the "Topic" column where it contains "Birth Rates."
+
+```{r}
+#This section was written with help from ChatGPT.
+
+#Get column names
+colnames(cdcdata)
+
+#Separate the "Year and Quarter" column into "Year" and "Quarter" columns in cdcdata
+cdcdata <- cdcdata %>%
+  separate("Year and Quarter", into = c("Year", "Quarter"), sep = " Q")
+
+#Convert "Year" and "Quarter" columns to numeric
+cdcdata <- cdcdata %>%
+  mutate(
+    Year = as.numeric(Year),
+    Quarter = case_when(
+      Quarter == "1" ~ 1,
+      Quarter == "2" ~ 2,
+      Quarter == "3" ~ 3,
+      Quarter == "4" ~ 4
+    )
+  )
+
+#Rename observations "Birth Rates"
+cdcdata <- cdcdata %>%
+  mutate(Topic = ifelse(Topic == "Birth Rates", str_replace(Topic, " ", "_"), Topic))
+
+# Filter to include only observations where the "Topic" column contains "Birth_Rates"
+cdcdata1 <- cdcdata %>% filter(Topic == "Birth_Rates")
+
+#Print the modified cdcdata dataset
+print(cdcdata1)
+```
+
+With our new dataset, called `cdcdata_birth_rates`, we can see that the "Year and Quarter" column has been separated into "Year" and "Quarter" columns, and the "Topic" column has been modified to replace the space with an underscore where it contains "Birth Rates." We can also see that the "Topic" column contains only "Birth Rates" observations. This gives us 9 columns (variables) and 572 rows (observations).
+
+Additionally, the "Topic" and "Subtopic" columns are redundant in that the "Subtopic" column is the true indicator we are looking for, and we can remove the "Topic" column.
+The same issue we had in the "Topic" column is also present in the "Topic Subgroup" column. We will remove the "Topic" column and filter the dataset to include only observations where the "Topic Subgroup" column is exactly "Age-specific Birth Rates." We will also replace "Age-specific Birth Rates" with "Age_Specific" in the "Topic Subgroup" column.
+```{r}
+#This section was written with help from ChatGPT.
+
+#Remove the "Topic" column
+cdcdata1 <- cdcdata1 %>%
+  select(-Topic)
+
+#Filter the dataset to include only observations where the "Topic Subgroup" column is exactly "Age-specific Birth Rates"
+cdcdata1 <- cdcdata1 %>%
+  filter(`Topic Subgroup` == "Age-specific Birth Rates")
+
+#Replace "Age-specific Birth Rates" with "Age_Specific" in the "Topic Subgroup" column
+cdcdata1 <- cdcdata1 %>%
+  mutate(`Topic Subgroup` = str_replace(`Topic Subgroup`, "Age-specific Birth Rates", "Age_Specific"))
+
+#Remove the "Topic Subgroup" column and rename dataframe
+cdcdata2 <- cdcdata1 %>%
+  select(-`Topic Subgroup`)
+
+#Print the modified cdcdata dataset
+print(cdcdata2)
+```
+Now, we have 7 columns (variables) and 352 observations, since we are only looking at age-specific birth rates, we don't need a column with that information.
+
+Now let's clean up the rest of the column names and observation entries, removing spaces and recategorizing variables.
+```{r}
+#This section was written with help from ChatGPT.
+
+#Renaming columns
+cdcdata2 <- cdcdata2 %>%
+  rename(Age_Years = Indicator)
+
+cdcdata2 <- cdcdata2 %>%
+  rename(Race_Ethnicity = `Race Ethnicity Category`)
+
+#Define the specific levels for the "Race_Ethnicity" category
+race_ethnicity_levels <- c("All races and origins", "Hispanic", "Non-Hispanic Black", "Non-Hispanic White")
+
+#Convert the "Race Ethnicity Category" column to a factor variable with custom levels
+cdcdata2$Race_Ethnicity <- factor(cdcdata2$Race_Ethnicity, levels = race_ethnicity_levels)
+
+#View the levels of the "Race_Ethnicity" column
+levels(cdcdata2$Race_Ethnicity)
+
+#Get unique age category levels from the "Age_Years" column
+age_levels <- unique(cdcdata2$Age_Years)
+
+#Convert the "Age_Years" column to a factor variable with custom levels
+cdcdata2$Age_Years <- factor(cdcdata2$Age_Years, levels = age_levels)
+
+#View the levels of the "Age_Years" column
+levels(cdcdata2$Age_Years)
+
+#Print the modified cdcdata dataset
+print(cdcdata2)
+```
+We can see that we have multiple missing entries for the "Significant" Column. From the data dictionary on the website, the CDC defines the "Significant" variable as follows: "An asterisk (*) indicates that estimates for the most recent quarter are significantly different from the same quarter of the previous year." This variable is not relevant for this analysis, so we can remove this column from the dataset. When CDC calculated rates, they had population size in each group, and thus could calculate significance.
+
+But first, let's just check how many observations are missing an asterisk in the "Significant" column.
+```{r}
+# Count the number of NA values in the "Significant" column
+na_count <- sum(is.na(cdcdata2$Significant))
+
+# Print the number of NA values
+print(na_count)
+```
+We can see that 327 of the 352 observations were not significantly different from the same quarter of the previous year.
+
+Now, let's remove that column/variable altogether.
+```{r}
+#Remove the "Significant" column
+cdcdata2 <- cdcdata2 %>%
+  select(-Significant)
+
+#Print the new dataset
+print(cdcdata2)
+```
+
+So, for our final dataset, we have 352 observations and 6 variables! However, in our exporatory analysis, we are going to look at the average of the rates over the entire 11 quarter time period, so we will drop the variables "Year", "Quarter", and "Unit" since they are not relevant for this analysis. All units are the same (per 1,000 population). This gives us 3 variables (Age_Years, Race_Ethnicity, and Rate).
+
+```{r}
+#Remove the "Year", "Quarter", "Unit" columns
+cdcdata2 <- cdcdata2 %>%
+  select(-Year, -Quarter, -Unit)
+```
+
+#Exploratory/Descriptive Analysis of Clean Data
+
+Now let's begin to explore the data. We can't show the percentage of observations in each category because we only have rate and not the population size. We also can't summarize the variables in a way that can be described in a distribution because we don't have the population size, just the final rates for each group. 
+
+We can ask: within each Race_Ethnicity category (All races and origins, Hispanic, Non-Hispanic Black, and Non-Hispanic White), how does the birth rate change across age groups during this 11-quarter period? 
+
+First, let's summarize the data so that we get the mean and standard deviation for each age group according to race_ethnicity.
+```{r}
+#Collapse data by Age_Years and Race_Ethnicity
+cdcdata2_agg <- cdcdata2 %>%
+  group_by(Age_Years, Race_Ethnicity) %>%
+  summarise_all(list(mean = mean, sd = sd)) %>%
+  ungroup()
+
+#Make a  table using knitr
+knitr::kable(cdcdata2_agg, caption = "Mean and Standard Deviation of Birth Rates by Age")
+
+print(cdcdata2_agg)
+```
+These are all stable measures because the SDs are small.
+
+For each race/ethnic group, I will plot the mean rate for each age group. I am not plotting the rate for each age group and race/ethnic group over time because that would result in 32 lines, and that would be a very messy figure. Instead, I will plot the mean rate for each age group for each race/ethnic group for the entire period.
+
+```{r}
+#ChatGPT helped me with this section.
+
+#Plotting a bar graph
+p1 <- ggplot(cdcdata2_agg, aes(x = Age_Years, y = mean, fill = Race_Ethnicity)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Mean Rate by Age Group and Race/Ethnicity",
+       x = "Age Group",
+       y = "Mean Rate",
+       fill = "Race/Ethnicity") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_brewer(palette = "Set2")  # Choose a color palette if needed
+plot(p1)
+
+#Saving figure
+figure_file <- here("cdcdata-exercise", "mean_rate_bar.png")
+ggsave(filename = figure_file, plot=p1)
+
+#Plotting a line graph
+p2 <- ggplot(cdcdata2_agg, aes(x = Age_Years, y = mean, color = Race_Ethnicity, group = Race_Ethnicity)) +
+  geom_line() +
+  labs(title = "Mean Rate by Age Group and Race/Ethnicity",
+       x = "Age Group",
+       y = "Mean Rate",
+       color = "Race/Ethnicity") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_color_brewer(palette = "Set2")  # Choose a color palette if needed
+plot(p2)
+
+#Saving figure
+figure_file <- here("cdcdata-exercise", "mean_rate_line.png")
+ggsave(filename = figure_file, plot=p2)
+``` 
+
+These graphs tell us how birth rates change as women get older among different race_ethnicity categories. Unsurprisingly, despite differences among racial_ethnic categories, the overall trend remains the same. Birth rates are highest among women in the 25-29 and 30-34 age groups.

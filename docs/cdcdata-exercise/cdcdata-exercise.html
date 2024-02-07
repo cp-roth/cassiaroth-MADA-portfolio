@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.537">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Cassia Roth">
+
+<title>Cassia Roth’s Data Analysis Portfolio - cdcdata-exercise</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Cassia Roth’s Data Analysis Portfolio</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../aboutme.html"> 
+<span class="menu-text">About Me</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-projects" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Projects</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-projects">    
+        <li>
+    <a class="dropdown-item" href="../starter-analysis-exercise/products/report/starter-analysis-report.html">
+ <span class="dropdown-text">Starter Analysis Exercise</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../coding-exercise/coding-exercise.html">
+ <span class="dropdown-text">R Coding Exercise</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../presentation-exercise/presentation-exercise.html">
+ <span class="dropdown-text">Presentation Exercise</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../tidytuesday-exercise/tidytuesday-exercise.html">
+ <span class="dropdown-text">Tidy Tuesday Exercise</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../data-exercise/data-exercise.html">
+ <span class="dropdown-text">Complex Data Exercise - Module 4</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../cdcdata-exercise/cdcdata-exercise.html">
+ <span class="dropdown-text">CDC Data Exercise - Module 5</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/cp-roth/cassiaroth-MADA-portfolio.git"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">cdcdata-exercise</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Cassia Roth </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="cdc-data-exploration-quarterly-provisional-estimates-for-selected-birth-indicators" class="level1">
+<h1>CDC Data Exploration: Quarterly Provisional Estimates for Selected Birth Indicators</h1>
+<section id="description-of-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="description-of-the-data">Description of the data</h3>
+<p>This dataset comes from the National Center for Health Statistics (NCHS) and is a part of the CDC’s National Vital Statistics System. The data is a quarterly release of provisional estimates of selected reproductive indicators including general fertility rates, age-specific birth rates, total and low-risk cesarean delivery rates, preterm birth rates, and other gestational age categories.</p>
+<p>The dataset is available at the <a href="https://data.cdc.gov/NCHS/NCHS-VSRR-Quarterly-provisional-estimates-for-sele/76vv-a7x8/about_data">CDC website</a>.</p>
+</section>
+<section id="reading-in-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="reading-in-the-data">Reading in the data</h3>
+<p>Here, I loaded all the packages I will use for this data exercise, listed below. I also read in the data from the csv file, and I called the data <code>cdcdata</code>. We can see that there are 8 variables and 1100 observations. This dataset has multiple indicators stacked on top of each other. For example, within the “Topic” column, there are metrics for “Birth Rate”, “Gestational Age,” etc., each measuring a very different outcome. Instead of widening the dataset (splitting the data into multiple tables, one for each metric), I am going to make things easier by looking at one metric, “Age-specific Birth Rates,” which I will get to below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Loading packages</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse) <span class="co">#This includes ggplot2, tidyr, readr, dplyr, stringr, purr, forcats</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.4
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.4.4     ✔ tibble    3.2.1
+✔ lubridate 1.9.3     ✔ tidyr     1.3.0
+✔ purrr     1.0.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>here() starts at /Users/cassiaroth/Documents/GitHub/MADARoth/cassiaroth-MADA-portfolio</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'kableExtra'
+
+The following object is masked from 'package:dplyr':
+
+    group_rows</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Reading in the csv file</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>cdcdata <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"cdcdata-exercise"</span>, <span class="st">"NCHS_VSRR_Quarterly_provisional_estimates_for_selected_birth_indicators_20240205.csv"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 1100 Columns: 8
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (7): Year and Quarter, Topic, Topic Subgroup, Indicator, Race Ethnicity ...
+dbl (1): Rate
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Checking the packaging (displaying first and last few rows of data)</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(cdcdata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1100</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ncol</span>(cdcdata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 8</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Showing the structure</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(cdcdata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>spc_tbl_ [1,100 × 8] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+ $ Year and Quarter       : chr [1:1100] "2023 Q3" "2023 Q3" "2023 Q3" "2023 Q3" ...
+ $ Topic                  : chr [1:1100] "Birth Rates" "Birth Rates" "Birth Rates" "Birth Rates" ...
+ $ Topic Subgroup         : chr [1:1100] "Age-specific Birth Rates" "Age-specific Birth Rates" "Age-specific Birth Rates" "Age-specific Birth Rates" ...
+ $ Indicator              : chr [1:1100] "10-14 years" "10-14 years" "10-14 years" "10-14 years" ...
+ $ Race Ethnicity Category: chr [1:1100] "All races and origins" "Hispanic" "Non-Hispanic Black" "Non-Hispanic White" ...
+ $ Rate                   : num [1:1100] 0.2 0.3 0.4 0.1 13.4 21.3 19.7 8.7 56 78.3 ...
+ $ Unit                   : chr [1:1100] "per 1,000 population" "per 1,000 population" "per 1,000 population" "per 1,000 population" ...
+ $ Significant            : chr [1:1100] NA NA "*" NA ...
+ - attr(*, "spec")=
+  .. cols(
+  ..   `Year and Quarter` = col_character(),
+  ..   Topic = col_character(),
+  ..   `Topic Subgroup` = col_character(),
+  ..   Indicator = col_character(),
+  ..   `Race Ethnicity Category` = col_character(),
+  ..   Rate = col_double(),
+  ..   Unit = col_character(),
+  ..   Significant = col_character()
+  .. )
+ - attr(*, "problems")=&lt;externalptr&gt; </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Looking at top/bottom of data</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(cdcdata)[, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 8
+  `Year and Quarter` Topic     `Topic Subgroup` Indicator Race Ethnicity Categ…¹
+  &lt;chr&gt;              &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;     &lt;chr&gt;                 
+1 2023 Q3            Birth Ra… Age-specific Bi… 10-14 ye… All races and origins 
+2 2023 Q3            Birth Ra… Age-specific Bi… 10-14 ye… Hispanic              
+3 2023 Q3            Birth Ra… Age-specific Bi… 10-14 ye… Non-Hispanic Black    
+4 2023 Q3            Birth Ra… Age-specific Bi… 10-14 ye… Non-Hispanic White    
+5 2023 Q3            Birth Ra… Age-specific Bi… 15-19 ye… All races and origins 
+6 2023 Q3            Birth Ra… Age-specific Bi… 15-19 ye… Hispanic              
+# ℹ abbreviated name: ¹​`Race Ethnicity Category`
+# ℹ 3 more variables: Rate &lt;dbl&gt;, Unit &lt;chr&gt;, Significant &lt;chr&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span>(cdcdata)[, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 8
+  `Year and Quarter` Topic     `Topic Subgroup` Indicator Race Ethnicity Categ…¹
+  &lt;chr&gt;              &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;     &lt;chr&gt;                 
+1 2021 Q1            NICU Adm… NICU Admission … NICU Adm… Non-Hispanic Black    
+2 2021 Q1            NICU Adm… NICU Admission … NICU Adm… Non-Hispanic White    
+3 2021 Q1            Source o… Medicaid         Medicaid  All races and origins 
+4 2021 Q1            Source o… Medicaid         Medicaid  Hispanic              
+5 2021 Q1            Source o… Medicaid         Medicaid  Non-Hispanic Black    
+6 2021 Q1            Source o… Medicaid         Medicaid  Non-Hispanic White    
+# ℹ abbreviated name: ¹​`Race Ethnicity Category`
+# ℹ 3 more variables: Rate &lt;dbl&gt;, Unit &lt;chr&gt;, Significant &lt;chr&gt;</code></pre>
+</div>
+</div>
+<p>This dataset is pretty untidy. The “Year and Quarter” column is a combination of the year and the quarter. I will separate this column into two columns, “Year” and “Quarter”, and convert them to numeric. In addition, the “Topic” and “Topic Subgroup” columns have multiple indicators listed in the same column. I will be looking at the observations only for “Birth Rates” and will remove all other observations. I will also replace the space with an underscore in the “Topic” column where it contains “Birth Rates.”</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">#This section was written with help from ChatGPT.</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Get column names</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(cdcdata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Year and Quarter"        "Topic"                  
+[3] "Topic Subgroup"          "Indicator"              
+[5] "Race Ethnicity Category" "Rate"                   
+[7] "Unit"                    "Significant"            </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Separate the "Year and Quarter" column into "Year" and "Quarter" columns in cdcdata</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>cdcdata <span class="ot">&lt;-</span> cdcdata <span class="sc">%&gt;%</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(<span class="st">"Year and Quarter"</span>, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"Year"</span>, <span class="st">"Quarter"</span>), <span class="at">sep =</span> <span class="st">" Q"</span>)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Convert "Year" and "Quarter" columns to numeric</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>cdcdata <span class="ot">&lt;-</span> cdcdata <span class="sc">%&gt;%</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">Year =</span> <span class="fu">as.numeric</span>(Year),</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">Quarter =</span> <span class="fu">case_when</span>(</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>      Quarter <span class="sc">==</span> <span class="st">"1"</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>      Quarter <span class="sc">==</span> <span class="st">"2"</span> <span class="sc">~</span> <span class="dv">2</span>,</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>      Quarter <span class="sc">==</span> <span class="st">"3"</span> <span class="sc">~</span> <span class="dv">3</span>,</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>      Quarter <span class="sc">==</span> <span class="st">"4"</span> <span class="sc">~</span> <span class="dv">4</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a><span class="co">#Rename observations "Birth Rates"</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>cdcdata <span class="ot">&lt;-</span> cdcdata <span class="sc">%&gt;%</span></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Topic =</span> <span class="fu">ifelse</span>(Topic <span class="sc">==</span> <span class="st">"Birth Rates"</span>, <span class="fu">str_replace</span>(Topic, <span class="st">" "</span>, <span class="st">"_"</span>), Topic))</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter to include only observations where the "Topic" column contains "Birth_Rates"</span></span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>cdcdata1 <span class="ot">&lt;-</span> cdcdata <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Topic <span class="sc">==</span> <span class="st">"Birth_Rates"</span>)</span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a><span class="co">#Print the modified cdcdata dataset</span></span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(cdcdata1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 572 × 9
+    Year Quarter Topic   `Topic Subgroup` Indicator Race Ethnicity Categ…¹  Rate
+   &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;            &lt;chr&gt;     &lt;chr&gt;                  &lt;dbl&gt;
+ 1  2023       3 Birth_… Age-specific Bi… 10-14 ye… All races and origins    0.2
+ 2  2023       3 Birth_… Age-specific Bi… 10-14 ye… Hispanic                 0.3
+ 3  2023       3 Birth_… Age-specific Bi… 10-14 ye… Non-Hispanic Black       0.4
+ 4  2023       3 Birth_… Age-specific Bi… 10-14 ye… Non-Hispanic White       0.1
+ 5  2023       3 Birth_… Age-specific Bi… 15-19 ye… All races and origins   13.4
+ 6  2023       3 Birth_… Age-specific Bi… 15-19 ye… Hispanic                21.3
+ 7  2023       3 Birth_… Age-specific Bi… 15-19 ye… Non-Hispanic Black      19.7
+ 8  2023       3 Birth_… Age-specific Bi… 15-19 ye… Non-Hispanic White       8.7
+ 9  2023       3 Birth_… Age-specific Bi… 20-24 ye… All races and origins   56  
+10  2023       3 Birth_… Age-specific Bi… 20-24 ye… Hispanic                78.3
+# ℹ 562 more rows
+# ℹ abbreviated name: ¹​`Race Ethnicity Category`
+# ℹ 2 more variables: Unit &lt;chr&gt;, Significant &lt;chr&gt;</code></pre>
+</div>
+</div>
+<p>With our new dataset, called <code>cdcdata_birth_rates</code>, we can see that the “Year and Quarter” column has been separated into “Year” and “Quarter” columns, and the “Topic” column has been modified to replace the space with an underscore where it contains “Birth Rates.” We can also see that the “Topic” column contains only “Birth Rates” observations. This gives us 9 columns (variables) and 572 rows (observations).</p>
+<p>Additionally, the “Topic” and “Subtopic” columns are redundant in that the “Subtopic” column is the true indicator we are looking for, and we can remove the “Topic” column. The same issue we had in the “Topic” column is also present in the “Topic Subgroup” column. We will remove the “Topic” column and filter the dataset to include only observations where the “Topic Subgroup” column is exactly “Age-specific Birth Rates.” We will also replace “Age-specific Birth Rates” with “Age_Specific” in the “Topic Subgroup” column.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co">#This section was written with help from ChatGPT.</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Remove the "Topic" column</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>cdcdata1 <span class="ot">&lt;-</span> cdcdata1 <span class="sc">%&gt;%</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>Topic)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="co">#Filter the dataset to include only observations where the "Topic Subgroup" column is exactly "Age-specific Birth Rates"</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>cdcdata1 <span class="ot">&lt;-</span> cdcdata1 <span class="sc">%&gt;%</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="st">`</span><span class="at">Topic Subgroup</span><span class="st">`</span> <span class="sc">==</span> <span class="st">"Age-specific Birth Rates"</span>)</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="co">#Replace "Age-specific Birth Rates" with "Age_Specific" in the "Topic Subgroup" column</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>cdcdata1 <span class="ot">&lt;-</span> cdcdata1 <span class="sc">%&gt;%</span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">Topic Subgroup</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">str_replace</span>(<span class="st">`</span><span class="at">Topic Subgroup</span><span class="st">`</span>, <span class="st">"Age-specific Birth Rates"</span>, <span class="st">"Age_Specific"</span>))</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a><span class="co">#Remove the "Topic Subgroup" column and rename dataframe</span></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>cdcdata2 <span class="ot">&lt;-</span> cdcdata1 <span class="sc">%&gt;%</span></span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="st">`</span><span class="at">Topic Subgroup</span><span class="st">`</span>)</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a><span class="co">#Print the modified cdcdata dataset</span></span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(cdcdata2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 352 × 7
+    Year Quarter Indicator   `Race Ethnicity Category`  Rate Unit    Significant
+   &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;       &lt;chr&gt;                     &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;      
+ 1  2023       3 10-14 years All races and origins       0.2 per 1,… &lt;NA&gt;       
+ 2  2023       3 10-14 years Hispanic                    0.3 per 1,… &lt;NA&gt;       
+ 3  2023       3 10-14 years Non-Hispanic Black          0.4 per 1,… *          
+ 4  2023       3 10-14 years Non-Hispanic White          0.1 per 1,… &lt;NA&gt;       
+ 5  2023       3 15-19 years All races and origins      13.4 per 1,… *          
+ 6  2023       3 15-19 years Hispanic                   21.3 per 1,… *          
+ 7  2023       3 15-19 years Non-Hispanic Black         19.7 per 1,… *          
+ 8  2023       3 15-19 years Non-Hispanic White          8.7 per 1,… *          
+ 9  2023       3 20-24 years All races and origins      56   per 1,… *          
+10  2023       3 20-24 years Hispanic                   78.3 per 1,… *          
+# ℹ 342 more rows</code></pre>
+</div>
+</div>
+<p>Now, we have 7 columns (variables) and 352 observations, since we are only looking at age-specific birth rates, we don’t need a column with that information.</p>
+<p>Now let’s clean up the rest of the column names and observation entries, removing spaces and recategorizing variables.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co">#This section was written with help from ChatGPT.</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Renaming columns</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>cdcdata2 <span class="ot">&lt;-</span> cdcdata2 <span class="sc">%&gt;%</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">Age_Years =</span> Indicator)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>cdcdata2 <span class="ot">&lt;-</span> cdcdata2 <span class="sc">%&gt;%</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">Race_Ethnicity =</span> <span class="st">`</span><span class="at">Race Ethnicity Category</span><span class="st">`</span>)</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a><span class="co">#Define the specific levels for the "Race_Ethnicity" category</span></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>race_ethnicity_levels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"All races and origins"</span>, <span class="st">"Hispanic"</span>, <span class="st">"Non-Hispanic Black"</span>, <span class="st">"Non-Hispanic White"</span>)</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a><span class="co">#Convert the "Race Ethnicity Category" column to a factor variable with custom levels</span></span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>cdcdata2<span class="sc">$</span>Race_Ethnicity <span class="ot">&lt;-</span> <span class="fu">factor</span>(cdcdata2<span class="sc">$</span>Race_Ethnicity, <span class="at">levels =</span> race_ethnicity_levels)</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a><span class="co">#View the levels of the "Race_Ethnicity" column</span></span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(cdcdata2<span class="sc">$</span>Race_Ethnicity)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "All races and origins" "Hispanic"              "Non-Hispanic Black"   
+[4] "Non-Hispanic White"   </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Get unique age category levels from the "Age_Years" column</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>age_levels <span class="ot">&lt;-</span> <span class="fu">unique</span>(cdcdata2<span class="sc">$</span>Age_Years)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Convert the "Age_Years" column to a factor variable with custom levels</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>cdcdata2<span class="sc">$</span>Age_Years <span class="ot">&lt;-</span> <span class="fu">factor</span>(cdcdata2<span class="sc">$</span>Age_Years, <span class="at">levels =</span> age_levels)</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="co">#View the levels of the "Age_Years" column</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(cdcdata2<span class="sc">$</span>Age_Years)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "10-14 years" "15-19 years" "20-24 years" "25-29 years" "30-34 years"
+[6] "35-39 years" "40-44 years" "45+ years"  </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Print the modified cdcdata dataset</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(cdcdata2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 352 × 7
+    Year Quarter Age_Years   Race_Ethnicity         Rate Unit        Significant
+   &lt;dbl&gt;   &lt;dbl&gt; &lt;fct&gt;       &lt;fct&gt;                 &lt;dbl&gt; &lt;chr&gt;       &lt;chr&gt;      
+ 1  2023       3 10-14 years All races and origins   0.2 per 1,000 … &lt;NA&gt;       
+ 2  2023       3 10-14 years Hispanic                0.3 per 1,000 … &lt;NA&gt;       
+ 3  2023       3 10-14 years Non-Hispanic Black      0.4 per 1,000 … *          
+ 4  2023       3 10-14 years Non-Hispanic White      0.1 per 1,000 … &lt;NA&gt;       
+ 5  2023       3 15-19 years All races and origins  13.4 per 1,000 … *          
+ 6  2023       3 15-19 years Hispanic               21.3 per 1,000 … *          
+ 7  2023       3 15-19 years Non-Hispanic Black     19.7 per 1,000 … *          
+ 8  2023       3 15-19 years Non-Hispanic White      8.7 per 1,000 … *          
+ 9  2023       3 20-24 years All races and origins  56   per 1,000 … *          
+10  2023       3 20-24 years Hispanic               78.3 per 1,000 … *          
+# ℹ 342 more rows</code></pre>
+</div>
+</div>
+<p>We can see that we have multiple missing entries for the “Significant” Column. From the data dictionary on the website, the CDC defines the “Significant” variable as follows: “An asterisk (*) indicates that estimates for the most recent quarter are significantly different from the same quarter of the previous year.” This variable is not relevant for this analysis, so we can remove this column from the dataset. When CDC calculated rates, they had population size in each group, and thus could calculate significance.</p>
+<p>But first, let’s just check how many observations are missing an asterisk in the “Significant” column.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Count the number of NA values in the "Significant" column</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>na_count <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(cdcdata2<span class="sc">$</span>Significant))</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the number of NA values</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(na_count)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 327</code></pre>
+</div>
+</div>
+<p>We can see that 327 of the 352 observations were not significantly different from the same quarter of the previous year.</p>
+<p>Now, let’s remove that column/variable altogether.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Remove the "Significant" column</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>cdcdata2 <span class="ot">&lt;-</span> cdcdata2 <span class="sc">%&gt;%</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>Significant)</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Print the new dataset</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(cdcdata2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 352 × 6
+    Year Quarter Age_Years   Race_Ethnicity         Rate Unit                
+   &lt;dbl&gt;   &lt;dbl&gt; &lt;fct&gt;       &lt;fct&gt;                 &lt;dbl&gt; &lt;chr&gt;               
+ 1  2023       3 10-14 years All races and origins   0.2 per 1,000 population
+ 2  2023       3 10-14 years Hispanic                0.3 per 1,000 population
+ 3  2023       3 10-14 years Non-Hispanic Black      0.4 per 1,000 population
+ 4  2023       3 10-14 years Non-Hispanic White      0.1 per 1,000 population
+ 5  2023       3 15-19 years All races and origins  13.4 per 1,000 population
+ 6  2023       3 15-19 years Hispanic               21.3 per 1,000 population
+ 7  2023       3 15-19 years Non-Hispanic Black     19.7 per 1,000 population
+ 8  2023       3 15-19 years Non-Hispanic White      8.7 per 1,000 population
+ 9  2023       3 20-24 years All races and origins  56   per 1,000 population
+10  2023       3 20-24 years Hispanic               78.3 per 1,000 population
+# ℹ 342 more rows</code></pre>
+</div>
+</div>
+<p>So, for our final dataset, we have 352 observations and 6 variables! However, in our exporatory analysis, we are going to look at the average of the rates over the entire 11 quarter time period, so we will drop the variables “Year”, “Quarter”, and “Unit” since they are not relevant for this analysis. All units are the same (per 1,000 population). This gives us 3 variables (Age_Years, Race_Ethnicity, and Rate).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Remove the "Year", "Quarter", "Unit" columns</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>cdcdata2 <span class="ot">&lt;-</span> cdcdata2 <span class="sc">%&gt;%</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>Year, <span class="sc">-</span>Quarter, <span class="sc">-</span>Unit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>#Exploratory/Descriptive Analysis of Clean Data</p>
+<p>Now let’s begin to explore the data. We can’t show the percentage of observations in each category because we only have rate and not the population size. We also can’t summarize the variables in a way that can be described in a distribution because we don’t have the population size, just the final rates for each group.</p>
+<p>We can ask: within each Race_Ethnicity category (All races and origins, Hispanic, Non-Hispanic Black, and Non-Hispanic White), how does the birth rate change across age groups during this 11-quarter period?</p>
+<p>First, let’s summarize the data so that we get the mean and standard deviation for each age group according to race_ethnicity.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Collapse data by Age_Years and Race_Ethnicity</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>cdcdata2_agg <span class="ot">&lt;-</span> cdcdata2 <span class="sc">%&gt;%</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Age_Years, Race_Ethnicity) <span class="sc">%&gt;%</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise_all</span>(<span class="fu">list</span>(<span class="at">mean =</span> mean, <span class="at">sd =</span> sd)) <span class="sc">%&gt;%</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="co">#Make a  table using knitr</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(cdcdata2_agg, <span class="at">caption =</span> <span class="st">"Mean and Standard Deviation of Birth Rates by Age"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<caption>Mean and Standard Deviation of Birth Rates by Age</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Age_Years</th>
+<th style="text-align: left;">Race_Ethnicity</th>
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">sd</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">10-14 years</td>
+<td style="text-align: left;">All races and origins</td>
+<td style="text-align: right;">0.2000000</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10-14 years</td>
+<td style="text-align: left;">Hispanic</td>
+<td style="text-align: right;">0.3000000</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">10-14 years</td>
+<td style="text-align: left;">Non-Hispanic Black</td>
+<td style="text-align: right;">0.3545455</td>
+<td style="text-align: right;">0.0522233</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10-14 years</td>
+<td style="text-align: left;">Non-Hispanic White</td>
+<td style="text-align: right;">0.1000000</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">15-19 years</td>
+<td style="text-align: left;">All races and origins</td>
+<td style="text-align: right;">13.8181818</td>
+<td style="text-align: right;">0.3789939</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">15-19 years</td>
+<td style="text-align: left;">Hispanic</td>
+<td style="text-align: right;">21.3000000</td>
+<td style="text-align: right;">0.3193744</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">15-19 years</td>
+<td style="text-align: left;">Non-Hispanic Black</td>
+<td style="text-align: right;">21.1636364</td>
+<td style="text-align: right;">1.1595454</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">15-19 years</td>
+<td style="text-align: left;">Non-Hispanic White</td>
+<td style="text-align: right;">9.2181818</td>
+<td style="text-align: right;">0.3341203</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">20-24 years</td>
+<td style="text-align: left;">All races and origins</td>
+<td style="text-align: right;">60.2818182</td>
+<td style="text-align: right;">1.9898835</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">20-24 years</td>
+<td style="text-align: left;">Hispanic</td>
+<td style="text-align: right;">81.8909091</td>
+<td style="text-align: right;">1.8019182</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">20-24 years</td>
+<td style="text-align: left;">Non-Hispanic Black</td>
+<td style="text-align: right;">76.3454545</td>
+<td style="text-align: right;">4.4362966</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">20-24 years</td>
+<td style="text-align: left;">Non-Hispanic White</td>
+<td style="text-align: right;">50.6272727</td>
+<td style="text-align: right;">1.8363501</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">25-29 years</td>
+<td style="text-align: left;">All races and origins</td>
+<td style="text-align: right;">92.6090909</td>
+<td style="text-align: right;">1.1076593</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">25-29 years</td>
+<td style="text-align: left;">Hispanic</td>
+<td style="text-align: right;">110.3090909</td>
+<td style="text-align: right;">3.8386077</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">25-29 years</td>
+<td style="text-align: left;">Non-Hispanic Black</td>
+<td style="text-align: right;">90.9818182</td>
+<td style="text-align: right;">1.5879661</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">25-29 years</td>
+<td style="text-align: left;">Non-Hispanic White</td>
+<td style="text-align: right;">90.5363636</td>
+<td style="text-align: right;">0.9254974</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">30-34 years</td>
+<td style="text-align: left;">All races and origins</td>
+<td style="text-align: right;">96.4363636</td>
+<td style="text-align: right;">1.3086426</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">30-34 years</td>
+<td style="text-align: left;">Hispanic</td>
+<td style="text-align: right;">99.2727273</td>
+<td style="text-align: right;">3.9678939</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">30-34 years</td>
+<td style="text-align: left;">Non-Hispanic Black</td>
+<td style="text-align: right;">79.1909091</td>
+<td style="text-align: right;">0.7879778</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">30-34 years</td>
+<td style="text-align: left;">Non-Hispanic White</td>
+<td style="text-align: right;">99.9000000</td>
+<td style="text-align: right;">1.4303846</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">35-39 years</td>
+<td style="text-align: left;">All races and origins</td>
+<td style="text-align: right;">53.8363636</td>
+<td style="text-align: right;">1.5711605</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">35-39 years</td>
+<td style="text-align: left;">Hispanic</td>
+<td style="text-align: right;">56.8000000</td>
+<td style="text-align: right;">2.8722813</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">35-39 years</td>
+<td style="text-align: left;">Non-Hispanic Black</td>
+<td style="text-align: right;">49.0000000</td>
+<td style="text-align: right;">1.5244671</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">35-39 years</td>
+<td style="text-align: left;">Non-Hispanic White</td>
+<td style="text-align: right;">52.0727273</td>
+<td style="text-align: right;">1.1816014</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">40-44 years</td>
+<td style="text-align: left;">All races and origins</td>
+<td style="text-align: right;">12.1909091</td>
+<td style="text-align: right;">0.4678772</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">40-44 years</td>
+<td style="text-align: left;">Hispanic</td>
+<td style="text-align: right;">14.8636364</td>
+<td style="text-align: right;">0.7500303</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">40-44 years</td>
+<td style="text-align: left;">Non-Hispanic Black</td>
+<td style="text-align: right;">13.2454545</td>
+<td style="text-align: right;">0.6486349</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">40-44 years</td>
+<td style="text-align: left;">Non-Hispanic White</td>
+<td style="text-align: right;">10.4454545</td>
+<td style="text-align: right;">0.2769969</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">45+ years</td>
+<td style="text-align: left;">All races and origins</td>
+<td style="text-align: right;">1.0090909</td>
+<td style="text-align: right;">0.0943880</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">45+ years</td>
+<td style="text-align: left;">Hispanic</td>
+<td style="text-align: right;">1.0636364</td>
+<td style="text-align: right;">0.1206045</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">45+ years</td>
+<td style="text-align: left;">Non-Hispanic Black</td>
+<td style="text-align: right;">1.2909091</td>
+<td style="text-align: right;">0.1445998</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">45+ years</td>
+<td style="text-align: left;">Non-Hispanic White</td>
+<td style="text-align: right;">0.8363636</td>
+<td style="text-align: right;">0.0809040</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(cdcdata2_agg)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 32 × 4
+   Age_Years   Race_Ethnicity          mean     sd
+   &lt;fct&gt;       &lt;fct&gt;                  &lt;dbl&gt;  &lt;dbl&gt;
+ 1 10-14 years All races and origins  0.2   0     
+ 2 10-14 years Hispanic               0.3   0     
+ 3 10-14 years Non-Hispanic Black     0.355 0.0522
+ 4 10-14 years Non-Hispanic White     0.1   0     
+ 5 15-19 years All races and origins 13.8   0.379 
+ 6 15-19 years Hispanic              21.3   0.319 
+ 7 15-19 years Non-Hispanic Black    21.2   1.16  
+ 8 15-19 years Non-Hispanic White     9.22  0.334 
+ 9 20-24 years All races and origins 60.3   1.99  
+10 20-24 years Hispanic              81.9   1.80  
+# ℹ 22 more rows</code></pre>
+</div>
+</div>
+<p>These are all stable measures because the SDs are small.</p>
+<p>For each race/ethnic group, I will plot the mean rate for each age group. I am not plotting the rate for each age group and race/ethnic group over time because that would result in 32 lines, and that would be a very messy figure. Instead, I will plot the mean rate for each age group for each race/ethnic group for the entire period.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co">#ChatGPT helped me with this section.</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Plotting a bar graph</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(cdcdata2_agg, <span class="fu">aes</span>(<span class="at">x =</span> Age_Years, <span class="at">y =</span> mean, <span class="at">fill =</span> Race_Ethnicity)) <span class="sc">+</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Mean Rate by Age Group and Race/Ethnicity"</span>,</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Age Group"</span>,</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Mean Rate"</span>,</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">fill =</span> <span class="st">"Race/Ethnicity"</span>) <span class="sc">+</span></span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Set2"</span>)  <span class="co"># Choose a color palette if needed</span></span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(p1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="cdcdata-exercise_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Saving figure</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>figure_file <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"cdcdata-exercise"</span>, <span class="st">"mean_rate_bar.png"</span>)</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="at">filename =</span> figure_file, <span class="at">plot=</span>p1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Saving 7 x 5 in image</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Plotting a line graph</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(cdcdata2_agg, <span class="fu">aes</span>(<span class="at">x =</span> Age_Years, <span class="at">y =</span> mean, <span class="at">color =</span> Race_Ethnicity, <span class="at">group =</span> Race_Ethnicity)) <span class="sc">+</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Mean Rate by Age Group and Race/Ethnicity"</span>,</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Age Group"</span>,</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Mean Rate"</span>,</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">"Race/Ethnicity"</span>) <span class="sc">+</span></span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_brewer</span>(<span class="at">palette =</span> <span class="st">"Set2"</span>)  <span class="co"># Choose a color palette if needed</span></span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(p2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="cdcdata-exercise_files/figure-html/unnamed-chunk-9-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Saving figure</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>figure_file <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"cdcdata-exercise"</span>, <span class="st">"mean_rate_line.png"</span>)</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="at">filename =</span> figure_file, <span class="at">plot=</span>p2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Saving 7 x 5 in image</code></pre>
+</div>
+</div>
+<p>These graphs tell us how birth rates change as women get older among different race_ethnicity categories. Unsurprisingly, despite differences among racial_ethnic categories, the overall trend remains the same. Birth rates are highest among women in the 25-29 and 30-34 age groups.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      return note.innerHTML;
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
