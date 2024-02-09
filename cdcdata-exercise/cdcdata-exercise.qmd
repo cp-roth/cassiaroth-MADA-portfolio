@@ -75,8 +75,8 @@ print(cdcdata1)
 
 With our new dataset, called `cdcdata_birth_rates`, we can see that the "Year and Quarter" column has been separated into "Year" and "Quarter" columns, and the "Topic" column has been modified to replace the space with an underscore where it contains "Birth Rates." We can also see that the "Topic" column contains only "Birth Rates" observations. This gives us 9 columns (variables) and 572 rows (observations).
 
-Additionally, the "Topic" and "Subtopic" columns are redundant in that the "Subtopic" column is the true indicator we are looking for, and we can remove the "Topic" column.
-The same issue we had in the "Topic" column is also present in the "Topic Subgroup" column. We will remove the "Topic" column and filter the dataset to include only observations where the "Topic Subgroup" column is exactly "Age-specific Birth Rates." We will also replace "Age-specific Birth Rates" with "Age_Specific" in the "Topic Subgroup" column.
+Additionally, the "Topic" and "Subtopic" columns are redundant in that the "Subtopic" column is the true indicator we are looking for, and we can remove the "Topic" column. The same issue we had in the "Topic" column is also present in the "Topic Subgroup" column. We will remove the "Topic" column and filter the dataset to include only observations where the "Topic Subgroup" column is exactly "Age-specific Birth Rates." We will also replace "Age-specific Birth Rates" with "Age_Specific" in the "Topic Subgroup" column.
+
 ```{r}
 #This section was written with help from ChatGPT.
 
@@ -99,9 +99,11 @@ cdcdata2 <- cdcdata1 %>%
 #Print the modified cdcdata dataset
 print(cdcdata2)
 ```
+
 Now, we have 7 columns (variables) and 352 observations, since we are only looking at age-specific birth rates, we don't need a column with that information.
 
 Now let's clean up the rest of the column names and observation entries, removing spaces and recategorizing variables.
+
 ```{r}
 #This section was written with help from ChatGPT.
 
@@ -133,9 +135,11 @@ levels(cdcdata2$Age_Years)
 #Print the modified cdcdata dataset
 print(cdcdata2)
 ```
-We can see that we have multiple missing entries for the "Significant" Column. From the data dictionary on the website, the CDC defines the "Significant" variable as follows: "An asterisk (*) indicates that estimates for the most recent quarter are significantly different from the same quarter of the previous year." This variable is not relevant for this analysis, so we can remove this column from the dataset. When CDC calculated rates, they had population size in each group, and thus could calculate significance.
+
+We can see that we have multiple missing entries for the "Significant" Column. From the data dictionary on the website, the CDC defines the "Significant" variable as follows: "An asterisk (\*) indicates that estimates for the most recent quarter are significantly different from the same quarter of the previous year." This variable is not relevant for this analysis, so we can remove this column from the dataset. When CDC calculated rates, they had population size in each group, and thus could calculate significance.
 
 But first, let's just check how many observations are missing an asterisk in the "Significant" column.
+
 ```{r}
 # Count the number of NA values in the "Significant" column
 na_count <- sum(is.na(cdcdata2$Significant))
@@ -143,9 +147,11 @@ na_count <- sum(is.na(cdcdata2$Significant))
 # Print the number of NA values
 print(na_count)
 ```
+
 We can see that 327 of the 352 observations were not significantly different from the same quarter of the previous year.
 
 Now, let's remove that column/variable altogether.
+
 ```{r}
 #Remove the "Significant" column
 cdcdata2 <- cdcdata2 %>%
@@ -165,11 +171,12 @@ cdcdata2 <- cdcdata2 %>%
 
 #Exploratory/Descriptive Analysis of Clean Data
 
-Now let's begin to explore the data. We can't show the percentage of observations in each category because we only have rate and not the population size. We also can't summarize the variables in a way that can be described in a distribution because we don't have the population size, just the final rates for each group. 
+Now let's begin to explore the data. We can't show the percentage of observations in each category because we only have rate and not the population size. We also can't summarize the variables in a way that can be described in a distribution because we don't have the population size, just the final rates for each group.
 
-We can ask: within each Race_Ethnicity category (All races and origins, Hispanic, Non-Hispanic Black, and Non-Hispanic White), how does the birth rate change across age groups during this 11-quarter period? 
+We can ask: within each Race_Ethnicity category (All races and origins, Hispanic, Non-Hispanic Black, and Non-Hispanic White), how does the birth rate change across age groups during this 11-quarter period?
 
 First, let's summarize the data so that we get the mean and standard deviation for each age group according to race_ethnicity.
+
 ```{r}
 #Collapse data by Age_Years and Race_Ethnicity
 cdcdata2_agg <- cdcdata2 %>%
@@ -182,6 +189,7 @@ knitr::kable(cdcdata2_agg, caption = "Mean and Standard Deviation of Birth Rates
 
 print(cdcdata2_agg)
 ```
+
 These are all stable measures because the SDs are small.
 
 For each race/ethnic group, I will plot the mean rate for each age group. I am not plotting the rate for each age group and race/ethnic group over time because that would result in 32 lines, and that would be a very messy figure. Instead, I will plot the mean rate for each age group for each race/ethnic group for the entire period.
@@ -220,6 +228,218 @@ plot(p2)
 #Saving figure
 figure_file <- here("cdcdata-exercise", "mean_rate_line.png")
 ggsave(filename = figure_file, plot=p2)
-``` 
+```
 
 These graphs tell us how birth rates change as women get older among different race_ethnicity categories. Unsurprisingly, despite differences among racial_ethnic categories, the overall trend remains the same. Birth rates are highest among women in the 25-29 and 30-34 age groups.
+
+**Rachel Robertson contributed to this portion of the exercise.**
+
+# Creating a Synthetic Data Set Based on Birth Rates for Age Categories and Race/Ethnicity
+
+### Finding Number of Entries for Each Factor Variable
+
+Cassia previously narrowed the data to 352 rows and 3 columns. The column rate represents a double (numeric variable in R), while the columns Age_Years and Race_Ethnicity both represent factors. As described by Cassia, the factor levels for Age_Years include: 10-14, 15-19, 20-24, 25-29, 30-34, 35-39, 40-45, and 45+ (years).
+The factor levels for Race_Ethnicity include:"All races and origins", "Hispanic", "Non-Hispanic Black", "Non-Hispanic White".
+
+However, I do not know how entries are within each of these levels. I will need to know how many entries are in each ethnicity group and corresponding age group to make sure the demographic factors of the synthetic data align with the original data.
+
+I will start  by checking how many entries are within each factor level for age and race/ethnicity, separately. I will do this by using the group_by() function and tally() from dplyr.
+```{r}
+n_age <- cdcdata2 %>% #Create new age category data frame
+    group_by(Age_Years) %>% #group the values for age_years
+    tally() #Tally values in each age_years level
+n_race <- cdcdata2 %>% #Create new race/ethnicity data frame
+    group_by(Race_Ethnicity) %>% #group the values for Race/ethnicity
+    tally() #Tally values in each race/ethnicity level
+    print(n_age)
+    print(n_race)#show the tables
+  
+```
+The age entries are evenly distributed with 44 entries for each age category.There are 88 entries per each race/ ethnicity group. This means that the new data frame will include an even distribution of age and race/ethnicity.
+
+I will now check how many entries for rate are within each aggregate race/ethnicity + age category. I will use the group_by() function from dplyr, similar to what Cassia previously used.
+```{r}
+cdcdata2_agg2 <- cdcdata2 %>%
+  group_by(Age_Years, Race_Ethnicity) %>% #Create an aggregate data frame with age and race/ethnicity groupped together
+  tally() #Take a count fo how many entries there are per groupping
+  print(cdcdata2_agg2)
+```
+There are 11 entries for each Age and Race/Ethnicity group. This means that 11 individuals for each race/ethnicity group were also part of the same age group.
+
+### Synthetic Data for Birth Rate dependent on Age and Race
+
+I will begin to make a synthetic data frame that reflects the trends of the original data frame, but with 1056 observations. I wanted to choose an n close to 1000. I chose 1056 specifically because it is a multiple of 11 (the smallest number of entries in all factor levels) and of 352 (the total number of rows left from the original data set).
+
+I will create an empty data frame with the same variables, but renamed without using the "_"
+```{r}
+set.seed(5) #Set seed for replicability
+n_mothers <- 1056 #Make there a total of 1056 participants (mothers) in this survey
+syn_cdcdata <- data.frame(
+  AgeYears = factor(n_mothers),
+  RaceEthnicity = factor(n_mothers),
+  Rate = numeric(n_mothers)
+) #create a new data frame called syn_cdcdata with a total of 1056 entries for each column 
+```
+
+I will start by defining the AgeYears and RaceEthnicity factor levels and ensure that they are evenly distributed. I told Chat GPT: "I want to make a synthetic factor variable in an existing blank data frame. The factor variable should have the same of entries at each level. Let the total data entries be 1000 and each factor level be a, b, and c."
+The output was not entirely what I needed, but I learned that I can create an entries per level variable for each factor level by making an equation of the total divided by the number of levels.I also learned that I can add ",each = number of entries variable" into the rep function to specify the even number of entries for each level.
+There will be 4 levels for raceethnicity and 8 for ageyears.
+```{r}
+syn_cdcdata$AgeYears <- rep(c("10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-45", "45+"), each = n_mothers/8) #Make the ageyear factor levels as specified by with an equal number of entries for each level
+syn_cdcdata$RaceEthnicity <- rep(c("All races and origins", "Hispanic", "Non-Hispanic Black", "Non-Hispanic White"), length.out = n_mothers) #Make the raceethnicity factor levels, I kept length.out instead of each so that there were different age levels within each race level
+str(syn_cdcdata) #checking the number of total entries
+# Check that there is an equal number of levels for each factor
+n_ageyears <- syn_cdcdata %>% #Create new age category data frame
+    group_by(AgeYears) %>% #group the values for age_years
+    tally() #Tally values in each age_years level
+n_raceeth <- syn_cdcdata %>% #Create new race/ethnicity data frame
+    group_by(RaceEthnicity) %>% #group the values for Race/ethnicity
+    tally() #Tally values in each race/ethnicity level
+    print(n_ageyears)
+    print(n_raceeth)#show the tables
+```
+
+There is the correct number of entries for each factor level, but they are character variables rather than factors now, so I will change both variables back to factors.
+```{r}
+syn_cdcdata$AgeYears <- factor(syn_cdcdata$AgeYears) #Set ageyears to a factor
+syn_cdcdata$RaceEthnicity <- factor(syn_cdcdata$RaceEthnicity) #set raceethnicity to a factor
+str(syn_cdcdata) #check the structure
+```
+Since they are now factor variables, we will add the birth rates for each ageyears + raceethnicity group using a normal distribution and the means and standard deviations provided in Cassia's exploratory analysis.
+
+I had no clue how to create rates that would match each corresponding two factors of ageyears and raceethnicity, so I told ChatGPT: "I want to create a synthetic rate variable in a data frame. The rate is dependent on a combination of two factor variables. I have the mean and standard deviation of each combination of factor levels. I want the rate variable to be normally distributed."
+
+I was given a base function and explanation for each function. I then had to ask it to give me a combination of factor levels for a 4X8 matrices. Then, I had to ask for it to account for both factor variables in the mean_index and sd_index. I fill in this function with the names specific to my data frame in the chunk below.
+
+Even with all of this back and forth with ChatGPT, the code it output gave me several blank rows for the rate value. Instead, I decided to go to the class question channel and ask for help there. Zayne Billings suggested that I use a regression model in the format y = intercept + b1 * age + b2 * race + b12 * age * gender + e. Assuming that the rate for age is normally distributed. I will find the mean for the entire factor of age. Assuming that this is impacted by race (maybe race is an effect modifier to this distribution) I will examine the mean rate for each race. Then I will find the interaction term with the aggregate function.
+```{r}
+#I started by askign chatGPT "How do I find the mean rate for one factor variable?"
+mean_rate <- aggregate(cdcdata2$Rate, by = list(cdcdata2$Age_Years), FUN = mean) #aggregate the Rate and Age_years variables and use the mean function
+colnames(mean_rate) <- c("Factor", "Mean_Rate") #put the two new variables together in a new dataframe
+print(mean_rate) #print the new columns
+
+#I will now use the same function for the race variable
+mean_rate2 <- aggregate(cdcdata2$Rate, by = list(cdcdata2$Race_Ethnicity), FUN = mean) #aggregate the Rate and race_ethnicity variables and use the mean function
+colnames(mean_rate2) <- c("Factor2", "Mean_Rate2") #put the two new variables together in a new dataframe
+print(mean_rate2) #print the new columns
+
+```
+I also know that I will need to find the residual sd to get e which is e = rnorm(length_of_vector, 0, residual_sd). I use a linear model to find the residual_sd.
+```{r}
+model1 <- lm(Rate ~ Race_Ethnicity + Age_Years + Race_Ethnicity * Age_Years, data = cdcdata2) #make a linear model predicting rate with an interaction term of race * age
+summary(model1) #Show the model summary
+```
+The residual sd= 1.651
+
+Now I will create a rate variable that corresponds to each interaction term (combination of levels). To do this more simply, I had a back and forth with ChatGPT. The original prompt was "If I have to make several equations formatted like : y = intercept + b1 * age + b2 * race + b12 * age * gender + e, Can I produce several equations at once by using the c() function for each b1, b2, and b12?"
+```{r}
+# Define  the coefficients by the means provided above
+b1_values <- c(0.2386364, 16.3750000, 67.2863636,  96.1090909, 93.7000000, 52.9272727, 12.6863636, 1.0500000)  # Means to different levels of age
+b2_values <- c(41.29773, 48.22500, 41.44659, 39.21705)  # Means corresponding to different levels of race
+b12_values <- c(0.2, 0.3, 0.3545, 0.1, 13.8182, 21.3, 21.1636, 9.2182, 60.2818, 81.8909, 76.3455, 50.6273, 92.6091, 110.3091, 90.9818, 90.5364, 96.4364,99.2727, 79.1909, 99.9, 53.8364, 56.8, 49, 52.0727, 12.1909, 14.8636, 13.2455, 10.4455, 1.0091, 1.0636, 1.2909, 0.8364)  #Interaction means for b12 given by Cassia's analysis above
+e <- rnorm(1056, 0, 1.651) #define the error using residual sd
+
+# Convert the variables to numeric
+syn_cdcdata$AgeYears <- as.integer(syn_cdcdata$AgeYears)
+syn_cdcdata$RaceEthnicity <- as.integer(syn_cdcdata$RaceEthnicity)
+
+# Repeat all of the coefficient values to have a total of 1056 values
+b1_values <- rep(b1_values, length.out = 1056)
+b2_values <- rep(b2_values, length.out = 1056)
+b12_values <- rep(b12_values, length.out = 1056)
+
+# Generate rate values and store them in the output data frame
+for (i in seq_len(nrow(syn_cdcdata))) {
+  b1 <- b1_values[syn_cdcdata$AgeYears[i]]
+  b2 <- b2_values[syn_cdcdata$RaceEthnicity[i]]
+  
+  b12 <- b12_values[i]
+  
+  print(c("AgeYears:", syn_cdcdata$AgeYears[i]))
+  print(c("RaceEthnicity:", syn_cdcdata$RaceEthnicity[i]))
+  
+  Rate <- b1 * syn_cdcdata$AgeYears[i] + b2 * syn_cdcdata$RaceEthnicity[i] + b12 * syn_cdcdata$AgeYears[i] * syn_cdcdata$RaceEthnicity[i] + e
+  syn_cdcdata$Rate[i] <- Rate
+}
+
+# View the output data frame
+print(syn_cdcdata)
+
+```
+Now I have to convert the integer variables race and age back to a factor variables. I will overwrite the integer values be rerunning the code assignging the factor variables.
+```{r}
+syn_cdcdata$AgeYears <- rep(c("10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-45", "45+"), each = n_mothers/8) #Make the ageyear factor levels as specified by with an equal number of entries for each level
+syn_cdcdata$RaceEthnicity <- rep(c("All races and origins", "Hispanic", "Non-Hispanic Black", "Non-Hispanic White"), length.out = n_mothers) #Make the raceethnicity factor levels, I kept length.out instead of each so that there were different age levels within each race level
+syn_cdcdata$AgeYears <- factor(syn_cdcdata$AgeYears) #Set ageyears to a factor
+syn_cdcdata$RaceEthnicity <- factor(syn_cdcdata$RaceEthnicity) #set raceethnicity to a factor
+print(syn_cdcdata) #Check the data altogether
+str(syn_cdcdata) #check the structure
+```
+### Plotting the synthetic data
+Lastly I will make a chart to check that the trends in rate match those in the ageyears and raceethnicity factors shown in the original data set. For this, I will use code similar to Cassia's to produce a line graph.
+
+First I will collapse the ageyears and raceethnicity factor levels to more easily display ont he graph, similar to what is above.
+```{r}
+syn_dataagg <- syn_cdcdata %>%
+  group_by(AgeYears, RaceEthnicity) %>% #use groupby() to group the two factor levels in question
+  summarise_all(list(mean = mean, sd = sd)) %>% #find the summary stats of mean and sd
+  ungroup() #ungroup before plotting the means and sds
+
+# Checking to see if the means and sds are similar in my data to the original
+knitr::kable(syn_dataagg, caption = "Mean and Standard Deviation of Birth Rates by Age")
+
+print(syn_dataagg) #printing the data to check
+```
+
+```{r}
+#Plotting a bar graph
+syn_plot1 <- ggplot(syn_dataagg, aes(x = AgeYears, y = mean, fill = RaceEthnicity)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Mean Rate by Age Group and Race/Ethnicity",
+       x = "Age Group",
+       y = "Mean Rate",
+       fill = "Race/Ethnicity") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_brewer(palette = "Set2")  # Choose a color palette if needed
+plot(syn_plot1)
+
+#Saving figure
+figure_file <- here("cdcdata-exercise", "mean_rate_bar_synthetic.png")
+ggsave(filename = figure_file, plot=syn_plot1)
+
+#Plotting a line graph
+p2 <- ggplot(cdcdata2_agg, aes(x = Age_Years, y = mean, color = Race_Ethnicity, group = Race_Ethnicity)) +
+  geom_line() +
+  labs(title = "Mean Rate by Age Group and Race/Ethnicity",
+       x = "Age Group",
+       y = "Mean Rate",
+       color = "Race/Ethnicity") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_color_brewer(palette = "Set2")  # Choose a color palette if needed
+plot(p2)
+
+#Saving figure
+figure_file <- here("cdcdata-exercise", "mean_rate_line.png")
+ggsave(filename = figure_file, plot=p2)
+```
+This is NOT the structure that I want. Assuming this is because of the previous integer values being multiplied by the means (b1, b2, and b12) to derive the rate values,
+For race:
+1= All
+2= Hispanic
+3= Black
+4= White
+For Age:
+1= 10-14
+2= 15-19
+3= 20-24
+4= 25-19
+5= 30-34
+6= 35-39
+7= 40-45
+8= 45+
+
+This has created a skewed chart with the largest integer values for both race and age corresponding the highest rates. I honestly do not know how to fix this.
+
+I will turn this in for now, as I have spent a cumulative 8+ hours on part 2 of this exercise. However, please let me know if you can help me fix this.
