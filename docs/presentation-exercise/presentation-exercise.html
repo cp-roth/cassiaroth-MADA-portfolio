@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -164,9 +198,694 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>Placeholder file for the future data/results presentation exercise.</p>
+<section id="data-source" class="level1">
+<h1>Data source</h1>
+<p>I found this bar graph from the <a href="https://www.pewresearch.org/short-reads/2023/01/11/what-the-data-says-about-abortion-in-the-u-s-2/">Pew Research Center</a> from an article titled “What the data says about abortion in the U.S.” by Jeff Diamant and Beheer Mohamed. The article explores how both abortion provision and the number of abortion facilities have changed from the legalization of abortion with <em>Roe v Wade</em> in 1973 until 2020. All data came from the Guttmacher Institute and the CDC, although I was unable to find the original data for the graph I recreated below, so I manually input the numbers into a <code>.csv</code> file.</p>
+<section id="original-graph" class="level3">
+<h3 class="anchored" data-anchor-id="original-graph">Original graph</h3>
+<p>Here you can see a copy of the original graph.</p>
+<p><img src="Pew_research.png" class="img-fluid" alt="Pew Research Center"> This shows us that the number of abortion facilities has decreased since 1982. The graph also shows the number of facilities by type, and we can see that most abortions used to be performed in hospitals, but now they are mostly performed in clinics. One misleading aspect of this graph is that it states these are the number of “providers,” which implies individual physicians. This is incorrect. From looking at the <a href="https://www.guttmacher.org/news-release/2022/guttmacher-institute-releases-2020-abortion-provider-census-important-data-us">Guttmacher website</a>, we can see that these are the number of facilities. I have changed the wording in my reproduced graph to better represent the data.</p>
+</section>
+</section>
+<section id="reproduced-graph" class="level1">
+<h1>Reproduced graph</h1>
+<section id="code" class="level3">
+<h3 class="anchored" data-anchor-id="code">Code</h3>
+<p>This was a long process for me, since I am new to creating graphics in R. First, I copied and pasted the data from my <code>.csv</code> file, which I created by hand into ChatGPT and asked it to create a dataframe using <code>tidyverse</code>. Then I asked how to reproduce these data into a bar graph using <code>ggplot2</code>.</p>
+<p>From there, I had to go back-and-forth to learn how to modify the colors of the bar graph and put the numbers in white text on top of each corresponding color; how to change the location of the numbers so they were in the center of each color block (this took awhile, but the <code>vjust</code> command was important); how to make sure all years were showing on the x-axis; how to change the formatting of the table title and subtitle; how to change the location of the legend; how to remove the labels on the y-axis; how to include the total numbers stacked on top of the bar graph; how to fiddle with the fonts and colors; and how to save the graph as a <code>.png</code> file.</p>
+<p>Here is my final code:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the necessary library</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the dataframe</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">Year =</span> <span class="fu">c</span>(<span class="dv">1982</span>, <span class="dv">1985</span>, <span class="dv">1988</span>, <span class="dv">1992</span>, <span class="dv">1996</span>, <span class="dv">2000</span>, <span class="dv">2005</span>, <span class="dv">2008</span>, <span class="dv">2011</span>, <span class="dv">2014</span>, <span class="dv">2017</span>, <span class="dv">2020</span>),</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">Total =</span> <span class="fu">c</span>(<span class="dv">2908</span>, <span class="dv">2680</span>, <span class="dv">2582</span>, <span class="dv">2380</span>, <span class="dv">2042</span>, <span class="dv">1819</span>, <span class="dv">1787</span>, <span class="dv">1793</span>, <span class="dv">1720</span>, <span class="dv">1671</span>, <span class="dv">1587</span>, <span class="dv">1603</span>),</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Physicians' offices</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">714</span>, <span class="dv">652</span>, <span class="dv">657</span>, <span class="dv">636</span>, <span class="dv">470</span>, <span class="dv">383</span>, <span class="dv">367</span>, <span class="dv">332</span>, <span class="dv">286</span>, <span class="dv">244</span>, <span class="dv">261</span>, <span class="dv">266</span>),</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">Hospitals =</span> <span class="fu">c</span>(<span class="dv">1405</span>, <span class="dv">1191</span>, <span class="dv">1040</span>, <span class="dv">855</span>, <span class="dv">703</span>, <span class="dv">603</span>, <span class="dv">604</span>, <span class="dv">610</span>, <span class="dv">595</span>, <span class="dv">638</span>, <span class="dv">518</span>, <span class="dv">530</span>),</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Other clinics</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">410</span>, <span class="dv">438</span>, <span class="dv">476</span>, <span class="dv">448</span>, <span class="dv">417</span>, <span class="dv">386</span>, <span class="dv">435</span>, <span class="dv">473</span>, <span class="dv">510</span>, <span class="dv">517</span>, <span class="dv">555</span>, <span class="dv">580</span>),</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Abortion clinics</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">379</span>, <span class="dv">399</span>, <span class="dv">409</span>, <span class="dv">441</span>, <span class="dv">452</span>, <span class="dv">447</span>, <span class="dv">381</span>, <span class="dv">378</span>, <span class="dv">329</span>, <span class="dv">272</span>, <span class="dv">253</span>, <span class="dv">227</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the breaks and labels for the x-axis</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>x_breaks <span class="ot">&lt;-</span> <span class="fu">unique</span>(data<span class="sc">$</span>Year)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Reshape the data frame into long format using tidyr's pivot_longer function</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>melted_data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">-</span>Year, <span class="at">names_to =</span> <span class="st">"Facility_Type"</span>, <span class="at">values_to =</span> <span class="st">"Number_of_Facilities"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Facility_Type <span class="sc">!=</span> <span class="st">"Total"</span>)  <span class="co"># Remove "Total" from melted data</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Set the order of levels in Facility_Type</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>facility_order <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Physicians' offices"</span>, <span class="st">"Hospitals"</span>, <span class="st">"Other clinics"</span>, <span class="st">"Abortion clinics"</span>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>melted_data<span class="sc">$</span>Facility_Type <span class="ot">&lt;-</span> <span class="fu">factor</span>(melted_data<span class="sc">$</span>Facility_Type, <span class="at">levels =</span> facility_order)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the cumulative sum of heights for each facility type</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>cumulative_heights <span class="ot">&lt;-</span> melted_data <span class="sc">%&gt;%</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Year) <span class="sc">%&gt;%</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(Facility_Type)) <span class="sc">%&gt;%</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cumulative_height =</span> <span class="fu">cumsum</span>(Number_of_Facilities) <span class="sc">-</span> <span class="fl">0.5</span> <span class="sc">*</span> Number_of_Facilities) <span class="sc">%&gt;%</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the data with the requested color scheme and white text on top</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>plot_pew <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">data =</span> melted_data, <span class="fu">aes</span>(<span class="at">x =</span> Year, <span class="at">y =</span> Number_of_Facilities, <span class="at">fill =</span> Facility_Type), <span class="at">stat =</span> <span class="st">"identity"</span>) <span class="sc">+</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> cumulative_heights, <span class="fu">aes</span>(<span class="at">x =</span> Year, <span class="at">y =</span> cumulative_height, <span class="at">label =</span> Number_of_Facilities), <span class="at">vjust =</span> <span class="fl">0.5</span>, <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> data, <span class="fu">aes</span>(<span class="at">x =</span> Year, <span class="at">y =</span> Total, <span class="at">label =</span> Total), <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">color =</span> <span class="st">"gray70"</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">expression</span>(<span class="fu">bold</span>(<span class="st">"Total number of abortion facilities down since 1982"</span>)),</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Number of abortion facilities in U.S., by type"</span>,</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Year"</span>,</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">""</span>,</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>       <span class="at">fill =</span> <span class="st">""</span>) <span class="sc">+</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.8</span>, <span class="fl">0.8</span>),  <span class="co"># Adjust legend position (top right corner)</span></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),  <span class="co"># Remove legend title</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">color =</span> <span class="st">"black"</span>),  <span class="co"># Set legend text color</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"black"</span>),</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(),  <span class="co"># Remove y-axis label</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>),</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"italic"</span>, <span class="at">color =</span> <span class="st">"gray70"</span>),</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"white"</span>),  <span class="co"># Set plot background to white</span></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"white"</span>)) <span class="sc">+</span>  <span class="co"># Set panel background to white</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> x_breaks, <span class="at">labels =</span> x_breaks) <span class="sc">+</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Physicians' offices"</span> <span class="ot">=</span> <span class="st">"aquamarine3"</span>,</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"Hospitals"</span> <span class="ot">=</span> <span class="st">"darkgreen"</span>,</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"Other clinics"</span> <span class="ot">=</span> <span class="st">"lightblue"</span>,</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"Abortion clinics"</span> <span class="ot">=</span> <span class="st">"deepskyblue3"</span>))</span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a><span class="co"># Save the plot as a PNG file using the here command</span></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="fu">here</span>(<span class="st">"presentation-exercise"</span>, <span class="st">"presentation-exercise.png"</span>), plot_pew, <span class="at">width =</span> <span class="dv">8</span>, <span class="at">height =</span> <span class="dv">6</span>, <span class="at">units =</span> <span class="st">"in"</span>, <span class="at">dpi =</span> <span class="dv">300</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="graph" class="level3">
+<h3 class="anchored" data-anchor-id="graph">Graph</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="presentation-exercise.png" class="img-fluid figure-img"></p>
+<figcaption>Pew Research Center</figcaption>
+</figure>
+</div>
+<p>I was unable to include the informational text about the shift toward clinics, including the lines coming from the clinic bars in 2020. However, overall, I am pretty happy with my output. I know I need to work on removing the graph lines, and the colors really don’t look as nice as the original. Any suggestions are welcome!</p>
+</section>
+</section>
+<section id="reproduced-table" class="level1">
+<h1>Reproduced Table</h1>
+<p>Below is the code ChatGPT helped me with. I had a really hard time making the title bold and all the columns center aligned. Although, somehow, after much back-and-forth as well as going to the <a href="https://gt.rstudio.com/reference/cols_align.html"><code>gt</code></a> website, I succeeded. I also found looking at Taylor Glass’s website helpful.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load packages</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gtsummary)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the dataframe</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">Year =</span> <span class="fu">c</span>(<span class="dv">1982</span>, <span class="dv">1985</span>, <span class="dv">1988</span>, <span class="dv">1992</span>, <span class="dv">1996</span>, <span class="dv">2000</span>, <span class="dv">2005</span>, <span class="dv">2008</span>, <span class="dv">2011</span>, <span class="dv">2014</span>, <span class="dv">2017</span>, <span class="dv">2020</span>),</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">Total =</span> <span class="fu">c</span>(<span class="dv">2908</span>, <span class="dv">2680</span>, <span class="dv">2582</span>, <span class="dv">2380</span>, <span class="dv">2042</span>, <span class="dv">1819</span>, <span class="dv">1787</span>, <span class="dv">1793</span>, <span class="dv">1720</span>, <span class="dv">1671</span>, <span class="dv">1587</span>, <span class="dv">1603</span>),</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Physicians' offices</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">714</span>, <span class="dv">652</span>, <span class="dv">657</span>, <span class="dv">636</span>, <span class="dv">470</span>, <span class="dv">383</span>, <span class="dv">367</span>, <span class="dv">332</span>, <span class="dv">286</span>, <span class="dv">244</span>, <span class="dv">261</span>, <span class="dv">266</span>),</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">Hospitals =</span> <span class="fu">c</span>(<span class="dv">1405</span>, <span class="dv">1191</span>, <span class="dv">1040</span>, <span class="dv">855</span>, <span class="dv">703</span>, <span class="dv">603</span>, <span class="dv">604</span>, <span class="dv">610</span>, <span class="dv">595</span>, <span class="dv">638</span>, <span class="dv">518</span>, <span class="dv">530</span>),</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Other clinics</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">410</span>, <span class="dv">438</span>, <span class="dv">476</span>, <span class="dv">448</span>, <span class="dv">417</span>, <span class="dv">386</span>, <span class="dv">435</span>, <span class="dv">473</span>, <span class="dv">510</span>, <span class="dv">517</span>, <span class="dv">555</span>, <span class="dv">580</span>),</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Abortion clinics</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">379</span>, <span class="dv">399</span>, <span class="dv">409</span>, <span class="dv">441</span>, <span class="dv">452</span>, <span class="dv">447</span>, <span class="dv">381</span>, <span class="dv">378</span>, <span class="dv">329</span>, <span class="dv">272</span>, <span class="dv">253</span>, <span class="dv">227</span>)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Create table</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>table_pew <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cols_align</span>(<span class="at">align =</span> <span class="st">"center"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_spanner</span>(</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="fu">md</span>(<span class="st">"**Facilities**"</span>),</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">columns =</span> <span class="fu">c</span>(Year, Total, <span class="st">`</span><span class="at">Physicians' offices</span><span class="st">`</span>, Hospitals, <span class="st">`</span><span class="at">Other clinics</span><span class="st">`</span>, <span class="st">`</span><span class="at">Abortion clinics</span><span class="st">`</span>)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_header</span>(</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Number of Abortion Facilities in U.S., by Type, 1982-2020"</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>table_pew</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="luxhilggpa" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#luxhilggpa table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#luxhilggpa thead, #luxhilggpa tbody, #luxhilggpa tfoot, #luxhilggpa tr, #luxhilggpa td, #luxhilggpa th {
+  border-style: none;
+}
+
+#luxhilggpa p {
+  margin: 0;
+  padding: 0;
+}
+
+#luxhilggpa .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#luxhilggpa .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#luxhilggpa .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#luxhilggpa .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#luxhilggpa .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#luxhilggpa .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#luxhilggpa .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#luxhilggpa .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#luxhilggpa .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#luxhilggpa .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#luxhilggpa .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#luxhilggpa .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#luxhilggpa .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#luxhilggpa .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#luxhilggpa .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#luxhilggpa .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#luxhilggpa .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#luxhilggpa .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#luxhilggpa .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#luxhilggpa .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#luxhilggpa .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#luxhilggpa .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#luxhilggpa .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#luxhilggpa .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#luxhilggpa .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#luxhilggpa .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#luxhilggpa .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#luxhilggpa .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#luxhilggpa .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#luxhilggpa .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#luxhilggpa .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#luxhilggpa .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#luxhilggpa .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#luxhilggpa .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#luxhilggpa .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#luxhilggpa .gt_left {
+  text-align: left;
+}
+
+#luxhilggpa .gt_center {
+  text-align: center;
+}
+
+#luxhilggpa .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#luxhilggpa .gt_font_normal {
+  font-weight: normal;
+}
+
+#luxhilggpa .gt_font_bold {
+  font-weight: bold;
+}
+
+#luxhilggpa .gt_font_italic {
+  font-style: italic;
+}
+
+#luxhilggpa .gt_super {
+  font-size: 65%;
+}
+
+#luxhilggpa .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#luxhilggpa .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#luxhilggpa .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#luxhilggpa .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#luxhilggpa .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#luxhilggpa .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#luxhilggpa .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+
+<table class="gt_table table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_heading">
+<th colspan="6" class="gt_heading gt_title gt_font_normal gt_bottom_border">Number of Abortion Facilities in U.S., by Type, 1982-2020</th>
+</tr>
+<tr class="odd gt_col_headings gt_spanner_row">
+<th colspan="6" id="<strong>Facilities</strong>" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><span class="gt_column_spanner"><strong>Facilities</strong></span></th>
+</tr>
+<tr class="header gt_col_headings">
+<th id="Year" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">Year</th>
+<th id="Total" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">Total</th>
+<th id="Physicians' offices" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">Physicians' offices</th>
+<th id="Hospitals" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">Hospitals</th>
+<th id="Other clinics" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">Other clinics</th>
+<th id="Abortion clinics" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">Abortion clinics</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_center" headers="Year">1982</td>
+<td class="gt_row gt_center" headers="Total">2908</td>
+<td class="gt_row gt_center" headers="Physicians' offices">714</td>
+<td class="gt_row gt_center" headers="Hospitals">1405</td>
+<td class="gt_row gt_center" headers="Other clinics">410</td>
+<td class="gt_row gt_center" headers="Abortion clinics">379</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_center" headers="Year">1985</td>
+<td class="gt_row gt_center" headers="Total">2680</td>
+<td class="gt_row gt_center" headers="Physicians' offices">652</td>
+<td class="gt_row gt_center" headers="Hospitals">1191</td>
+<td class="gt_row gt_center" headers="Other clinics">438</td>
+<td class="gt_row gt_center" headers="Abortion clinics">399</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_center" headers="Year">1988</td>
+<td class="gt_row gt_center" headers="Total">2582</td>
+<td class="gt_row gt_center" headers="Physicians' offices">657</td>
+<td class="gt_row gt_center" headers="Hospitals">1040</td>
+<td class="gt_row gt_center" headers="Other clinics">476</td>
+<td class="gt_row gt_center" headers="Abortion clinics">409</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_center" headers="Year">1992</td>
+<td class="gt_row gt_center" headers="Total">2380</td>
+<td class="gt_row gt_center" headers="Physicians' offices">636</td>
+<td class="gt_row gt_center" headers="Hospitals">855</td>
+<td class="gt_row gt_center" headers="Other clinics">448</td>
+<td class="gt_row gt_center" headers="Abortion clinics">441</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_center" headers="Year">1996</td>
+<td class="gt_row gt_center" headers="Total">2042</td>
+<td class="gt_row gt_center" headers="Physicians' offices">470</td>
+<td class="gt_row gt_center" headers="Hospitals">703</td>
+<td class="gt_row gt_center" headers="Other clinics">417</td>
+<td class="gt_row gt_center" headers="Abortion clinics">452</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_center" headers="Year">2000</td>
+<td class="gt_row gt_center" headers="Total">1819</td>
+<td class="gt_row gt_center" headers="Physicians' offices">383</td>
+<td class="gt_row gt_center" headers="Hospitals">603</td>
+<td class="gt_row gt_center" headers="Other clinics">386</td>
+<td class="gt_row gt_center" headers="Abortion clinics">447</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_center" headers="Year">2005</td>
+<td class="gt_row gt_center" headers="Total">1787</td>
+<td class="gt_row gt_center" headers="Physicians' offices">367</td>
+<td class="gt_row gt_center" headers="Hospitals">604</td>
+<td class="gt_row gt_center" headers="Other clinics">435</td>
+<td class="gt_row gt_center" headers="Abortion clinics">381</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_center" headers="Year">2008</td>
+<td class="gt_row gt_center" headers="Total">1793</td>
+<td class="gt_row gt_center" headers="Physicians' offices">332</td>
+<td class="gt_row gt_center" headers="Hospitals">610</td>
+<td class="gt_row gt_center" headers="Other clinics">473</td>
+<td class="gt_row gt_center" headers="Abortion clinics">378</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_center" headers="Year">2011</td>
+<td class="gt_row gt_center" headers="Total">1720</td>
+<td class="gt_row gt_center" headers="Physicians' offices">286</td>
+<td class="gt_row gt_center" headers="Hospitals">595</td>
+<td class="gt_row gt_center" headers="Other clinics">510</td>
+<td class="gt_row gt_center" headers="Abortion clinics">329</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_center" headers="Year">2014</td>
+<td class="gt_row gt_center" headers="Total">1671</td>
+<td class="gt_row gt_center" headers="Physicians' offices">244</td>
+<td class="gt_row gt_center" headers="Hospitals">638</td>
+<td class="gt_row gt_center" headers="Other clinics">517</td>
+<td class="gt_row gt_center" headers="Abortion clinics">272</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_center" headers="Year">2017</td>
+<td class="gt_row gt_center" headers="Total">1587</td>
+<td class="gt_row gt_center" headers="Physicians' offices">261</td>
+<td class="gt_row gt_center" headers="Hospitals">518</td>
+<td class="gt_row gt_center" headers="Other clinics">555</td>
+<td class="gt_row gt_center" headers="Abortion clinics">253</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_center" headers="Year">2020</td>
+<td class="gt_row gt_center" headers="Total">1603</td>
+<td class="gt_row gt_center" headers="Physicians' offices">266</td>
+<td class="gt_row gt_center" headers="Hospitals">530</td>
+<td class="gt_row gt_center" headers="Other clinics">580</td>
+<td class="gt_row gt_center" headers="Abortion clinics">227</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
