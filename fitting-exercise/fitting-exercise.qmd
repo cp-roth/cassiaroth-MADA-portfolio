@@ -1,0 +1,377 @@
+---
+title: "fitting-exercise"
+author: "Cassia Roth"
+editor: visual
+---
+Here, we are going to fit a model using the `nlmixr2data` package and data. First, let's read in the .csv file and check its structure.
+
+```{r, message=FALSE,  warning=FALSE}
+#Loading packages
+library(tidyverse) #This includes ggplot2, tidyr, readr, dplyr, stringr, purr, forcats
+library(knitr)
+library(here) # For file paths
+library(kableExtra) # For tables
+library(gt) # For tables
+library(gtsummary) # For tables
+library(renv) # For package management
+library(patchwork) # For combining plots
+
+#Reading in the csv file
+mavo <- read_csv(here("fitting-exercise", "Mavoglurant_A2121_nmpk.csv"))
+
+#Checking the packaging (displaying first and last few rows of data)
+nrow(mavo)
+ncol(mavo)
+
+#Showing the structure
+str(mavo)
+```
+
+# Data cleaning
+
+Next, let's get a quick visual idea of the data by plotting the outcome variable `DV` as a function of time, stratified by `DOSE` and using `ID` as a grouping factor.
+
+```{r, message=FALSE,  warning=FALSE}
+# Plotting the outcome variable (DV) as a function of time, stratified by DOSE and using ID as a grouping factor. ChatGPT helped me with this code.
+mavo %>%
+  ggplot(aes(x = TIME, y = DV, color = factor(DOSE))) +
+  geom_line() +
+  facet_wrap(~ID) +
+  labs(x = "Time", y = "Outcome Variable (DV)", color = "DOSE") +
+  theme_minimal()
+```
+
+Per Dr. Handel's guidance, we can see that the formatting of the dataset still looks off because some individuals received the drug more than one (OCC = 1 and OCC = 2). We will now remove all entries with OCC = 2. 
+
+```{r, message=FALSE,  warning=FALSE}
+# Filter data to include only the first dose and store it in mavo_filtered
+mavo_filtered <- mavo %>%
+  filter(OCC == 1)  # Filter observations where OCC is equal to 1
+
+# Plotting the outcome variable (DV) as a function of time, stratified by DOSE and using ID as a grouping factor
+mavo_filtered %>%
+  ggplot(aes(x = TIME, y = DV, color = factor(DOSE))) +
+  geom_line() +
+  facet_wrap(~ID) +
+  labs(x = "Time", y = "Outcome Variable (DV)", color = "DOSE") +
+  theme_minimal()
+```
+
+Next, let's remove the `TIME=0` values for each individual and compute the sum of `DV` for each individual, called variable `Y`. We will also write code that keeps only the `TIME=0` entries for each individual. Finally, we will combine the two datasets so you have a single one that has the time=0 entry for everyone, and an extra column for total drug concentration in a data frame size 120 by 18.
+
+```{r, message=FALSE,  warning=FALSE}
+# Remove TIME=0 values for each individual and compute the sum of DV for each individual
+mavo_filteredDV <- mavo_filtered %>%
+  filter(TIME != 0) %>%  # Remove TIME=0 values for each individual
+  group_by(ID) %>%       # Group by ID
+  summarize(Y = sum(DV)) # Compute the sum of DV for each individual
+
+# Keep only the TIME=0 entries for each individual
+mavo_timeZero <- mavo_filtered %>%
+  filter(TIME == 0)
+
+# Combine two datasets
+mavo_combined <- left_join(mavo_timeZero, mavo_filteredDV, by = "ID")
+```
+
+Now, we will do more cleaning by only including the following variables: `Y`, `DOSE`, `RATE`, `AGE`, `SEX`, `RACE`, `WT`, `HT`. We also must convert `RACE` and `SEX` to factor variables.
+
+```{r, message=FALSE,  warning=FALSE}
+# Selecting only the specified variables from mavo_combined
+mavo_combined_subset <- mavo_combined %>%
+  select(Y, DOSE, RATE, AGE, SEX, RACE, WT, HT) %>% # Select only the specified variables
+  mutate(RACE = factor(RACE), # Convert RACE and SEX variables to factor variables
+         SEX = factor(SEX))
+
+# View the structure of the updated dataframe
+str(mavo_combined_subset)
+``` 
+
+# EDA
+
+Now that we have cleaned the data, we can perform some exploratory data analysis. I will start by creating a summary table using `gtsummary()`.
+
+```{r}
+# Create gtsummary table
+table1 <- 
+  mavo_combined_subset %>%
+  tbl_summary(include = c(Y, DOSE, RATE, AGE, SEX, RACE, WT, HT))
+print(table1)
+```
+
+Now, I will visualize the distribution of our continuous variables in density plots: `Y`, `AGE`, `WT`, and `HT`.
+
+```{r}
+# Create density plots for continuous variables. CoPilot helped with this code.
+plot1 <-
+  mavo_combined_subset %>%
+  select(Y, AGE, WT, HT) %>%
+  pivot_longer(everything()) %>%
+  ggplot(aes(x = value, fill = name)) +
+  geom_density(alpha = 0.5) +
+  facet_wrap(~name, scales = "free") +
+  theme_minimal()
+
+#Saving figure
+figure_file <- here("fitting-exercise", "densityplots.png")
+ggsave(filename = figure_file, plot=plot1, bg="white")
+```
+Now, let's create boxplots for variables `DOSE` and `RATE`.
+
+```{r}
+# Create boxplots for DOSE and RATE. CoPilot assisted with this code.
+plot2 <-
+  mavo_combined_subset %>%
+  ggplot(aes(x = factor(DOSE), y = Y)) +
+  geom_boxplot() +
+  labs(x = "Dose", y = "Y") +
+  theme_minimal()
+
+#Saving figure
+figure_file <- here("fitting-exercise", "boxplot_dose.png")
+ggsave(filename = figure_file, plot=plot2, bg="white")
+
+plot3 <-
+  mavo_combined_subset %>%
+  ggplot(aes(x = factor(RATE), y = Y)) +
+  geom_boxplot() +
+  labs(x = "Rate", y = "Y") +
+  theme_minimal()
+
+#Saving figure
+figure_file <- here("fitting-exercise", "boxplot_rate.png")
+ggsave(filename = figure_file, plot=plot3, bg="white")
+```
+
+From these boxplots, we see that we have some outliers in the `Y` variable. If doing an actual project, we might want to remove them, but I will maintain them for this exercise.
+
+Now let's create some scatterplots to visualize relationships between `Y` and `AGE`, `WT`, and `HT`.
+
+```{r}
+# Create scatterplots for Y vs. AGE, WT, and HT. CoPilot helped with this code.
+plot4 <-
+  mavo_combined_subset %>%
+  ggplot(aes(x = AGE, y = Y)) +
+  geom_point() +
+  labs(x = "Age", y = "Y") +
+  theme_minimal()
+
+plot5 <-
+  mavo_combined_subset %>%
+  ggplot(aes(x = WT, y = Y)) +
+  geom_point() +
+  labs(x = "Weight", y = "Y") +
+  theme_minimal()
+
+plot6 <-
+  mavo_combined_subset %>%
+  ggplot(aes(x = HT, y = Y)) +
+  geom_point() +
+  labs(x = "Height", y = "Y") +
+  theme_minimal()
+
+# Laying out in grid
+pairplot <- plot4 / plot5 / plot6
+
+
+#Saving figures
+figure_file <- here("fitting-exercise", "scatterplot_age.png")
+ggsave(filename = figure_file, plot=plot4, bg="white")
+
+figure_file <- here("fitting-exercise", "scatterplot_weight.png")
+ggsave(filename = figure_file, plot=plot5, bg="white")
+
+figure_file <- here("fitting-exercise", "scatterplot_height.png")
+ggsave(filename = figure_file, plot=plot6, bg="white")
+
+figure_file <- here("fitting-exercise", "pairplot.png")
+ggsave(filename = figure_file, plot=pairplot, bg="white")
+```
+
+# Model fitting
+
+Now let's move to model fitting using `tidymodels` framework. First let's install the packages and load them.
+
+```{r}
+# Loading packages
+library(tidymodels)
+library(broom.mixed)
+library(dotwhisker)
+```
+
+Now, let's fit a linear model to the continuous outcome `Y` using the main predictor of interest, `DOSE`.
+
+```{r, message=FALSE}
+# ChatGPT and CoPilot helped with this code. I also used this website: https://www.tidymodels.org/start/models/ and this part of TMWR https://www.tmwr.org/performance (9.2 Regression Metrics) to guide me through the process.
+
+# One option is create a linear model using the lm() function from base R
+#mavo_lm <- lm(Y ~ DOSE, data = mavo_combined_subset)
+
+# Other option using linear_reg() (default engine, OLS) from tidymodels
+mavo_lm1 <- linear_reg() %>% set_engine("lm") %>% fit(Y ~ DOSE, data = mavo_combined_subset)
+
+# Use broom::tidy() to tidy results
+tidy(mavo_lm1)
+
+# Produce predictions for RMSE and R-squared
+mavo_lm1_pred <- predict(mavo_lm1, new_data = mavo_combined_subset %>% select(-Y))
+mavo_lm1_pred
+
+# Predicted numeric outcome named .pred. Now we will match predicted values with corresponding observed outcome values
+mavo_lm1_pred <- bind_cols(mavo_lm1_pred, mavo_combined_subset %>% select(Y))
+mavo_lm1_pred
+
+# Plot data before computing metrics
+ggplot(mavo_lm1_pred, aes(x = Y, y = .pred)) +
+  geom_abline(lty = 2) + # Add a dashed line to represent the 1:1 line
+  geom_point(alpha = 0.5) +
+  labs(x = "Observed (log10)", y = "Predicted (log10)") + #Scale and size x- and y-axis uniformly
+  coord_obs_pred()
+
+# Create metric set including RMSE and R-squared
+metrics_lm1 <- metric_set(rmse, rsq, mae) # MAE for fun
+metrics_lm1(mavo_lm1_pred, truth = Y, estimate = .pred)
+```
+
+Next, let's fit a linear model to the continuous outcome `Y` using all predictors. Then we will go through the same process and get RMSE and R-squared.
+
+```{r}
+# I used the Tidymodels website: https://www.tidymodels.org/learn/statistics/tidy-analysis/ for this code
+
+# Create a linear model using linear_reg() from tidymodels
+mavo_lm2 <- linear_reg() %>% set_engine("lm") %>% fit(Y ~ DOSE + RATE + AGE + SEX + RACE + WT + HT, data = mavo_combined_subset)
+
+# Use broom::tidy() to tidy results
+output_mavo_lm2 <- tidy(mavo_lm2)
+
+# Use dotwhisker::dwplot() to visualize the results
+dwplot(mavo_lm2)
+
+# Produce predictions for RMSE and R-squared
+mavo_lm2_pred <- predict(mavo_lm2, new_data = mavo_combined_subset %>% select(-Y))
+mavo_lm2_pred
+
+# Predicted numeric outcome named .pred. Now we will match predicted values with corresponding observed outcome values
+mavo_lm2_pred <- bind_cols(mavo_lm2_pred, mavo_combined_subset %>% select(Y))
+mavo_lm2_pred
+
+# Plot data before computing metrics
+ggplot(mavo_lm2_pred, aes(x = Y, y = .pred)) +
+  geom_abline(lty = 2) + # Add a dashed line to represent the 1:1 line
+  geom_point(alpha = 0.5) +
+  labs(x = "Observed (log10)", y = "Predicted (log10)") + #Scale and size x- and y-axis uniformly
+  coord_obs_pred()
+
+# Create metric set including RMSE and R-squared
+metrics_lm2 <- metric_set(rmse, rsq, mae) # MAE for fun
+metrics_lm2(mavo_lm2_pred, truth = Y, estimate = .pred)
+```
+
+Now we will consider `SEX` as the outcome of interest and fit a logistic model to the categorical/binary outcome `SEX` using the main predictor of interest, `DOSE`. Then we will compute accuracy and ROC-AUC and print them.
+
+```{r}
+# https://www.datacamp.com/courses/modeling-with-tidymodels-in-r I used videos from this online course to help me with this code, specifically the Classification module.
+
+# Data resampling.
+mavo_log1_split <- initial_split(mavo_combined_subset, prop = 0.75, strata = SEX) # Data is similar to training and testing datasets
+
+# Create training and test datasets
+mavo_log1_train <- mavo_log1_split %>% training()
+
+mavo_log1_test <- mavo_log1_split %>% testing()
+
+# Create a logistic model using logistic_reg() from parsnip
+mavo_log1 <- logistic_reg() %>% set_engine("glm") %>% set_mode("classification") %>% #specify model
+  fit(SEX ~ DOSE, data = mavo_log1_train) #Pass model object to fit(), specify model formula, provide training data
+
+# Use broom::tidy() to tidy results
+output_mavo_log1 <- tidy(mavo_log1)
+
+# Predicting outcome categories
+class_preds <- mavo_log1 %>% predict(new_data = mavo_log1_test, type = 'class') # New_data specifies dataset on which to predict new values; type class provides categorical predictions; standardized output from predict()
+class_preds
+
+# Estimating probabilities. Set type to prob to provide estimated probabilities for each outcome category
+prob_preds <- mavo_log1 %>% predict(new_data = mavo_log1_test, type = 'prob')
+prob_preds
+
+# Combining results using model evaluation with yardstick package
+mavo_log1_results <- mavo_log1_test %>% select(SEX) %>% bind_cols(class_preds, prob_preds) # Bind columns of two datasets together
+
+# Confusion matrix with yardstick
+conf_mat(mavo_log1_results, truth = SEX, estimate = .pred_class)
+
+# Classification accuracy (generally not the best metric)
+accuracy <- accuracy(mavo_log1_results, truth = SEX, estimate = .pred_class)
+print(accuracy)
+
+# ROC (ROC used to visualize performance across probability thresholds)
+mavo_log1_results %>%
+  roc_curve(truth = SEX, .pred_1)
+
+# Plot ROC curve
+mavo_log1_results %>%
+  roc_curve(truth = SEX, .pred_1) %>%
+  autoplot()
+
+# Calculate ROC AUC
+roc_auc <- roc_auc(mavo_log1_results, truth = SEX, .pred_1)
+print(roc_auc)
+```
+
+The accuracy is 0.866, and the ROC-AUC performance is 0.65, which gives us a D classification performance out of a scale of A to F. Clearly, this is not a good model fit.
+
+Now we will fit a logistic model to the categorical/binary outcome `SEX` using all predictors of interest except `RATE`. Then we will compute accuracy and ROC-AUC and print them.
+
+```{r}
+#For this code, I asked ChatGPT to take the previous code I had written with the help of Data Camp and change it to include all the predictor variables and rename it to mavo_log2 wherever it had been mavo_log1.
+
+# Data resampling
+mavo_log2_split <- initial_split(mavo_combined_subset, prop = 0.75, strata = SEX) 
+
+# Create training and test datasets
+mavo_log2_train <- mavo_log2_split %>% training()
+mavo_log2_test <- mavo_log2_split %>% testing()
+
+# Create a logistic model using logistic_reg() from parsnip
+mavo_log2 <- logistic_reg() %>% 
+  set_engine("glm") %>% 
+  set_mode("classification") %>% 
+  fit(SEX ~ DOSE + AGE + RACE + RATE + WT + HT + Y, data = mavo_log2_train)
+
+# Use broom::tidy() to tidy results
+output_mavo_log2 <- tidy(mavo_log2)
+
+# Predicting outcome categories
+class_preds <- mavo_log2 %>% 
+  predict(new_data = mavo_log2_test, type = 'class')
+
+# Estimating probabilities
+prob_preds <- mavo_log2 %>% 
+  predict(new_data = mavo_log2_test, type = 'prob')
+
+# Combining results using model evaluation with yardstick package
+mavo_log2_results <- mavo_log2_test %>% 
+  select(SEX) %>% 
+  bind_cols(class_preds, prob_preds)
+
+# Confusion matrix with yardstick
+conf_mat(mavo_log2_results, truth = SEX, estimate = .pred_class)
+
+# Classification accuracy
+accuracy <- accuracy(mavo_log2_results, truth = SEX, estimate = .pred_class)
+print(accuracy)
+
+# ROC (ROC used to visualize performance across probability thresholds)
+roc_curve_data <- mavo_log2_results %>%
+  roc_curve(truth = SEX, .pred_1) 
+
+# Plot ROC curve
+autoplot(roc_curve_data)
+
+# Calculate ROC AUC
+roc_auc <- roc_auc(mavo_log2_results, truth = SEX, .pred_1)
+print(roc_auc)
+```
+
+Here, our accuracy is 0.875 and the ROC-AUC performance is 0.875, which gives us a B classification performance out of a scale of A to F. This is a better model fit than the previous one, but still not great.
