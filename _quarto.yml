@@ -22,6 +22,8 @@ website:
             file: data-exercise/data-exercise.qmd
           - text: "CDC Data Exercise - Module 5"
             file: cdcdata-exercise/cdcdata-exercise.qmd
+          - text: "Fitting Exercise - Module 8"
+            file: fitting-exercise/fitting-exercise.qmd
     right:
       - icon: github 
         href: https://github.com/cp-roth/cassiaroth-MADA-portfolio.git     
