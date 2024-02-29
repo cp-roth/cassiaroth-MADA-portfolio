@@ -3,6 +3,7 @@ title: "fitting-exercise"
 author: "Cassia Roth"
 editor: visual
 ---
+
 Here, we are going to fit a model using the `nlmixr2data` package and data. First, let's read in the .csv file and check its structure.
 
 ```{r, message=FALSE,  warning=FALSE}
@@ -41,7 +42,7 @@ mavo %>%
   theme_minimal()
 ```
 
-Per Dr. Handel's guidance, we can see that the formatting of the dataset still looks off because some individuals received the drug more than one (OCC = 1 and OCC = 2). We will now remove all entries with OCC = 2. 
+Per Dr. Handel's guidance, we can see that the formatting of the dataset still looks off because some individuals received the drug more than one (OCC = 1 and OCC = 2). We will now remove all entries with OCC = 2.
 
 ```{r, message=FALSE,  warning=FALSE}
 # Filter data to include only the first dose and store it in mavo_filtered
@@ -85,7 +86,7 @@ mavo_combined_subset <- mavo_combined %>%
 
 # View the structure of the updated dataframe
 str(mavo_combined_subset)
-``` 
+```
 
 # EDA
 
@@ -117,6 +118,7 @@ plot1
 figure_file <- here("fitting-exercise", "densityplots.png")
 ggsave(filename = figure_file, plot=plot1, bg="white")
 ```
+
 Now, let's create boxplots for variables `DOSE` and `RATE`.
 
 ```{r}
@@ -196,6 +198,7 @@ ggsave(filename = figure_file, plot=pairplot, bg="white")
 
 # Model fitting
 
+## Linear models
 Now let's move to model fitting using `tidymodels` framework. First let's install the packages and load them.
 
 ```{r, message=FALSE,  warning=FALSE}
@@ -274,6 +277,10 @@ ggplot(mavo_lm2_pred, aes(x = Y, y = .pred)) +
 metrics_lm2 <- metric_set(rmse, rsq, mae) # MAE for fun
 metrics_lm2(mavo_lm2_pred, truth = Y, estimate = .pred)
 ```
+
+I got R-squared and RMSE statistics that were very similar for this model as for the previous model. We can see from our R-squared statistic, that the independent variables explain about 63% of the model, although this doesn't necessarily tell us if our model is good for the data at hand. Our RMSE, which is the square root of the average of squared differences between observed and predicted values, is usually supposed to be lower (less distance between observed and predicted). Here, our RMSE is quite high, 583.1.
+
+## Logistic models
 
 Now we will consider `SEX` as the outcome of interest and fit a logistic model to the categorical/binary outcome `SEX` using the main predictor of interest, `DOSE`. Then we will compute accuracy and ROC-AUC and print them.
 
