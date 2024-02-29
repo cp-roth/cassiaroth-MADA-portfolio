@@ -91,12 +91,12 @@ str(mavo_combined_subset)
 
 Now that we have cleaned the data, we can perform some exploratory data analysis. I will start by creating a summary table using `gtsummary()`.
 
-```{r}
+```{r, output="html"}
 # Create gtsummary table
 table1 <- 
   mavo_combined_subset %>%
   tbl_summary(include = c(Y, DOSE, RATE, AGE, SEX, RACE, WT, HT))
-print(table1)
+table1
 ```
 
 Now, I will visualize the distribution of our continuous variables in density plots: `Y`, `AGE`, `WT`, and `HT`.
@@ -111,6 +111,7 @@ plot1 <-
   geom_density(alpha = 0.5) +
   facet_wrap(~name, scales = "free") +
   theme_minimal()
+plot1
 
 #Saving figure
 figure_file <- here("fitting-exercise", "densityplots.png")
@@ -126,6 +127,7 @@ plot2 <-
   geom_boxplot() +
   labs(x = "Dose", y = "Y") +
   theme_minimal()
+plot2
 
 #Saving figure
 figure_file <- here("fitting-exercise", "boxplot_dose.png")
@@ -137,6 +139,7 @@ plot3 <-
   geom_boxplot() +
   labs(x = "Rate", y = "Y") +
   theme_minimal()
+plot3
 
 #Saving figure
 figure_file <- here("fitting-exercise", "boxplot_rate.png")
@@ -155,6 +158,7 @@ plot4 <-
   geom_point() +
   labs(x = "Age", y = "Y") +
   theme_minimal()
+plot4
 
 plot5 <-
   mavo_combined_subset %>%
@@ -162,6 +166,7 @@ plot5 <-
   geom_point() +
   labs(x = "Weight", y = "Y") +
   theme_minimal()
+plot5
 
 plot6 <-
   mavo_combined_subset %>%
@@ -169,10 +174,11 @@ plot6 <-
   geom_point() +
   labs(x = "Height", y = "Y") +
   theme_minimal()
+plot6
 
 # Laying out in grid
 pairplot <- plot4 / plot5 / plot6
-
+pairplot
 
 #Saving figures
 figure_file <- here("fitting-exercise", "scatterplot_age.png")
@@ -192,7 +198,7 @@ ggsave(filename = figure_file, plot=pairplot, bg="white")
 
 Now let's move to model fitting using `tidymodels` framework. First let's install the packages and load them.
 
-```{r}
+```{r, message=FALSE,  warning=FALSE}
 # Loading packages
 library(tidymodels)
 library(broom.mixed)
@@ -232,6 +238,8 @@ ggplot(mavo_lm1_pred, aes(x = Y, y = .pred)) +
 metrics_lm1 <- metric_set(rmse, rsq, mae) # MAE for fun
 metrics_lm1(mavo_lm1_pred, truth = Y, estimate = .pred)
 ```
+
+Here, we can see from our R-squared statistic, that the independent variables explain about 63% of the model, although this doesn't necessarily tell us if our model is good for the data at hand. Our RMSE, which is the square root of the average of squared differences between observed and predicted values, is usually supposed to be lower (less distance between observed and predicted). Here, our RMSE is quite high, 583 (if I did this correctly!)
 
 Next, let's fit a linear model to the continuous outcome `Y` using all predictors. Then we will go through the same process and get RMSE and R-squared.
 
