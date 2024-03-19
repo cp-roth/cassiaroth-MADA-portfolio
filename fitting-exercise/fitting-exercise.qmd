@@ -199,6 +199,7 @@ ggsave(filename = figure_file, plot=pairplot, bg="white")
 # Model fitting
 
 ## Linear models
+
 Now let's move to model fitting using `tidymodels` framework. First let's install the packages and load them.
 
 ```{r, message=FALSE,  warning=FALSE}
@@ -390,3 +391,168 @@ print(roc_auc)
 ```
 
 Here, our accuracy is 0.875 and the ROC-AUC performance is 0.875, which gives us a B classification performance out of a scale of A to F. This is a better model fit than the previous one, but still not great.
+
+# Exercise Part 2 (Module 10: Model Improvement)
+
+## Model Performance Assessment 1
+
+Let's set the random seed using Dr. Handel's last method. Then we will compute predictions for the two models (the first using only `dose` as a predictor and the second using all predictors), using observed and predicted values to compute RMSE of the best-fitting model.
+
+```{r, message=FALSE,  warning=FALSE}
+
+# Fix the random numbers by setting the seed 
+# This enables the analysis to be reproducible when random numbers are used 
+rngseed = 1234
+set.seed(rngseed)
+
+# Select only the specified variables from mavo_combined_subset (not Race)
+mavo_combined_subset <- mavo_combined_subset %>%
+  select(Y, DOSE, AGE, SEX, WT, HT) # Select only the specified variables
+
+# View the structure of the updated dataframe
+str(mavo_combined_subset)
+
+# Create training data
+# Put 3/4 of the data into the training set 
+data_split <- initial_split(mavo_combined_subset, prop = 3/4)
+
+# Create data frames for the two sets:
+train_data <- training(data_split)
+test_data  <- testing(data_split)
+```
+Now we will run two linear models  on our continuous outcome of interest (`Y`). The first model will only use `DOSE` as a predictor. The second model will us all predictors. For both models, the metric to optimize will be RMSE. 
+
+```{r, message=FALSE,  warning=FALSE}
+# Create a linear model using linear_reg() from tidymodels using dose as a predictor
+mavo_lm3 <- linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>% #specify model
+  fit(Y ~ DOSE, data = train_data) #Pass model object to fit(), specify model formula, provide training data
+mavo_lm3
+
+# Use broom::tidy() to tidy results
+tidy(mavo_lm3)
+
+# Produce predictions for RMSE and R-squared
+mavo_lm3_pred <- predict(mavo_lm3, new_data = train_data %>% select(-Y))
+mavo_lm3_pred
+
+# Predicted numeric outcome named .pred. Now we will match predicted values with corresponding observed outcome values
+mavo_lm3_pred <- bind_cols(mavo_lm3_pred, train_data %>% select(Y))
+mavo_lm3_pred
+
+# Create metric set including RMSE and R-squared
+metrics_lm3 <- metric_set(rmse, rsq, mae) # MAE for fun
+metrics_lm3(mavo_lm3_pred, truth = Y, estimate = .pred)
+
+# Create a linear model using linear_reg() from tidymodels using all predictors (Dr Handel's code somewhat)
+mavo_lm4 <- linear_reg() %>% set_engine("lm") %>% fit(Y ~ ., data = train_data)
+tidy(mavo_lm4)
+
+# Compute the RMSE and R squared for model 4 using Dr. Handel's Code
+metrics_lm4 <- mavo_lm4 %>% 
+  predict(train_data) %>% 
+  bind_cols(train_data) %>% 
+  metrics(truth = Y, estimate = .pred)
+metrics_lm4
+
+# Run null-model (predict the mean outcome for each observation without predictor information). For the following code I used ChatGPT, and I also looked at my classmate Taylor Glass's code.
+mavo_lm0 <- null_model(mode = "regression") %>% 
+    set_engine("parsnip") %>%
+    fit(Y ~ 1, data = train_data)
+
+# Compute the RMSE and R squared for model 4 using Dr. Handel's Code
+metrics_lm0 <- mavo_lm0 %>% 
+  predict(train_data) %>% 
+  bind_cols(train_data) %>% 
+  metrics(truth = Y, estimate = .pred)
+metrics_lm0
+```
+For model 1 (`mavo_lm3`), the RMSE is 702; for model 2 (`mavo_lm4`), the RMSE is 627, and for the null model (`mavo_lm0`), the RMSE is 948.
+
+## Model Performance Assessment 2
+
+Now we will perform a 10-fold cross-validation , fitting the 2 models to the data 10 times.
+
+The first model is the simple linear model, only using `DOSE` as a predictor.
+
+```{r, message=FALSE,  warning=FALSE}
+# Simple linear model
+# Set the seed for reproducibility
+set.seed(rngseed)
+
+# Create 10-fold cross-validation
+folds <- vfold_cv(train_data, v = 10)
+folds
+
+# Set model specification
+mavo_spec <- linear_reg() %>% set_engine("lm")
+
+# Create and initialize workflow that bundles together model specification and formula. ChatGPT helped me here.
+mavo_wf <- workflow() %>% 
+  add_model(mavo_spec) %>% 
+  add_formula(Y ~ DOSE)
+  fit_resamples(mavo_wf, resamples = folds)
+
+# Resample the model
+mavo_wf_rs1 <- fit_resamples(mavo_wf, resamples = folds)
+mavo_wf_rs1
+
+# Get model metrics
+collect_metrics(mavo_wf_rs1)
+```
+We can see that the RMSE for the linear model only using `DOSE` as a predictor decreased to 690 (from 702). Further, we can see the standard error (67.5), which allows us to understand variability. It appears that the CV method works better than the train and test method.
+
+Now let's do the same thing for the complex linear model using all predictors.
+```{r, message=FALSE,  warning=FALSE}
+# Set the seed for reproducibility
+set.seed(rngseed)
+
+# Create and initialize workflow that bundles together model specification and formula. ChatGPT helped me here.
+mavo_wf2 <- workflow() %>% 
+  add_model(mavo_spec) %>% 
+  add_formula(Y ~ .,)
+  fit_resamples(mavo_wf2, resamples = folds)
+
+# Resample the model
+mavo_wf_rs2 <- fit_resamples(mavo_wf2, resamples = folds)
+mavo_wf_rs2
+
+# Get model metrics
+collect_metrics(mavo_wf_rs2)
+```
+For the complex linear model, we have an RMSE of 645 with a standard deviation of 57. This is a better fit than the simple linear model using CV (690). However, the RMSE of 645 (with a standard error of 64.8) is higher than the complex linear model tested using train and test, which was 627. I am not sure why this is the case, so if any of my classmates know, that would be great.
+
+Finally, we will run the code that creates the CV again, but we will choose a different value for the random seed. Although our RMSE values change, the overall patterns between the RMSE values for the fits for training data with and without CV should stay the same.
+
+```{r, message=FALSE,  warning=FALSE}
+# Set new seed for reproducibility
+set.seed(13579)
+
+# Simple linear model
+# Create and initialize workflow that bundles together model specification and formula. ChatGPT helped me here.
+mavo_wf <- workflow() %>% 
+  add_model(mavo_spec) %>% 
+  add_formula(Y ~ DOSE)
+  fit_resamples(mavo_wf, resamples = folds)
+
+# Resample the model
+mavo_wf_rs3 <- fit_resamples(mavo_wf, resamples = folds)
+mavo_wf_rs3
+
+# Get model metrics
+collect_metrics(mavo_wf_rs3)
+
+# Complex linear model
+# Create and initialize workflow that bundles together model specification and formula. ChatGPT helped me here.
+mavo_wf <- workflow() %>% 
+  add_model(mavo_spec) %>% 
+  add_formula(Y ~ .,)
+  fit_resamples(mavo_wf, resamples = folds)
+
+# Resample the model with a different seed
+mavo_wf_rs4 <- fit_resamples(mavo_wf, resamples = folds)
+mavo_wf_rs4
+
+# Get model metrics
+collect_metrics(mavo_wf_rs4)
+```
+For the simple linear model, we get an RMSE of 690 and a standard error of 67.5. This is the same as I got for using a different random seed previously. For the complex linear model, we get an RMSE of 645 and a standard error of 64.8. This is also the same as I got using a different random seed. The multiple linear regression continues to outperform the simple linear regression.
