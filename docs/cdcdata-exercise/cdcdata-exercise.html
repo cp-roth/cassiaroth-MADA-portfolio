@@ -209,6 +209,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; Updated upstream</p>
 <section id="cdc-data-exploration-quarterly-provisional-estimates-for-selected-birth-indicators" class="level1">
 <h1>CDC Data Exploration: Quarterly Provisional Estimates for Selected Birth Indicators</h1>
 <section id="description-of-the-data" class="level3">
@@ -11975,7 +11976,593 @@ multiple of replacement length</code></pre>
 </div>
 <p>This is NOT the structure that I want. Assuming this is because of the previous integer values being multiplied by the means (b1, b2, and b12) to derive the rate values, For race: 1= All 2= Hispanic 3= Black 4= White For Age: 1= 10-14 2= 15-19 3= 20-24 4= 25-19 5= 30-34 6= 35-39 7= 40-45 8= 45+</p>
 <p>This has created a skewed chart with the largest integer values for both race and age corresponding the highest rates. I honestly do not know how to fix this.</p>
-<p>I will turn this in for now, as I have spent a cumulative 8+ hours on part 2 of this exercise. However, please let me know if you can help me fix this.</p>
+</section>
+</section>
+<section id="i-will-turn-this-in-for-now-as-i-have-spent-a-cumulative-8-hours-on-part-2-of-this-exercise.-however-please-let-me-know-if-you-can-help-me-fix-this." class="level1">
+<h1>I will turn this in for now, as I have spent a cumulative 8+ hours on part 2 of this exercise. However, please let me know if you can help me fix this.</h1>
+</section>
+<section id="cdc-data-exploration-quarterly-provisional-estimates-for-selected-birth-indicators-1" class="level1">
+<h1>CDC Data Exploration: Quarterly Provisional Estimates for Selected Birth Indicators</h1>
+<section id="description-of-the-data-1" class="level3">
+<h3 class="anchored" data-anchor-id="description-of-the-data-1">Description of the data</h3>
+<p>This dataset comes from the National Center for Health Statistics (NCHS) and is a part of the CDC’s National Vital Statistics System. The data is a quarterly release of provisional estimates of selected reproductive indicators including general fertility rates, age-specific birth rates, total and low-risk cesarean delivery rates, preterm birth rates, and other gestational age categories.</p>
+<p>The dataset is available at the <a href="https://data.cdc.gov/NCHS/NCHS-VSRR-Quarterly-provisional-estimates-for-sele/76vv-a7x8/about_data">CDC website</a>.</p>
+</section>
+<section id="reading-in-the-data-1" class="level3">
+<h3 class="anchored" data-anchor-id="reading-in-the-data-1">Reading in the data</h3>
+<p>Here, I loaded all the packages I will use for this data exercise, listed below. I also read in the data from the csv file, and I called the data <code>cdcdata</code>. We can see that there are 8 variables and 1100 observations. This dataset has multiple indicators stacked on top of each other. For example, within the “Topic” column, there are metrics for “Birth Rate”, “Gestational Age,” etc., each measuring a very different outcome. Instead of widening the dataset (splitting the data into multiple tables, one for each metric), I am going to make things easier by looking at one metric, “Age-specific Birth Rates,” which I will get to below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2194"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2194-1"><a href="#cb2194-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Loading packages</span></span>
+<span id="cb2194-2"><a href="#cb2194-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse) <span class="co">#This includes ggplot2, tidyr, readr, dplyr, stringr, purr, forcats</span></span>
+<span id="cb2194-3"><a href="#cb2194-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb2194-4"><a href="#cb2194-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
+<span id="cb2194-5"><a href="#cb2194-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb2194-6"><a href="#cb2194-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2194-7"><a href="#cb2194-7" aria-hidden="true" tabindex="-1"></a><span class="co">#Reading in the csv file</span></span>
+<span id="cb2194-8"><a href="#cb2194-8" aria-hidden="true" tabindex="-1"></a>cdcdata <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"cdcdata-exercise"</span>, <span class="st">"NCHS_VSRR_Quarterly_provisional_estimates_for_selected_birth_indicators_20240205.csv"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 1100 Columns: 8
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (7): Year and Quarter, Topic, Topic Subgroup, Indicator, Race Ethnicity ...
+dbl (1): Rate
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb2196"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2196-1"><a href="#cb2196-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Checking the packaging (displaying first and last few rows of data)</span></span>
+<span id="cb2196-2"><a href="#cb2196-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(cdcdata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1100</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb2198"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2198-1"><a href="#cb2198-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ncol</span>(cdcdata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 8</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb2200"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2200-1"><a href="#cb2200-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Showing the structure</span></span>
+<span id="cb2200-2"><a href="#cb2200-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(cdcdata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>spc_tbl_ [1,100 × 8] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+ $ Year and Quarter       : chr [1:1100] "2023 Q3" "2023 Q3" "2023 Q3" "2023 Q3" ...
+ $ Topic                  : chr [1:1100] "Birth Rates" "Birth Rates" "Birth Rates" "Birth Rates" ...
+ $ Topic Subgroup         : chr [1:1100] "Age-specific Birth Rates" "Age-specific Birth Rates" "Age-specific Birth Rates" "Age-specific Birth Rates" ...
+ $ Indicator              : chr [1:1100] "10-14 years" "10-14 years" "10-14 years" "10-14 years" ...
+ $ Race Ethnicity Category: chr [1:1100] "All races and origins" "Hispanic" "Non-Hispanic Black" "Non-Hispanic White" ...
+ $ Rate                   : num [1:1100] 0.2 0.3 0.4 0.1 13.4 21.3 19.7 8.7 56 78.3 ...
+ $ Unit                   : chr [1:1100] "per 1,000 population" "per 1,000 population" "per 1,000 population" "per 1,000 population" ...
+ $ Significant            : chr [1:1100] NA NA "*" NA ...
+ - attr(*, "spec")=
+  .. cols(
+  ..   `Year and Quarter` = col_character(),
+  ..   Topic = col_character(),
+  ..   `Topic Subgroup` = col_character(),
+  ..   Indicator = col_character(),
+  ..   `Race Ethnicity Category` = col_character(),
+  ..   Rate = col_double(),
+  ..   Unit = col_character(),
+  ..   Significant = col_character()
+  .. )
+ - attr(*, "problems")=&lt;externalptr&gt; </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb2202"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2202-1"><a href="#cb2202-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Looking at top/bottom of data</span></span>
+<span id="cb2202-2"><a href="#cb2202-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(cdcdata)[, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 8
+  `Year and Quarter` Topic     `Topic Subgroup` Indicator Race Ethnicity Categ…¹
+  &lt;chr&gt;              &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;     &lt;chr&gt;                 
+1 2023 Q3            Birth Ra… Age-specific Bi… 10-14 ye… All races and origins 
+2 2023 Q3            Birth Ra… Age-specific Bi… 10-14 ye… Hispanic              
+3 2023 Q3            Birth Ra… Age-specific Bi… 10-14 ye… Non-Hispanic Black    
+4 2023 Q3            Birth Ra… Age-specific Bi… 10-14 ye… Non-Hispanic White    
+5 2023 Q3            Birth Ra… Age-specific Bi… 15-19 ye… All races and origins 
+6 2023 Q3            Birth Ra… Age-specific Bi… 15-19 ye… Hispanic              
+# ℹ abbreviated name: ¹​`Race Ethnicity Category`
+# ℹ 3 more variables: Rate &lt;dbl&gt;, Unit &lt;chr&gt;, Significant &lt;chr&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb2204"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2204-1"><a href="#cb2204-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span>(cdcdata)[, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 8
+  `Year and Quarter` Topic     `Topic Subgroup` Indicator Race Ethnicity Categ…¹
+  &lt;chr&gt;              &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;     &lt;chr&gt;                 
+1 2021 Q1            NICU Adm… NICU Admission … NICU Adm… Non-Hispanic Black    
+2 2021 Q1            NICU Adm… NICU Admission … NICU Adm… Non-Hispanic White    
+3 2021 Q1            Source o… Medicaid         Medicaid  All races and origins 
+4 2021 Q1            Source o… Medicaid         Medicaid  Hispanic              
+5 2021 Q1            Source o… Medicaid         Medicaid  Non-Hispanic Black    
+6 2021 Q1            Source o… Medicaid         Medicaid  Non-Hispanic White    
+# ℹ abbreviated name: ¹​`Race Ethnicity Category`
+# ℹ 3 more variables: Rate &lt;dbl&gt;, Unit &lt;chr&gt;, Significant &lt;chr&gt;</code></pre>
+</div>
+</div>
+<p>This dataset is pretty untidy. The “Year and Quarter” column is a combination of the year and the quarter. I will separate this column into two columns, “Year” and “Quarter”, and convert them to numeric. In addition, the “Topic” and “Topic Subgroup” columns have multiple indicators listed in the same column. I will be looking at the observations only for “Birth Rates” and will remove all other observations. I will also replace the space with an underscore in the “Topic” column where it contains “Birth Rates.”</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2206"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2206-1"><a href="#cb2206-1" aria-hidden="true" tabindex="-1"></a><span class="co">#This section was written with help from ChatGPT.</span></span>
+<span id="cb2206-2"><a href="#cb2206-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2206-3"><a href="#cb2206-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Get column names</span></span>
+<span id="cb2206-4"><a href="#cb2206-4" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(cdcdata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Year and Quarter"        "Topic"                  
+[3] "Topic Subgroup"          "Indicator"              
+[5] "Race Ethnicity Category" "Rate"                   
+[7] "Unit"                    "Significant"            </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb2208"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2208-1"><a href="#cb2208-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Separate the "Year and Quarter" column into "Year" and "Quarter" columns in cdcdata</span></span>
+<span id="cb2208-2"><a href="#cb2208-2" aria-hidden="true" tabindex="-1"></a>cdcdata <span class="ot">&lt;-</span> cdcdata <span class="sc">%&gt;%</span></span>
+<span id="cb2208-3"><a href="#cb2208-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(<span class="st">"Year and Quarter"</span>, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"Year"</span>, <span class="st">"Quarter"</span>), <span class="at">sep =</span> <span class="st">" Q"</span>)</span>
+<span id="cb2208-4"><a href="#cb2208-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2208-5"><a href="#cb2208-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Convert "Year" and "Quarter" columns to numeric</span></span>
+<span id="cb2208-6"><a href="#cb2208-6" aria-hidden="true" tabindex="-1"></a>cdcdata <span class="ot">&lt;-</span> cdcdata <span class="sc">%&gt;%</span></span>
+<span id="cb2208-7"><a href="#cb2208-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb2208-8"><a href="#cb2208-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">Year =</span> <span class="fu">as.numeric</span>(Year),</span>
+<span id="cb2208-9"><a href="#cb2208-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">Quarter =</span> <span class="fu">case_when</span>(</span>
+<span id="cb2208-10"><a href="#cb2208-10" aria-hidden="true" tabindex="-1"></a>      Quarter <span class="sc">==</span> <span class="st">"1"</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb2208-11"><a href="#cb2208-11" aria-hidden="true" tabindex="-1"></a>      Quarter <span class="sc">==</span> <span class="st">"2"</span> <span class="sc">~</span> <span class="dv">2</span>,</span>
+<span id="cb2208-12"><a href="#cb2208-12" aria-hidden="true" tabindex="-1"></a>      Quarter <span class="sc">==</span> <span class="st">"3"</span> <span class="sc">~</span> <span class="dv">3</span>,</span>
+<span id="cb2208-13"><a href="#cb2208-13" aria-hidden="true" tabindex="-1"></a>      Quarter <span class="sc">==</span> <span class="st">"4"</span> <span class="sc">~</span> <span class="dv">4</span></span>
+<span id="cb2208-14"><a href="#cb2208-14" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2208-15"><a href="#cb2208-15" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb2208-16"><a href="#cb2208-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2208-17"><a href="#cb2208-17" aria-hidden="true" tabindex="-1"></a><span class="co">#Rename observations "Birth Rates"</span></span>
+<span id="cb2208-18"><a href="#cb2208-18" aria-hidden="true" tabindex="-1"></a>cdcdata <span class="ot">&lt;-</span> cdcdata <span class="sc">%&gt;%</span></span>
+<span id="cb2208-19"><a href="#cb2208-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Topic =</span> <span class="fu">ifelse</span>(Topic <span class="sc">==</span> <span class="st">"Birth Rates"</span>, <span class="fu">str_replace</span>(Topic, <span class="st">" "</span>, <span class="st">"_"</span>), Topic))</span>
+<span id="cb2208-20"><a href="#cb2208-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2208-21"><a href="#cb2208-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter to include only observations where the "Topic" column contains "Birth_Rates"</span></span>
+<span id="cb2208-22"><a href="#cb2208-22" aria-hidden="true" tabindex="-1"></a>cdcdata1 <span class="ot">&lt;-</span> cdcdata <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Topic <span class="sc">==</span> <span class="st">"Birth_Rates"</span>)</span>
+<span id="cb2208-23"><a href="#cb2208-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2208-24"><a href="#cb2208-24" aria-hidden="true" tabindex="-1"></a><span class="co">#Print the modified cdcdata dataset</span></span>
+<span id="cb2208-25"><a href="#cb2208-25" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(cdcdata1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 572 × 9
+    Year Quarter Topic   `Topic Subgroup` Indicator Race Ethnicity Categ…¹  Rate
+   &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;            &lt;chr&gt;     &lt;chr&gt;                  &lt;dbl&gt;
+ 1  2023       3 Birth_… Age-specific Bi… 10-14 ye… All races and origins    0.2
+ 2  2023       3 Birth_… Age-specific Bi… 10-14 ye… Hispanic                 0.3
+ 3  2023       3 Birth_… Age-specific Bi… 10-14 ye… Non-Hispanic Black       0.4
+ 4  2023       3 Birth_… Age-specific Bi… 10-14 ye… Non-Hispanic White       0.1
+ 5  2023       3 Birth_… Age-specific Bi… 15-19 ye… All races and origins   13.4
+ 6  2023       3 Birth_… Age-specific Bi… 15-19 ye… Hispanic                21.3
+ 7  2023       3 Birth_… Age-specific Bi… 15-19 ye… Non-Hispanic Black      19.7
+ 8  2023       3 Birth_… Age-specific Bi… 15-19 ye… Non-Hispanic White       8.7
+ 9  2023       3 Birth_… Age-specific Bi… 20-24 ye… All races and origins   56  
+10  2023       3 Birth_… Age-specific Bi… 20-24 ye… Hispanic                78.3
+# ℹ 562 more rows
+# ℹ abbreviated name: ¹​`Race Ethnicity Category`
+# ℹ 2 more variables: Unit &lt;chr&gt;, Significant &lt;chr&gt;</code></pre>
+</div>
+</div>
+<p>With our new dataset, called <code>cdcdata_birth_rates</code>, we can see that the “Year and Quarter” column has been separated into “Year” and “Quarter” columns, and the “Topic” column has been modified to replace the space with an underscore where it contains “Birth Rates.” We can also see that the “Topic” column contains only “Birth Rates” observations. This gives us 9 columns (variables) and 572 rows (observations).</p>
+<p>Additionally, the “Topic” and “Subtopic” columns are redundant in that the “Subtopic” column is the true indicator we are looking for, and we can remove the “Topic” column. The same issue we had in the “Topic” column is also present in the “Topic Subgroup” column. We will remove the “Topic” column and filter the dataset to include only observations where the “Topic Subgroup” column is exactly “Age-specific Birth Rates.” We will also replace “Age-specific Birth Rates” with “Age_Specific” in the “Topic Subgroup” column.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2210"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2210-1"><a href="#cb2210-1" aria-hidden="true" tabindex="-1"></a><span class="co">#This section was written with help from ChatGPT.</span></span>
+<span id="cb2210-2"><a href="#cb2210-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2210-3"><a href="#cb2210-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Remove the "Topic" column</span></span>
+<span id="cb2210-4"><a href="#cb2210-4" aria-hidden="true" tabindex="-1"></a>cdcdata1 <span class="ot">&lt;-</span> cdcdata1 <span class="sc">%&gt;%</span></span>
+<span id="cb2210-5"><a href="#cb2210-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>Topic)</span>
+<span id="cb2210-6"><a href="#cb2210-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2210-7"><a href="#cb2210-7" aria-hidden="true" tabindex="-1"></a><span class="co">#Filter the dataset to include only observations where the "Topic Subgroup" column is exactly "Age-specific Birth Rates"</span></span>
+<span id="cb2210-8"><a href="#cb2210-8" aria-hidden="true" tabindex="-1"></a>cdcdata1 <span class="ot">&lt;-</span> cdcdata1 <span class="sc">%&gt;%</span></span>
+<span id="cb2210-9"><a href="#cb2210-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="st">`</span><span class="at">Topic Subgroup</span><span class="st">`</span> <span class="sc">==</span> <span class="st">"Age-specific Birth Rates"</span>)</span>
+<span id="cb2210-10"><a href="#cb2210-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2210-11"><a href="#cb2210-11" aria-hidden="true" tabindex="-1"></a><span class="co">#Replace "Age-specific Birth Rates" with "Age_Specific" in the "Topic Subgroup" column</span></span>
+<span id="cb2210-12"><a href="#cb2210-12" aria-hidden="true" tabindex="-1"></a>cdcdata1 <span class="ot">&lt;-</span> cdcdata1 <span class="sc">%&gt;%</span></span>
+<span id="cb2210-13"><a href="#cb2210-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">Topic Subgroup</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">str_replace</span>(<span class="st">`</span><span class="at">Topic Subgroup</span><span class="st">`</span>, <span class="st">"Age-specific Birth Rates"</span>, <span class="st">"Age_Specific"</span>))</span>
+<span id="cb2210-14"><a href="#cb2210-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2210-15"><a href="#cb2210-15" aria-hidden="true" tabindex="-1"></a><span class="co">#Remove the "Topic Subgroup" column and rename dataframe</span></span>
+<span id="cb2210-16"><a href="#cb2210-16" aria-hidden="true" tabindex="-1"></a>cdcdata2 <span class="ot">&lt;-</span> cdcdata1 <span class="sc">%&gt;%</span></span>
+<span id="cb2210-17"><a href="#cb2210-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="st">`</span><span class="at">Topic Subgroup</span><span class="st">`</span>)</span>
+<span id="cb2210-18"><a href="#cb2210-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2210-19"><a href="#cb2210-19" aria-hidden="true" tabindex="-1"></a><span class="co">#Print the modified cdcdata dataset</span></span>
+<span id="cb2210-20"><a href="#cb2210-20" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(cdcdata2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 352 × 7
+    Year Quarter Indicator   `Race Ethnicity Category`  Rate Unit    Significant
+   &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;       &lt;chr&gt;                     &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;      
+ 1  2023       3 10-14 years All races and origins       0.2 per 1,… &lt;NA&gt;       
+ 2  2023       3 10-14 years Hispanic                    0.3 per 1,… &lt;NA&gt;       
+ 3  2023       3 10-14 years Non-Hispanic Black          0.4 per 1,… *          
+ 4  2023       3 10-14 years Non-Hispanic White          0.1 per 1,… &lt;NA&gt;       
+ 5  2023       3 15-19 years All races and origins      13.4 per 1,… *          
+ 6  2023       3 15-19 years Hispanic                   21.3 per 1,… *          
+ 7  2023       3 15-19 years Non-Hispanic Black         19.7 per 1,… *          
+ 8  2023       3 15-19 years Non-Hispanic White          8.7 per 1,… *          
+ 9  2023       3 20-24 years All races and origins      56   per 1,… *          
+10  2023       3 20-24 years Hispanic                   78.3 per 1,… *          
+# ℹ 342 more rows</code></pre>
+</div>
+</div>
+<p>Now, we have 7 columns (variables) and 352 observations, since we are only looking at age-specific birth rates, we don’t need a column with that information.</p>
+<p>Now let’s clean up the rest of the column names and observation entries, removing spaces and recategorizing variables.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2212"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2212-1"><a href="#cb2212-1" aria-hidden="true" tabindex="-1"></a><span class="co">#This section was written with help from ChatGPT.</span></span>
+<span id="cb2212-2"><a href="#cb2212-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2212-3"><a href="#cb2212-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Renaming columns</span></span>
+<span id="cb2212-4"><a href="#cb2212-4" aria-hidden="true" tabindex="-1"></a>cdcdata2 <span class="ot">&lt;-</span> cdcdata2 <span class="sc">%&gt;%</span></span>
+<span id="cb2212-5"><a href="#cb2212-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">Age_Years =</span> Indicator)</span>
+<span id="cb2212-6"><a href="#cb2212-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2212-7"><a href="#cb2212-7" aria-hidden="true" tabindex="-1"></a>cdcdata2 <span class="ot">&lt;-</span> cdcdata2 <span class="sc">%&gt;%</span></span>
+<span id="cb2212-8"><a href="#cb2212-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">Race_Ethnicity =</span> <span class="st">`</span><span class="at">Race Ethnicity Category</span><span class="st">`</span>)</span>
+<span id="cb2212-9"><a href="#cb2212-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2212-10"><a href="#cb2212-10" aria-hidden="true" tabindex="-1"></a><span class="co">#Define the specific levels for the "Race_Ethnicity" category</span></span>
+<span id="cb2212-11"><a href="#cb2212-11" aria-hidden="true" tabindex="-1"></a>race_ethnicity_levels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"All races and origins"</span>, <span class="st">"Hispanic"</span>, <span class="st">"Non-Hispanic Black"</span>, <span class="st">"Non-Hispanic White"</span>)</span>
+<span id="cb2212-12"><a href="#cb2212-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2212-13"><a href="#cb2212-13" aria-hidden="true" tabindex="-1"></a><span class="co">#Convert the "Race Ethnicity Category" column to a factor variable with custom levels</span></span>
+<span id="cb2212-14"><a href="#cb2212-14" aria-hidden="true" tabindex="-1"></a>cdcdata2<span class="sc">$</span>Race_Ethnicity <span class="ot">&lt;-</span> <span class="fu">factor</span>(cdcdata2<span class="sc">$</span>Race_Ethnicity, <span class="at">levels =</span> race_ethnicity_levels)</span>
+<span id="cb2212-15"><a href="#cb2212-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2212-16"><a href="#cb2212-16" aria-hidden="true" tabindex="-1"></a><span class="co">#View the levels of the "Race_Ethnicity" column</span></span>
+<span id="cb2212-17"><a href="#cb2212-17" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(cdcdata2<span class="sc">$</span>Race_Ethnicity)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "All races and origins" "Hispanic"              "Non-Hispanic Black"   
+[4] "Non-Hispanic White"   </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb2214"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2214-1"><a href="#cb2214-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Get unique age category levels from the "Age_Years" column</span></span>
+<span id="cb2214-2"><a href="#cb2214-2" aria-hidden="true" tabindex="-1"></a>age_levels <span class="ot">&lt;-</span> <span class="fu">unique</span>(cdcdata2<span class="sc">$</span>Age_Years)</span>
+<span id="cb2214-3"><a href="#cb2214-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2214-4"><a href="#cb2214-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Convert the "Age_Years" column to a factor variable with custom levels</span></span>
+<span id="cb2214-5"><a href="#cb2214-5" aria-hidden="true" tabindex="-1"></a>cdcdata2<span class="sc">$</span>Age_Years <span class="ot">&lt;-</span> <span class="fu">factor</span>(cdcdata2<span class="sc">$</span>Age_Years, <span class="at">levels =</span> age_levels)</span>
+<span id="cb2214-6"><a href="#cb2214-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2214-7"><a href="#cb2214-7" aria-hidden="true" tabindex="-1"></a><span class="co">#View the levels of the "Age_Years" column</span></span>
+<span id="cb2214-8"><a href="#cb2214-8" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(cdcdata2<span class="sc">$</span>Age_Years)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "10-14 years" "15-19 years" "20-24 years" "25-29 years" "30-34 years"
+[6] "35-39 years" "40-44 years" "45+ years"  </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb2216"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2216-1"><a href="#cb2216-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Print the modified cdcdata dataset</span></span>
+<span id="cb2216-2"><a href="#cb2216-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(cdcdata2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 352 × 7
+    Year Quarter Age_Years   Race_Ethnicity         Rate Unit        Significant
+   &lt;dbl&gt;   &lt;dbl&gt; &lt;fct&gt;       &lt;fct&gt;                 &lt;dbl&gt; &lt;chr&gt;       &lt;chr&gt;      
+ 1  2023       3 10-14 years All races and origins   0.2 per 1,000 … &lt;NA&gt;       
+ 2  2023       3 10-14 years Hispanic                0.3 per 1,000 … &lt;NA&gt;       
+ 3  2023       3 10-14 years Non-Hispanic Black      0.4 per 1,000 … *          
+ 4  2023       3 10-14 years Non-Hispanic White      0.1 per 1,000 … &lt;NA&gt;       
+ 5  2023       3 15-19 years All races and origins  13.4 per 1,000 … *          
+ 6  2023       3 15-19 years Hispanic               21.3 per 1,000 … *          
+ 7  2023       3 15-19 years Non-Hispanic Black     19.7 per 1,000 … *          
+ 8  2023       3 15-19 years Non-Hispanic White      8.7 per 1,000 … *          
+ 9  2023       3 20-24 years All races and origins  56   per 1,000 … *          
+10  2023       3 20-24 years Hispanic               78.3 per 1,000 … *          
+# ℹ 342 more rows</code></pre>
+</div>
+</div>
+<p>We can see that we have multiple missing entries for the “Significant” Column. From the data dictionary on the website, the CDC defines the “Significant” variable as follows: “An asterisk (*) indicates that estimates for the most recent quarter are significantly different from the same quarter of the previous year.” This variable is not relevant for this analysis, so we can remove this column from the dataset. When CDC calculated rates, they had population size in each group, and thus could calculate significance.</p>
+<p>But first, let’s just check how many observations are missing an asterisk in the “Significant” column.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2218"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2218-1"><a href="#cb2218-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Count the number of NA values in the "Significant" column</span></span>
+<span id="cb2218-2"><a href="#cb2218-2" aria-hidden="true" tabindex="-1"></a>na_count <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(cdcdata2<span class="sc">$</span>Significant))</span>
+<span id="cb2218-3"><a href="#cb2218-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2218-4"><a href="#cb2218-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the number of NA values</span></span>
+<span id="cb2218-5"><a href="#cb2218-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(na_count)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 327</code></pre>
+</div>
+</div>
+<p>We can see that 327 of the 352 observations were not significantly different from the same quarter of the previous year.</p>
+<p>Now, let’s remove that column/variable altogether.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2220"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2220-1"><a href="#cb2220-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Remove the "Significant" column</span></span>
+<span id="cb2220-2"><a href="#cb2220-2" aria-hidden="true" tabindex="-1"></a>cdcdata2 <span class="ot">&lt;-</span> cdcdata2 <span class="sc">%&gt;%</span></span>
+<span id="cb2220-3"><a href="#cb2220-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>Significant)</span>
+<span id="cb2220-4"><a href="#cb2220-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2220-5"><a href="#cb2220-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Print the new dataset</span></span>
+<span id="cb2220-6"><a href="#cb2220-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(cdcdata2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 352 × 6
+    Year Quarter Age_Years   Race_Ethnicity         Rate Unit                
+   &lt;dbl&gt;   &lt;dbl&gt; &lt;fct&gt;       &lt;fct&gt;                 &lt;dbl&gt; &lt;chr&gt;               
+ 1  2023       3 10-14 years All races and origins   0.2 per 1,000 population
+ 2  2023       3 10-14 years Hispanic                0.3 per 1,000 population
+ 3  2023       3 10-14 years Non-Hispanic Black      0.4 per 1,000 population
+ 4  2023       3 10-14 years Non-Hispanic White      0.1 per 1,000 population
+ 5  2023       3 15-19 years All races and origins  13.4 per 1,000 population
+ 6  2023       3 15-19 years Hispanic               21.3 per 1,000 population
+ 7  2023       3 15-19 years Non-Hispanic Black     19.7 per 1,000 population
+ 8  2023       3 15-19 years Non-Hispanic White      8.7 per 1,000 population
+ 9  2023       3 20-24 years All races and origins  56   per 1,000 population
+10  2023       3 20-24 years Hispanic               78.3 per 1,000 population
+# ℹ 342 more rows</code></pre>
+</div>
+</div>
+<p>So, for our final dataset, we have 352 observations and 6 variables! However, in our exporatory analysis, we are going to look at the average of the rates over the entire 11 quarter time period, so we will drop the variables “Year”, “Quarter”, and “Unit” since they are not relevant for this analysis. All units are the same (per 1,000 population). This gives us 3 variables (Age_Years, Race_Ethnicity, and Rate).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2222"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2222-1"><a href="#cb2222-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Remove the "Year", "Quarter", "Unit" columns</span></span>
+<span id="cb2222-2"><a href="#cb2222-2" aria-hidden="true" tabindex="-1"></a>cdcdata2 <span class="ot">&lt;-</span> cdcdata2 <span class="sc">%&gt;%</span></span>
+<span id="cb2222-3"><a href="#cb2222-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>Year, <span class="sc">-</span>Quarter, <span class="sc">-</span>Unit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>#Exploratory/Descriptive Analysis of Clean Data</p>
+<p>Now let’s begin to explore the data. We can’t show the percentage of observations in each category because we only have rate and not the population size. We also can’t summarize the variables in a way that can be described in a distribution because we don’t have the population size, just the final rates for each group.</p>
+<p>We can ask: within each Race_Ethnicity category (All races and origins, Hispanic, Non-Hispanic Black, and Non-Hispanic White), how does the birth rate change across age groups during this 11-quarter period?</p>
+<p>First, let’s summarize the data so that we get the mean and standard deviation for each age group according to race_ethnicity.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2223"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2223-1"><a href="#cb2223-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Collapse data by Age_Years and Race_Ethnicity</span></span>
+<span id="cb2223-2"><a href="#cb2223-2" aria-hidden="true" tabindex="-1"></a>cdcdata2_agg <span class="ot">&lt;-</span> cdcdata2 <span class="sc">%&gt;%</span></span>
+<span id="cb2223-3"><a href="#cb2223-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Age_Years, Race_Ethnicity) <span class="sc">%&gt;%</span></span>
+<span id="cb2223-4"><a href="#cb2223-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise_all</span>(<span class="fu">list</span>(<span class="at">mean =</span> mean, <span class="at">sd =</span> sd)) <span class="sc">%&gt;%</span></span>
+<span id="cb2223-5"><a href="#cb2223-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb2223-6"><a href="#cb2223-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2223-7"><a href="#cb2223-7" aria-hidden="true" tabindex="-1"></a><span class="co">#Make a  table using knitr</span></span>
+<span id="cb2223-8"><a href="#cb2223-8" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(cdcdata2_agg, <span class="at">caption =</span> <span class="st">"Mean and Standard Deviation of Birth Rates by Age"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<caption>Mean and Standard Deviation of Birth Rates by Age</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Age_Years</th>
+<th style="text-align: left;">Race_Ethnicity</th>
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">sd</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">10-14 years</td>
+<td style="text-align: left;">All races and origins</td>
+<td style="text-align: right;">0.2000000</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10-14 years</td>
+<td style="text-align: left;">Hispanic</td>
+<td style="text-align: right;">0.3000000</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">10-14 years</td>
+<td style="text-align: left;">Non-Hispanic Black</td>
+<td style="text-align: right;">0.3545455</td>
+<td style="text-align: right;">0.0522233</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10-14 years</td>
+<td style="text-align: left;">Non-Hispanic White</td>
+<td style="text-align: right;">0.1000000</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">15-19 years</td>
+<td style="text-align: left;">All races and origins</td>
+<td style="text-align: right;">13.8181818</td>
+<td style="text-align: right;">0.3789939</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">15-19 years</td>
+<td style="text-align: left;">Hispanic</td>
+<td style="text-align: right;">21.3000000</td>
+<td style="text-align: right;">0.3193744</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">15-19 years</td>
+<td style="text-align: left;">Non-Hispanic Black</td>
+<td style="text-align: right;">21.1636364</td>
+<td style="text-align: right;">1.1595454</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">15-19 years</td>
+<td style="text-align: left;">Non-Hispanic White</td>
+<td style="text-align: right;">9.2181818</td>
+<td style="text-align: right;">0.3341203</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">20-24 years</td>
+<td style="text-align: left;">All races and origins</td>
+<td style="text-align: right;">60.2818182</td>
+<td style="text-align: right;">1.9898835</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">20-24 years</td>
+<td style="text-align: left;">Hispanic</td>
+<td style="text-align: right;">81.8909091</td>
+<td style="text-align: right;">1.8019182</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">20-24 years</td>
+<td style="text-align: left;">Non-Hispanic Black</td>
+<td style="text-align: right;">76.3454545</td>
+<td style="text-align: right;">4.4362966</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">20-24 years</td>
+<td style="text-align: left;">Non-Hispanic White</td>
+<td style="text-align: right;">50.6272727</td>
+<td style="text-align: right;">1.8363501</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">25-29 years</td>
+<td style="text-align: left;">All races and origins</td>
+<td style="text-align: right;">92.6090909</td>
+<td style="text-align: right;">1.1076593</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">25-29 years</td>
+<td style="text-align: left;">Hispanic</td>
+<td style="text-align: right;">110.3090909</td>
+<td style="text-align: right;">3.8386077</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">25-29 years</td>
+<td style="text-align: left;">Non-Hispanic Black</td>
+<td style="text-align: right;">90.9818182</td>
+<td style="text-align: right;">1.5879661</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">25-29 years</td>
+<td style="text-align: left;">Non-Hispanic White</td>
+<td style="text-align: right;">90.5363636</td>
+<td style="text-align: right;">0.9254974</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">30-34 years</td>
+<td style="text-align: left;">All races and origins</td>
+<td style="text-align: right;">96.4363636</td>
+<td style="text-align: right;">1.3086426</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">30-34 years</td>
+<td style="text-align: left;">Hispanic</td>
+<td style="text-align: right;">99.2727273</td>
+<td style="text-align: right;">3.9678939</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">30-34 years</td>
+<td style="text-align: left;">Non-Hispanic Black</td>
+<td style="text-align: right;">79.1909091</td>
+<td style="text-align: right;">0.7879778</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">30-34 years</td>
+<td style="text-align: left;">Non-Hispanic White</td>
+<td style="text-align: right;">99.9000000</td>
+<td style="text-align: right;">1.4303846</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">35-39 years</td>
+<td style="text-align: left;">All races and origins</td>
+<td style="text-align: right;">53.8363636</td>
+<td style="text-align: right;">1.5711605</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">35-39 years</td>
+<td style="text-align: left;">Hispanic</td>
+<td style="text-align: right;">56.8000000</td>
+<td style="text-align: right;">2.8722813</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">35-39 years</td>
+<td style="text-align: left;">Non-Hispanic Black</td>
+<td style="text-align: right;">49.0000000</td>
+<td style="text-align: right;">1.5244671</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">35-39 years</td>
+<td style="text-align: left;">Non-Hispanic White</td>
+<td style="text-align: right;">52.0727273</td>
+<td style="text-align: right;">1.1816014</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">40-44 years</td>
+<td style="text-align: left;">All races and origins</td>
+<td style="text-align: right;">12.1909091</td>
+<td style="text-align: right;">0.4678772</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">40-44 years</td>
+<td style="text-align: left;">Hispanic</td>
+<td style="text-align: right;">14.8636364</td>
+<td style="text-align: right;">0.7500303</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">40-44 years</td>
+<td style="text-align: left;">Non-Hispanic Black</td>
+<td style="text-align: right;">13.2454545</td>
+<td style="text-align: right;">0.6486349</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">40-44 years</td>
+<td style="text-align: left;">Non-Hispanic White</td>
+<td style="text-align: right;">10.4454545</td>
+<td style="text-align: right;">0.2769969</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">45+ years</td>
+<td style="text-align: left;">All races and origins</td>
+<td style="text-align: right;">1.0090909</td>
+<td style="text-align: right;">0.0943880</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">45+ years</td>
+<td style="text-align: left;">Hispanic</td>
+<td style="text-align: right;">1.0636364</td>
+<td style="text-align: right;">0.1206045</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">45+ years</td>
+<td style="text-align: left;">Non-Hispanic Black</td>
+<td style="text-align: right;">1.2909091</td>
+<td style="text-align: right;">0.1445998</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">45+ years</td>
+<td style="text-align: left;">Non-Hispanic White</td>
+<td style="text-align: right;">0.8363636</td>
+<td style="text-align: right;">0.0809040</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sourceCode cell-code" id="cb2224"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2224-1"><a href="#cb2224-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(cdcdata2_agg)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 32 × 4
+   Age_Years   Race_Ethnicity          mean     sd
+   &lt;fct&gt;       &lt;fct&gt;                  &lt;dbl&gt;  &lt;dbl&gt;
+ 1 10-14 years All races and origins  0.2   0     
+ 2 10-14 years Hispanic               0.3   0     
+ 3 10-14 years Non-Hispanic Black     0.355 0.0522
+ 4 10-14 years Non-Hispanic White     0.1   0     
+ 5 15-19 years All races and origins 13.8   0.379 
+ 6 15-19 years Hispanic              21.3   0.319 
+ 7 15-19 years Non-Hispanic Black    21.2   1.16  
+ 8 15-19 years Non-Hispanic White     9.22  0.334 
+ 9 20-24 years All races and origins 60.3   1.99  
+10 20-24 years Hispanic              81.9   1.80  
+# ℹ 22 more rows</code></pre>
+</div>
+</div>
+<p>These are all stable measures because the SDs are small.</p>
+<p>For each race/ethnic group, I will plot the mean rate for each age group. I am not plotting the rate for each age group and race/ethnic group over time because that would result in 32 lines, and that would be a very messy figure. Instead, I will plot the mean rate for each age group for each race/ethnic group for the entire period.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2226"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2226-1"><a href="#cb2226-1" aria-hidden="true" tabindex="-1"></a><span class="co">#ChatGPT helped me with this section.</span></span>
+<span id="cb2226-2"><a href="#cb2226-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2226-3"><a href="#cb2226-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Plotting a bar graph</span></span>
+<span id="cb2226-4"><a href="#cb2226-4" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(cdcdata2_agg, <span class="fu">aes</span>(<span class="at">x =</span> Age_Years, <span class="at">y =</span> mean, <span class="at">fill =</span> Race_Ethnicity)) <span class="sc">+</span></span>
+<span id="cb2226-5"><a href="#cb2226-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb2226-6"><a href="#cb2226-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Mean Rate by Age Group and Race/Ethnicity"</span>,</span>
+<span id="cb2226-7"><a href="#cb2226-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Age Group"</span>,</span>
+<span id="cb2226-8"><a href="#cb2226-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Mean Rate"</span>,</span>
+<span id="cb2226-9"><a href="#cb2226-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">fill =</span> <span class="st">"Race/Ethnicity"</span>) <span class="sc">+</span></span>
+<span id="cb2226-10"><a href="#cb2226-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb2226-11"><a href="#cb2226-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb2226-12"><a href="#cb2226-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Set2"</span>)  <span class="co"># Choose a color palette if needed</span></span>
+<span id="cb2226-13"><a href="#cb2226-13" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(p1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="cdcdata-exercise_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb2227"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2227-1"><a href="#cb2227-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Saving figure</span></span>
+<span id="cb2227-2"><a href="#cb2227-2" aria-hidden="true" tabindex="-1"></a>figure_file <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"cdcdata-exercise"</span>, <span class="st">"mean_rate_bar.png"</span>)</span>
+<span id="cb2227-3"><a href="#cb2227-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="at">filename =</span> figure_file, <span class="at">plot=</span>p1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Saving 7 x 5 in image</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb2229"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2229-1"><a href="#cb2229-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Plotting a line graph</span></span>
+<span id="cb2229-2"><a href="#cb2229-2" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(cdcdata2_agg, <span class="fu">aes</span>(<span class="at">x =</span> Age_Years, <span class="at">y =</span> mean, <span class="at">color =</span> Race_Ethnicity, <span class="at">group =</span> Race_Ethnicity)) <span class="sc">+</span></span>
+<span id="cb2229-3"><a href="#cb2229-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb2229-4"><a href="#cb2229-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Mean Rate by Age Group and Race/Ethnicity"</span>,</span>
+<span id="cb2229-5"><a href="#cb2229-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Age Group"</span>,</span>
+<span id="cb2229-6"><a href="#cb2229-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Mean Rate"</span>,</span>
+<span id="cb2229-7"><a href="#cb2229-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">"Race/Ethnicity"</span>) <span class="sc">+</span></span>
+<span id="cb2229-8"><a href="#cb2229-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb2229-9"><a href="#cb2229-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb2229-10"><a href="#cb2229-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_brewer</span>(<span class="at">palette =</span> <span class="st">"Set2"</span>)  <span class="co"># Choose a color palette if needed</span></span>
+<span id="cb2229-11"><a href="#cb2229-11" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(p2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="cdcdata-exercise_files/figure-html/unnamed-chunk-29-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb2230"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2230-1"><a href="#cb2230-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Saving figure</span></span>
+<span id="cb2230-2"><a href="#cb2230-2" aria-hidden="true" tabindex="-1"></a>figure_file <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"cdcdata-exercise"</span>, <span class="st">"mean_rate_line.png"</span>)</span>
+<span id="cb2230-3"><a href="#cb2230-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="at">filename =</span> figure_file, <span class="at">plot=</span>p2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Saving 7 x 5 in image</code></pre>
+</div>
+</div>
+<p>These graphs tell us how birth rates change as women get older among different race_ethnicity categories. Unsurprisingly, despite differences among racial_ethnic categories, the overall trend remains the same. Birth rates are highest among women in the 25-29 and 30-34 age groups.</p>
+<p><strong>Rachel Robertson contributed to this portion of the exercise.</strong> &gt;&gt;&gt;&gt;&gt;&gt;&gt; Stashed changes</p>
 
 
 </section>

@@ -564,7 +564,9 @@ collect_metrics(mavo_wf_rs4)
 For the simple linear model, we get an RMSE of 690 and a standard error of 67.5. This is the same as I got for using a different random seed previously. For the complex linear model, we get an RMSE of 645 and a standard error of 64.8. This is also the same as I got using a different random seed. The multiple linear regression continues to outperform the simple linear regression.
 
 ### Rachel Robertson contributed to this section of the fitting exercise
+
 We will begin by adding the predictions made by the models to the original data frame that contains observations for each Y. They will then be plotted together with a 45 degree slope to compare the predictions with the outcome (Y).
+
 ```{r, message = FALSE, warning = FALSE }
 # Augment linear regressions into data frame
 mavo_lm3_aug <- augment(mavo_lm3, new_data = train_data) %>%
