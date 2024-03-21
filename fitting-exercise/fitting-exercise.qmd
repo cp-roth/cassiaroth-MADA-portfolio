@@ -420,7 +420,8 @@ data_split <- initial_split(mavo_combined_subset, prop = 3/4)
 train_data <- training(data_split)
 test_data  <- testing(data_split)
 ```
-Now we will run two linear models  on our continuous outcome of interest (`Y`). The first model will only use `DOSE` as a predictor. The second model will us all predictors. For both models, the metric to optimize will be RMSE. 
+
+Now we will run two linear models on our continuous outcome of interest (`Y`). The first model will only use `DOSE` as a predictor. The second model will us all predictors. For both models, the metric to optimize will be RMSE.
 
 ```{r, message=FALSE,  warning=FALSE}
 # Create a linear model using linear_reg() from tidymodels using dose as a predictor
@@ -466,6 +467,7 @@ metrics_lm0 <- mavo_lm0 %>%
   metrics(truth = Y, estimate = .pred)
 metrics_lm0
 ```
+
 For model 1 (`mavo_lm3`), the RMSE is 702; for model 2 (`mavo_lm4`), the RMSE is 627, and for the null model (`mavo_lm0`), the RMSE is 948.
 
 ## Model Performance Assessment 2
@@ -499,9 +501,11 @@ mavo_wf_rs1
 # Get model metrics
 collect_metrics(mavo_wf_rs1)
 ```
+
 We can see that the RMSE for the linear model only using `DOSE` as a predictor decreased to 690 (from 702). Further, we can see the standard error (67.5), which allows us to understand variability. It appears that the CV method works better than the train and test method.
 
 Now let's do the same thing for the complex linear model using all predictors.
+
 ```{r, message=FALSE,  warning=FALSE}
 # Set the seed for reproducibility
 set.seed(rngseed)
@@ -519,6 +523,7 @@ mavo_wf_rs2
 # Get model metrics
 collect_metrics(mavo_wf_rs2)
 ```
+
 For the complex linear model, we have an RMSE of 645 with a standard deviation of 57. This is a better fit than the simple linear model using CV (690). However, the RMSE of 645 (with a standard error of 64.8) is higher than the complex linear model tested using train and test, which was 627. I am not sure why this is the case, so if any of my classmates know, that would be great.
 
 Finally, we will run the code that creates the CV again, but we will choose a different value for the random seed. Although our RMSE values change, the overall patterns between the RMSE values for the fits for training data with and without CV should stay the same.
@@ -555,4 +560,111 @@ mavo_wf_rs4
 # Get model metrics
 collect_metrics(mavo_wf_rs4)
 ```
+
 For the simple linear model, we get an RMSE of 690 and a standard error of 67.5. This is the same as I got for using a different random seed previously. For the complex linear model, we get an RMSE of 645 and a standard error of 64.8. This is also the same as I got using a different random seed. The multiple linear regression continues to outperform the simple linear regression.
+
+### Rachel Robertson contributed to this section of the fitting exercise
+We will begin by adding the predictions made by the models to the original data frame that contains observations for each Y. They will then be plotted together with a 45 degree slope to compare the predictions with the outcome (Y).
+```{r, message = FALSE, warning = FALSE }
+# Augment linear regressions into data frame
+mavo_lm3_aug <- augment(mavo_lm3, new_data = train_data) %>%
+  select("Y", ".pred", ".resid") # select only the Y column and predictions
+names(mavo_lm3_aug)[names(mavo_lm3_aug) == '.pred'] <- 'lm3_pred' # change name of prediction variable
+names(mavo_lm3_aug)[names(mavo_lm3_aug) == '.resid'] <- 'lm3_resid' # change name of residual variable
+
+mavo_lm4_aug <- augment(mavo_lm4, new_data = train_data)%>%
+  select("Y", ".pred", ".resid")
+names(mavo_lm4_aug)[names(mavo_lm4_aug) == '.pred'] <- 'lm4_pred'
+names(mavo_lm4_aug)[names(mavo_lm4_aug) == '.resid'] <- 'lm4_resid'
+
+mavo_lm0_aug <- augment(mavo_lm0, new_data = train_data) %>%
+  select("Y", ".pred", ".resid") # select y and prediction column
+names(mavo_lm0_aug)[names(mavo_lm0_aug) == '.pred'] <- 'lm0_pred'
+names(mavo_lm0_aug)[names(mavo_lm0_aug) == '.resid'] <- 'lm0_resid'
+
+combined_pred <- mavo_lm3_aug %>%
+  left_join(mavo_lm4_aug, by='Y') %>%  
+  left_join(mavo_lm0_aug, by='Y') # left join all three augmented data frames by Y
+str(combined_pred) # Check the structure of the combined data frame
+
+# Plot the combined data frame
+ggplot(combined_pred, aes(x = Y)) + # add observed Y values
+  geom_point(aes(y = lm3_pred, color = "Dose v. Y model")) + # add aes layer for lm3 predictions with a color for model name
+  geom_point(aes(y = lm4_pred, color = "Full model")) + # add aes layer for lm4 predictions with a color for model name
+  geom_point(aes(y = lm0_pred, color = "Null model")) + # add aes layer for lm0 predictions with a color for model name
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed") + # create 45 degree line
+  labs(x = "Outcome (Y)", y = "Model Predictions", title = "Observed Value of Y versus Model Predictions") + # add axis labels and title
+  scale_color_manual(values = c("Dose v. Y model" = "red", "Full model" = "blue", "Null model" = "green")) + # add colors for each model name
+  theme_minimal()
+```
+
+By plotting all three models together, we can see that the null model produces a singlular horizontal line and the model including just dose produces three horizontal lines. This is likely because there are 3 values of dose that were possibly administered. Lastly, the full model (including all the predictors) produces a more randomly distributed scatter plot, which best captures the trend of the Y variable. The lower predictions of the full model seem to be closer to the line than the larger values, which suggests that the model might not capture a certain trend within the observed values.
+
+```{r, message = FALSE, warning = FALSE }
+# Residual plot
+ggplot(mavo_lm4_aug, aes(x = lm4_pred, y = lm4_resid)) +
+  geom_point() +  # Scatter plot of residuals
+  geom_hline(yintercept = 0, linetype = "dashed") +  # add a dashed horizontal line at y = 0
+  labs(x = "Predicted Values", y = "Residuals", title = "Residual Plot") +
+  coord_cartesian(ylim = c(-2500, 2500)) +  # set y-axis range to -2500, 2500
+  theme_minimal()
+```
+
+We can see from the residual plot of the full model, that there is some pattern. The dots seem more scattered as the predicted values increase. There are also outliers where there are larger predicted values.
+
+We will now examine the model fit by bootstrapping the model. We will break it up into 100 resamples using the rsample package and then perform a loop to bootstrap all the samples. The predictions will be stored in an array vector and then can be plotted with metrics against the original Y values to assess the model fit.
+
+```{r message = FALSE, warning = FALSE }
+# set seed
+set.seed(rngseed)
+
+# bootstrapping
+lm4_boot <- bootstraps(train_data, times = 100)  # bootstrap the train data 100 times
+
+boot_pred <- array(NA, dim = c(nrow(train_data), length(lm4_boot))) # create an array vector to store the bootstrap data
+
+# creating a loop
+for (i in 1:length(lm4_boot)) {
+  
+  bootstrap <- analysis(lm4_boot$splits[[i]]) # extract the splits from the bootstrap 
+  model <- lm(Y ~ ., data = bootstrap) # fit the model for the bootstrap using full model formula and bootstrap sample data
+  pred <- predict(model, newdata = train_data) # predict the new data from training data
+  boot_pred[,i] <- pred # put the predictions into the array vector
+}
+
+dat_bs <- analysis(lm4_boot$splits[[i]]) # extract individual bootstrap samples
+print(dat_bs)
+
+# compute the mean and confidence intervals 
+mean_ci <- function(x) { # use functions(x) to list the functions to calculate both the mean and CI
+  mean <- mean(x) #mean(x) applies mean function to unspecified vector
+  ci <- quantile(x, c(0.025, 0.5, 0.975)) #applies 95% CI quantiles to vector
+  return(c(mean, ci))
+}
+
+preds <- apply(boot_pred, 2, mean_ci) # apply the customized function for mean and ci
+
+preds_t <- t(preds) # t() transposes the matrix into a data frame
+
+# Placing the bootstrap data and predictions into a new data frame
+plot_data <- data.frame( #make a new data frame to contain the observed Y, predictions from bootstrap, and bounds
+  Y = c(train_data$Y),  # Observed values
+  point_estimates = c(mavo_lm4_aug$lm4_pred),  # Point estimates from full model
+  median = preds_t[, 2],  # Median from bootstrap sampling
+  lower_CI = preds_t[, 3],  # Lower confidence limit from bootstrap sampling
+  upper_CI = preds_t[, 4]   # Upper confidence limit from bootstrap sampling
+)
+
+# plot the point estimates and bounts along with the observed Y
+ggplot(plot_data, aes(x = Y, y = point_estimates)) +
+  geom_point(color = "black") +  # add layer for point estimates
+  geom_point(aes(y = median), color = "blue") +  # add layer for median
+  geom_errorbar(aes(ymin = lower_CI, ymax = upper_CI), color = "red", width = 0.2) +  # add layer for confidence intervals
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed") +  # add 45 degree line
+  labs(x = "Y Values Observed", y = "Mean Predicted Values", title = "Observed vs Predicted Values with Bootstrap Confidence Intervals") +  # Axes labels and title
+  theme_minimal() 
+```
+
+The plot above shows the predicted values (black), mean predicted values from the bootstrap (blue), lower and upper limits of the median predicted values (red), compared to a 45 degree line (black, dotted). The predicted values follow the dotted line closely, showing a fairly good fit, however the mean and CI from bootstrapping follow a horizontal line and are more dense at lower values than higher values.
+
+This plot shows that the model fit predictions from the cross validation are a better representation than the mean predictions made from bootstrapping. This may be because the mean can be shifted by skewness. The predictions also seem skewed as they become more sparse at higher values. The confidence interval bars (red) show the upper and lower limits predicted by bootstrapping. Although they follow a horizontal line, the CI bars are more dense towards the lower end of the y-axis, which also might represent skewness, or a trend that is not captured by the model. The mean values also seem to get sparser on the high end of the y-axis, indicating the same problem as the CI distribution. This might be fixed by adding more variables (columns) to the data set or increasing the sample size (rows) of the data in the model.
