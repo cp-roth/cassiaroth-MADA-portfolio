@@ -399,7 +399,6 @@ Here, our accuracy is 0.875 and the ROC-AUC performance is 0.875, which gives us
 Let's set the random seed using Dr. Handel's last method. Then we will compute predictions for the two models (the first using only `dose` as a predictor and the second using all predictors), using observed and predicted values to compute RMSE of the best-fitting model.
 
 ```{r, message=FALSE,  warning=FALSE}
-
 # Fix the random numbers by setting the seed 
 # This enables the analysis to be reproducible when random numbers are used 
 rngseed = 1234
@@ -590,7 +589,7 @@ combined_pred <- mavo_lm3_aug %>%
 str(combined_pred) # Check the structure of the combined data frame
 
 # Plot the combined data frame
-ggplot(combined_pred, aes(x = Y)) + # add observed Y values
+combinedplot <- ggplot(combined_pred, aes(x = Y)) + # add observed Y values
   geom_point(aes(y = lm3_pred, color = "Dose v. Y model")) + # add aes layer for lm3 predictions with a color for model name
   geom_point(aes(y = lm4_pred, color = "Full model")) + # add aes layer for lm4 predictions with a color for model name
   geom_point(aes(y = lm0_pred, color = "Null model")) + # add aes layer for lm0 predictions with a color for model name
@@ -598,18 +597,28 @@ ggplot(combined_pred, aes(x = Y)) + # add observed Y values
   labs(x = "Outcome (Y)", y = "Model Predictions", title = "Observed Value of Y versus Model Predictions") + # add axis labels and title
   scale_color_manual(values = c("Dose v. Y model" = "red", "Full model" = "blue", "Null model" = "green")) + # add colors for each model name
   theme_minimal()
+combinedplot
+
+# Save figure
+figure_file <- here("fitting-exercise", "combinedplot.png")
+ggsave(filename = figure_file, plot=combinedplot, bg="white")
 ```
 
-By plotting all three models together, we can see that the null model produces a singlular horizontal line and the model including just dose produces three horizontal lines. This is likely because there are 3 values of dose that were possibly administered. Lastly, the full model (including all the predictors) produces a more randomly distributed scatter plot, which best captures the trend of the Y variable. The lower predictions of the full model seem to be closer to the line than the larger values, which suggests that the model might not capture a certain trend within the observed values.
+By plotting all three models together, we can see that the null model produces a singlular horizontal line and the model including just dose produces three horizontal lines. This is likely because there are 3 values of dose that were possibly administered. Lastly, the full model (including all the predictors) produces a more randomly distributed scatter plot, which best captures the trend of the Y variable. The lower predictions of the full model seem to be closer to the line than the larger values, which suggests that the model still might not be capturing a certain trend within the observed values.
 
 ```{r, message = FALSE, warning = FALSE }
 # Residual plot
-ggplot(mavo_lm4_aug, aes(x = lm4_pred, y = lm4_resid)) +
+residualplot <- ggplot(mavo_lm4_aug, aes(x = lm4_pred, y = lm4_resid)) +
   geom_point() +  # Scatter plot of residuals
   geom_hline(yintercept = 0, linetype = "dashed") +  # add a dashed horizontal line at y = 0
   labs(x = "Predicted Values", y = "Residuals", title = "Residual Plot") +
   coord_cartesian(ylim = c(-2500, 2500)) +  # set y-axis range to -2500, 2500
   theme_minimal()
+residualplot
+
+# Save figure
+figure_file <- here("fitting-exercise", "residualplot.png")
+ggsave(filename = figure_file, plot=residualplot, bg="white")
 ```
 
 We can see from the residual plot of the full model, that there is some pattern. The dots seem more scattered as the predicted values increase. There are also outliers where there are larger predicted values.
@@ -650,15 +659,15 @@ preds_t <- t(preds) # t() transposes the matrix into a data frame
 
 # Placing the bootstrap data and predictions into a new data frame
 plot_data <- data.frame( #make a new data frame to contain the observed Y, predictions from bootstrap, and bounds
-  Y = c(train_data$Y),  # Observed values
+  observed = c(train_data$Y),  # Observed values
   point_estimates = c(mavo_lm4_aug$lm4_pred),  # Point estimates from full model
   median = preds_t[, 2],  # Median from bootstrap sampling
   lower_CI = preds_t[, 3],  # Lower confidence limit from bootstrap sampling
   upper_CI = preds_t[, 4]   # Upper confidence limit from bootstrap sampling
 )
 
-# plot the point estimates and bounts along with the observed Y
-ggplot(plot_data, aes(x = Y, y = point_estimates)) +
+# plot the point estimates and bounds along with the observed Y
+ggplot(plot_data, aes(x = observed, y = point_estimates)) +
   geom_point(color = "black") +  # add layer for point estimates
   geom_point(aes(y = median), color = "blue") +  # add layer for median
   geom_errorbar(aes(ymin = lower_CI, ymax = upper_CI), color = "red", width = 0.2) +  # add layer for confidence intervals
@@ -670,3 +679,47 @@ ggplot(plot_data, aes(x = Y, y = point_estimates)) +
 The plot above shows the predicted values (black), mean predicted values from the bootstrap (blue), lower and upper limits of the median predicted values (red), compared to a 45 degree line (black, dotted). The predicted values follow the dotted line closely, showing a fairly good fit, however the mean and CI from bootstrapping follow a horizontal line and are more dense at lower values than higher values.
 
 This plot shows that the model fit predictions from the cross validation are a better representation than the mean predictions made from bootstrapping. This may be because the mean can be shifted by skewness. The predictions also seem skewed as they become more sparse at higher values. The confidence interval bars (red) show the upper and lower limits predicted by bootstrapping. Although they follow a horizontal line, the CI bars are more dense towards the lower end of the y-axis, which also might represent skewness, or a trend that is not captured by the model. The mean values also seem to get sparser on the high end of the y-axis, indicating the same problem as the CI distribution. This might be fixed by adding more variables (columns) to the data set or increasing the sample size (rows) of the data in the model.
+
+# Exercise Part 3: Back to Cassia
+
+Now, we will use the fit of model 2 from the training data to make predictions for the test data. This will give us an indication of how the model generalizes to data that wasn't used to construct the model.
+```{r}
+# ChatGPT helped me with this code. Assuming mavo_lm4 is already trained and test_data is prepared
+# Make predictions on training data
+train_pred <- predict(mavo_lm4, new_data = train_data)
+print(train_pred)
+
+# Make predictions on test data
+test_pred <- predict(mavo_lm4, new_data = test_data)
+print(test_pred)
+
+# Create dataframes for plotting
+train_data_plot <- data.frame(
+  Observed = train_data$Y,
+  Predicted = train_pred$.pred
+)
+
+test_data_plot <- data.frame(
+  Observed = test_data$Y,
+  Predicted = test_pred$.pred
+)
+
+# Create the plot
+finalplot <- ggplot() +
+  geom_point(data = train_data_plot, aes(x = Observed, y = Predicted, shape = "train_observed"), color = "blue", alpha = 0.5) +  # Use a specific shape for observed in training data
+  geom_point(data = train_data_plot, aes(x = Observed, y = Predicted, shape = "train_predicted"), color = "blue", alpha = 0.5) +  # Use a different shape for predicted in training data
+  geom_point(data = test_data_plot, aes(x = Observed, y = Predicted, shape = "test_observed"), color = "red", alpha = 0.5) +  # Use a specific shape for observed in test data
+  geom_point(data = test_data_plot, aes(x = Observed, y = Predicted, shape = "test_predicted"), color = "red", alpha = 0.5) +  # Use a different shape for predicted in test data
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "black") +  # Add identity line
+  scale_shape_manual(values = c("train_observed" = 1, "train_predicted" = 2, "test_observed" = 3, "test_predicted" = 4)) +  # Assign specific shapes
+  labs(x = "Observed", y = "Predicted", title = "Predicted vs Observed") +
+  theme_minimal()
+finalplot
+
+# Save figure
+figure_file <- here("fitting-exercise", "finalplot.png")
+ggsave(filename = figure_file, plot=finalplot, bg="white")
+```
+As Dr. Handel wrote, we can see that the observed/predicted values for the test data are mixed in with the observed/predicted values for the train data, which means the model is fitting well, and is not overfitting.
+
+Now let's do some thinking about the overall model assessment: 1. All of our models perform better than the null model given the RMSEs computed above and the plotting. 2. Model 1, which only uses `DOSE` as a predictor variable, improves the results over the null model because it has a lower RMSE. These results make sense given that the null model is only computing the mean. However, Model 1 is not necessarily usable in a practical sense in that there is a lot of unexplained aspects of the model; the results might be "significant" but they aren't necessarily meaningful. 3. Model 2, with all the predictor further improves the results (based on the RMSE and based on our visualizations of the predictors). The CV and bootstrap resampling methods further demonstrated that the model is robust. The results make sense. We are capturing a clearer picture of what predictor variables are influencing outcome. However, I wouldn't necessarily consider this model usable for any real purpose, mainly because the underlying data we are using (sample size and how we fiddled around with variables) isn't necessarily logical. As Dr. Handel said in Week 8, how we created our dependent `Y` variable, by computing the total amount of drug for each individual by adding all the `DV` values instead of doing a time-series analysis, "is a pretty bad idea."
