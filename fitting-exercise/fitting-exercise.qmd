@@ -683,6 +683,7 @@ This plot shows that the model fit predictions from the cross validation are a b
 # Exercise Part 3: Back to Cassia
 
 Now, we will use the fit of model 2 from the training data to make predictions for the test data. This will give us an indication of how the model generalizes to data that wasn't used to construct the model.
+
 ```{r}
 # ChatGPT helped me with this code. Assuming mavo_lm4 is already trained and test_data is prepared
 # Make predictions on training data
@@ -720,6 +721,7 @@ finalplot
 figure_file <- here("fitting-exercise", "finalplot.png")
 ggsave(filename = figure_file, plot=finalplot, bg="white")
 ```
+
 As Dr. Handel wrote, we can see that the observed/predicted values for the test data are mixed in with the observed/predicted values for the train data, which means the model is fitting well, and is not overfitting.
 
 Now let's do some thinking about the overall model assessment: 1. All of our models perform better than the null model given the RMSEs computed above and the plotting. 2. Model 1, which only uses `DOSE` as a predictor variable, improves the results over the null model because it has a lower RMSE. These results make sense given that the null model is only computing the mean. However, Model 1 is not necessarily usable in a practical sense in that there is a lot of unexplained aspects of the model; the results might be "significant" but they aren't necessarily meaningful. 3. Model 2, with all the predictor further improves the results (based on the RMSE and based on our visualizations of the predictors). The CV and bootstrap resampling methods further demonstrated that the model is robust. The results make sense. We are capturing a clearer picture of what predictor variables are influencing outcome. However, I wouldn't necessarily consider this model usable for any real purpose, mainly because the underlying data we are using (sample size and how we fiddled around with variables) isn't necessarily logical. As Dr. Handel said in Week 8, how we created our dependent `Y` variable, by computing the total amount of drug for each individual by adding all the `DV` values instead of doing a time-series analysis, "is a pretty bad idea."

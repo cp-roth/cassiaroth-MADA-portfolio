@@ -1,0 +1,328 @@
+---
+title: "ml-models-exercise"
+author: "Cassia Roth"
+date: "2024-03-25"
+editor: visual
+---
+Load the data and set the seed for reproducibility.
+
+```{r, message=FALSE,  warning=FALSE}
+
+#Loading packages
+library(tidyverse) #This includes ggplot2, tidyr, readr, dplyr, stringr, purr, forcats
+library(tidymodels) #This includes recipes, rsample, parsnip, yardstick, and dials
+library(here) # For file paths
+
+#Path to summary data. Note the use of the here() package and not absolute paths
+data_location <- here::here("fitting-exercise","mavoglurant.rds")
+
+#load data
+mavo_ml<- readRDS(data_location)
+
+# Fix the random numbers by setting the seed 
+# This enables the analysis to be reproducible when random numbers are used 
+rngseed = 1234
+```
+
+# More processing
+
+I can't figure out the meaning of the numbers for the `RACE` variable. Nonetheless, here, we will recode so that `RACE` has three levels: 1, 2, and 3. 
+
+```{r, message=FALSE,  warning=FALSE}
+# Define "3" as a new level if it doesn't exist
+mavo_ml$RACE <- fct_expand(mavo_ml$RACE, "3")
+
+# Combine categories 7 and 88 into category 3
+mavo_ml <- mavo_ml %>%
+  mutate(RACE = fct_collapse(RACE, "3" = c("7", "88")))
+mavo_ml
+
+# One-hot encode SEX
+#mavo_ml <- mavo_ml %>%
+  #mutate(SEX_male = as.numeric(SEX == "male"),
+        # SEX_female = as.numeric(SEX == "female"))
+
+# One-hot encode RACE
+#mavo_ml <- mavo_ml %>%
+  #mutate(RACE_1 = as.numeric(RACE == "1"),
+        # RACE_2 = as.numeric(RACE == "2"),
+         #RACE_3 = as.numeric(RACE == "3"))
+#mavo_ml
+```
+
+# Pairwise correlations
+
+We will now make pairwise correlations for the continuous variables, removing any variables that show very strong correlations. 
+
+```{r, message=FALSE,  warning=FALSE}
+# Check continuous variables (Y, DOSE, AGE, WT, HT). Even though DOSE could be considered categorical...
+str(mavo_ml)
+
+# Select the continuous variables
+continuous_vars <- select_if(mavo_ml, is.numeric)
+
+# Calculate the correlation matrix
+correlation_matrix <- cor(continuous_vars)
+
+# Convert correlation matrix to a data frame
+mavo_cor <- as.data.frame(correlation_matrix)
+
+# Add row names as a column
+mavo_cor$vars <- rownames(mavo_cor)
+
+# Reshape the data to long format
+correlation_long <- pivot_longer(mavo_cor, cols = -vars, names_to = "Variable_1", values_to = "Correlation")
+
+# Create a ggplot for the correlation plot
+mavo_plot_cor <- ggplot(data = correlation_long, aes(x = vars, y = Variable_1, fill = Correlation)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+                       midpoint = 0, limit = c(-1,1), space = "Lab",
+                       name="Correlation") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, size = 10, hjust = 1)) +
+  labs(x = "Variables", y = "Variables") +
+  coord_fixed()
+mavo_plot_cor
+
+# Save figure
+figure_file <- here("ml-models-exercise", "correlation_plot.png")
+ggsave(filename = figure_file, plot=mavo_plot_cor, bg="white")
+```
+
+Some variables appear to be strongly correlated, but nothing is excessive (|>0.9|). 
+
+# Feature Engineering
+
+Don't worry: feature engineering is just a "fancy" phrase for creating new variables. First we will create a new variable called `BMI`. Our measurements for height and weight are in the metric system (centimeters and kilograms, accordingly). According to the [CDC](https://www.cdc.gov/healthyweight/assessing/bmi/childrens_BMI/childrens_BMI_formula.html) the formula for BMI is: $[weight (kg) / [height (m)]^2$.
+
+```{r, message=FALSE,  warning=FALSE}
+# Create a new variable called BMI
+mavo_ml <- mavo_ml %>%
+  mutate(BMI = (WT / (HT^2)))
+mavo_ml
+```
+
+# Model Building
+
+Now we will explore 3 different models: 1) a linear model with all predictors; 2) a LASSO regression; 3) a random forest (RF). 
+
+First, let's make sure we have the `glmnet` and `ranger` packages installed and loaded.
+
+```{r, message=FALSE,  warning=FALSE}
+# Install and load needed packages
+#install.packages("glmnet")
+#install.packages("ranger")
+library(glmnet)
+library(ranger)
+```
+
+```{r, message=FALSE,  warning=FALSE}
+# ChatGPT, GitHub CoPilot and looking at Kevin Kosewick's code helped me to write this code.
+# Set seed for reproducibility
+set.seed(rngseed)
+
+# Define outcome and predictors
+outcome <- "Y"
+predictors <- setdiff(names(mavo_ml), outcome)
+
+# Create recipe for linear and LASSO models (creating dummy variables and standardizing continuous variables)
+mavo_recipe_lmlasso <- recipe(Y ~ ., data = mavo_ml) %>%
+  step_dummy(all_nominal(), -all_outcomes()) %>%
+  step_normalize(all_predictors())
+
+# Create recipe for random forest model (no need to create dummy variables or standardize continuous)
+mavo_recipe_rf <- recipe(Y ~ ., data = mavo_ml)
+
+# Define models
+# Linear model
+mavo_lm <- linear_reg() %>%
+  set_engine("lm") %>%
+  set_mode("regression")
+
+# LASSO model
+mavo_LASSO <- linear_reg(penalty = 0.1, mixture = 1) %>%
+  set_engine("glmnet") %>%
+  set_mode("regression")
+
+# Random forest model
+mavo_rf <- rand_forest() %>%
+  set_engine("ranger", seed = rngseed) %>%
+  set_mode("regression")
+
+# Create workflows
+# Linear workflow
+linear_workflow <- workflow() %>%
+  add_recipe(mavo_recipe_lmlasso) %>%
+  add_model(mavo_lm)
+
+# LASSO workflow
+LASSO_workflow <- workflow() %>%
+  add_recipe(mavo_recipe_lmlasso) %>%
+  add_model(mavo_LASSO)
+
+# Random forest workflow
+rf_workflow <- workflow() %>%
+  add_recipe(mavo_recipe_rf) %>%
+  add_model(mavo_rf)
+
+# Fit models
+#Linear
+linear_fit <- linear_workflow %>%
+fit(data = mavo_ml)
+
+# LASSO
+LASSO_fit <- LASSO_workflow %>%
+  fit(data = mavo_ml)
+
+# Random forest
+rf_fit <- rf_workflow %>%
+  fit(data = mavo_ml)
+
+# Tidy all results linear and LASSO
+linear_fit_results <- tidy(linear_fit, fmt = "decimal")
+linear_fit_results
+
+LASSO_fit_results <- tidy(LASSO_fit)
+LASSO_fit_results
+
+# Extract info from random forest
+rf_fit_results <- rf_fit$.workflow[[1]]$fit$fit$forest$importance %>%
+  as_tibble()
+rf_fit_results
+```
+
+Now we will use the model to make predictions on the entire dataset, reporting the RMSE performance metric for each of the three model fits. Finally, we will make an observed versus predicted plot for each of the models.
+
+```{r, message=FALSE,  warning=FALSE}
+# ChatGPT and GitHub CoPilot helped with this code.
+
+# Make predictions
+# linear model
+linear_preds <- predict(linear_fit, mavo_ml) %>%
+  bind_cols(mavo_ml) %>% # alternative way to augment (adding columns to dataset with observed and predicted values)
+  select(Y, pred = .pred)
+
+# LASSO model
+LASSO_preds <- predict(LASSO_fit, mavo_ml) %>%
+  bind_cols(mavo_ml) %>% # alternative way to augment (adding columns to dataset with observed and predicted values)
+  select(Y, pred = .pred)
+
+# Random forest model
+rf_preds <- predict(rf_fit, mavo_ml) %>%
+ bind_cols(mavo_ml) %>% # alternative way to augment (adding columns to dataset with observed and predicted values)
+select(Y, pred = .pred)
+
+# Get RMSE for each model
+# linear model
+linear_rmse <- rmse(linear_preds, truth = Y, estimate = pred)
+linear_rmse
+
+# LASSO model
+LASSO_rmse <- rmse(LASSO_preds, truth = Y, estimate = pred)
+LASSO_rmse
+
+# Random forest model
+rf_rmse <- rmse(rf_preds, truth = Y, estimate = pred)
+rf_rmse
+
+# Print RMSE values
+print(paste("Linear Model RMSE: ", linear_rmse[[3]]))
+print(paste("LASSO Model RMSE: ", LASSO_rmse[[3]]))
+print(paste("Random Forest Model RMSE: ", rf_rmse[[3]]))
+``` 
+
+```{r, message=FALSE,  warning=FALSE}
+# Create observed versus predicted plots
+linear_preds_plot <- ggplot(linear_preds, aes(x = Y, y = pred)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, color = "red") +
+  labs(title = "Observed vs Predicted (Linear Model)", x = "Observed", y = "Predicted")
+
+LASSO_preds_plot <- ggplot(LASSO_preds, aes(x = Y, y = pred)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, color = "red") +
+  labs(title = "Observed vs Predicted (LASSO Model)", x = "Observed", y = "Predicted")
+
+rf_preds_plot <- ggplot(rf_preds, aes(x = Y, y = pred)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, color = "red") +
+  labs(title = "Observed vs Predicted (Random Forest Model)", x = "Observed", y = "Predicted")
+
+# Display plots
+linear_preds_plot
+LASSO_preds_plot
+rf_preds_plot
+
+# Save plots
+figure_file <- here("ml-models-exercise", "linearplot.png")
+ggsave(filename = figure_file, plot=linear_preds_plot, bg="white")
+
+figure_file <- here("ml-models-exercise", "LASSOplot.png")
+ggsave(filename = figure_file, plot=LASSO_preds_plot, bg="white")
+
+figure_file <- here("ml-models-exercise", "rfplot.png")
+ggsave(filename = figure_file, plot=rf_preds_plot, bg="white")
+```
+
+Here we can see that the linear model and LASSO model give very similar results because the regularization term for the LASSO regression is small. The random forest model performs best, with an RMSE of 358. The scatterplots of the observed versus predicted values reinforces this point, with the random forest model having the least amount of variation. This isn't surprising as we know that random forest models are flexible and can capture patterns in the data well.
+
+# Tuning the models
+
+We will now tune the LASSO and RF models to improve model performance. Unlike in a real-data situation, we will be doing this without cross-validation for educational purposes even though we know this will overfit our data. Let's start with our LASSO model.
+
+For the LASSO model, we will define a grid of parameters to tune over from `1E-5` to `1E2` (50 values linearly spaced on a log scale).
+
+Use tune_grid() to tune the model by testing model performance for each parameter value you defined as the search grid.
+
+To create an object that only contains the data, and that you can use as resamples input for tune_grid(), use the apparent() function.
+
+Once you have done the tuning, you can take a look at some diagnostics by sending your object returned from the tune_grid() function to autoplot(). For instance if you tuned the tree and saved the result as tree_tune_res, you can run tree_tune_res %>% autoplot(). Depending on the model, the plot will be different, but in general it shows you what happened during the tuning process.
+
+
+```{r, message=FALSE,  warning=FALSE}
+# Set seed for reproducibility
+set.seed(rngseed)
+
+# Tune LASSO model
+
+# Create recipe for LASSO tune model
+mavo_recipe_LASSO_tune <- recipe(Y ~ ., data = mavo_ml)
+
+# Define LASSO model
+mavo_LASSO_tune <- linear_reg(penalty = tune(), mixture = 1) %>%
+  set_engine("glmnet") %>%
+  set_mode("regression")
+
+# Define penalty parameter with your range (used this website: https://dials.tidymodels.org/reference/penalty.html)
+penalty_param <- penalty(range = c(-5, 2), trans = transform_log10())
+
+# Define search grid for tuning
+lasso_grid <- grid_regular(penalty_param, levels = 50)
+
+# Create workflow for tuning
+LASSO_tune_wf <- workflow() %>%
+  add_recipe(mavo_recipe_LASSO_tune) %>%
+  add_model(mavo_LASSO_tune)
+
+# Create resamples object using apparent
+apparent_resamples <- apparent(mavo_ml)
+
+# Tune the LASSO model
+LASSO_tune_results <- tune_grid(
+  object = LASSO_tune_wf,
+  resamples = apparent_resamples,
+  grid = lasso_grid,
+  metrics = metric_set(rmse)
+)
+
+# Get best tuning parameters
+best_params <- select_best(LASSO_tune_results, "rmse")
+
+# Fit the LASSO model with the best parameters
+best_LASSO_fit <- LASSO_tune_results %>%
+  finalize_workflow(best_params) %>%
+  fit(data = mavo_ml)
+
+```
+As the penalty parameter increases, the lambda in the cost function is increasing. Since it uses the absolute values of the coefficients, the sum of the coefficients is always positive. Therefore, as the lambda increases the value of the regularization term increases, which makes the RMSE larger.
