@@ -12,6 +12,8 @@ Load the data and set the seed for reproducibility.
 library(tidyverse) #This includes ggplot2, tidyr, readr, dplyr, stringr, purr, forcats
 library(tidymodels) #This includes recipes, rsample, parsnip, yardstick, and dials
 library(here) # For file paths
+#install.packages("corrplot")
+library(corrplot)
 
 #Path to summary data. Note the use of the here() package and not absolute paths
 data_location <- here::here("fitting-exercise","mavoglurant.rds")
@@ -26,7 +28,7 @@ rngseed = 1234
 
 # More processing
 
-I can't figure out the meaning of the numbers for the `RACE` variable. Nonetheless, here, we will recode so that `RACE` has three levels: 1, 2, and 3. 
+Just by looking at the paper for which these data were collected, in which around 88% of all participants were Caucasian males, it appears that the `7` and `88` categories could be some form of non-white race for the `RACE` variable. Regardless, here we will recode so that `RACE` has three levels: 1, 2, and 3. 
 
 ```{r, message=FALSE,  warning=FALSE}
 # Define "3" as a new level if it doesn't exist
@@ -36,18 +38,6 @@ mavo_ml$RACE <- fct_expand(mavo_ml$RACE, "3")
 mavo_ml <- mavo_ml %>%
   mutate(RACE = fct_collapse(RACE, "3" = c("7", "88")))
 mavo_ml
-
-# One-hot encode SEX
-#mavo_ml <- mavo_ml %>%
-  #mutate(SEX_male = as.numeric(SEX == "male"),
-        # SEX_female = as.numeric(SEX == "female"))
-
-# One-hot encode RACE
-#mavo_ml <- mavo_ml %>%
-  #mutate(RACE_1 = as.numeric(RACE == "1"),
-        # RACE_2 = as.numeric(RACE == "2"),
-         #RACE_3 = as.numeric(RACE == "3"))
-#mavo_ml
 ```
 
 # Pairwise correlations
@@ -58,36 +48,20 @@ We will now make pairwise correlations for the continuous variables, removing an
 # Check continuous variables (Y, DOSE, AGE, WT, HT). Even though DOSE could be considered categorical...
 str(mavo_ml)
 
-# Select the continuous variables
-continuous_vars <- select_if(mavo_ml, is.numeric)
+# Select the continuous variables minus DOSE
+continuous_vars <- mavo_ml %>% select(-DOSE) %>% select_if(is.numeric)
 
 # Calculate the correlation matrix
-correlation_matrix <- cor(continuous_vars)
+correlation_matrix <- cor(continuous_vars, use="pairwise.complete.obs")
 
-# Convert correlation matrix to a data frame
-mavo_cor <- as.data.frame(correlation_matrix)
+# Create correlation plot using corrplot
+mavo_plot_cor <- corrplot(correlation_matrix, method = "number")
 
-# Add row names as a column
-mavo_cor$vars <- rownames(mavo_cor)
-
-# Reshape the data to long format
-correlation_long <- pivot_longer(mavo_cor, cols = -vars, names_to = "Variable_1", values_to = "Correlation")
-
-# Create a ggplot for the correlation plot
-mavo_plot_cor <- ggplot(data = correlation_long, aes(x = vars, y = Variable_1, fill = Correlation)) +
-  geom_tile(color = "white") +
-  scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
-                       midpoint = 0, limit = c(-1,1), space = "Lab",
-                       name="Correlation") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, size = 10, hjust = 1)) +
-  labs(x = "Variables", y = "Variables") +
-  coord_fixed()
-mavo_plot_cor
-
-# Save figure
+# Save figures Chat GPT helped me with this code
 figure_file <- here("ml-models-exercise", "correlation_plot.png")
-ggsave(filename = figure_file, plot=mavo_plot_cor, bg="white")
+png(filename = figure_file, width = 800, height = 800, units = "px")
+corrplot(correlation_matrix, method = "color", type = "upper")
+dev.off()
 ```
 
 Some variables appear to be strongly correlated, but nothing is excessive (|>0.9|). 
@@ -234,20 +208,20 @@ print(paste("Random Forest Model RMSE: ", rf_rmse[[3]]))
 
 ```{r, message=FALSE,  warning=FALSE}
 # Create observed versus predicted plots
-linear_preds_plot <- ggplot(linear_preds, aes(x = Y, y = pred)) +
+linear_preds_plot <- ggplot(linear_preds, aes(x = pred, y = Y)) +
   geom_point() +
-  geom_abline(slope = 1, intercept = 0, color = "red") +
-  labs(title = "Observed vs Predicted (Linear Model)", x = "Observed", y = "Predicted")
+  geom_abline(linetype = "dashed", color = "red") +
+  labs(title = "Model 1 Observed vs Predicted (Linear Model)", x = "Observed", y = "Predicted")
 
-LASSO_preds_plot <- ggplot(LASSO_preds, aes(x = Y, y = pred)) +
+LASSO_preds_plot <- ggplot(LASSO_preds, aes(x = pred, y = Y)) +
   geom_point() +
-  geom_abline(slope = 1, intercept = 0, color = "red") +
-  labs(title = "Observed vs Predicted (LASSO Model)", x = "Observed", y = "Predicted")
+  geom_abline(linetype = "dashed", color = "red") +
+  labs(title = "Model 2 Observed vs Predicted (LASSO Model)", x = "Observed", y = "Predicted")
 
-rf_preds_plot <- ggplot(rf_preds, aes(x = Y, y = pred)) +
+rf_preds_plot <- ggplot(rf_preds, aes(x = pred, y = Y)) +
   geom_point() +
-  geom_abline(slope = 1, intercept = 0, color = "red") +
-  labs(title = "Observed vs Predicted (Random Forest Model)", x = "Observed", y = "Predicted")
+  geom_abline(linetype = "dashed", color = "red") +
+  labs(title = "Model 3 Observed vs Predicted (Random Forest Model)", x = "Observed", y = "Predicted")
 
 # Display plots
 linear_preds_plot
@@ -271,23 +245,19 @@ Here we can see that the linear model and LASSO model give very similar results 
 
 We will now tune the LASSO and RF models to improve model performance. Unlike in a real-data situation, we will be doing this without cross-validation for educational purposes even though we know this will overfit our data. Let's start with our LASSO model.
 
-For the LASSO model, we will define a grid of parameters to tune over from `1E-5` to `1E2` (50 values linearly spaced on a log scale).
-
-Use tune_grid() to tune the model by testing model performance for each parameter value you defined as the search grid.
-
-To create an object that only contains the data, and that you can use as resamples input for tune_grid(), use the apparent() function.
-
-Once you have done the tuning, you can take a look at some diagnostics by sending your object returned from the tune_grid() function to autoplot(). For instance if you tuned the tree and saved the result as tree_tune_res, you can run tree_tune_res %>% autoplot(). Depending on the model, the plot will be different, but in general it shows you what happened during the tuning process.
-
+For the LASSO model, we will define a grid of parameters to tune over from `1E-5` to `1E2` (50 values linearly spaced on a log scale). We will use the `tune_grid()` function to tune the model by testing model performance for each parameter value defined in the search grid. To create an object that only contains the data and for which we can use as `resamples` input for `tune_grid()`, we will use the `apparent()` function. Finally, we will look at the diagnostics using `autoplot()`.
 
 ```{r, message=FALSE,  warning=FALSE}
+#ChatGPT and Zane Billings helped with this code
 # Set seed for reproducibility
 set.seed(rngseed)
 
 # Tune LASSO model
 
 # Create recipe for LASSO tune model
-mavo_recipe_LASSO_tune <- recipe(Y ~ ., data = mavo_ml)
+mavo_recipe_LASSO_tune <- recipe(Y ~ ., data = mavo_ml) %>%
+   step_normalize(all_numeric_predictors()) %>%
+  step_dummy(all_nominal_predictors())
 
 # Define LASSO model
 mavo_LASSO_tune <- linear_reg(penalty = tune(), mixture = 1) %>%
@@ -316,13 +286,193 @@ LASSO_tune_results <- tune_grid(
   metrics = metric_set(rmse)
 )
 
-# Get best tuning parameters
-best_params <- select_best(LASSO_tune_results, "rmse")
+autoplot(LASSO_tune_results)
 
-# Fit the LASSO model with the best parameters
-best_LASSO_fit <- LASSO_tune_results %>%
-  finalize_workflow(best_params) %>%
-  fit(data = mavo_ml)
+# Get RMSE from tuning results
+rmse_values <- collect_metrics(LASSO_tune_results) %>%
+  filter(.metric == "rmse")
+rmse_values
 
+# Save file
+figure_file <- here("ml-models-exercise", "LASSO_tune_plot.png")
+ggsave(filename = figure_file, plot=autoplot(LASSO_tune_results), bg="white")
 ```
 As the penalty parameter increases, the lambda in the cost function is increasing. Since it uses the absolute values of the coefficients, the sum of the coefficients is always positive. Therefore, as the lambda increases the value of the regularization term increases, which makes the RMSE larger.
+
+Now let's repeat this with the random forest model.
+
+```{r, message=FALSE,  warning=FALSE}
+#ChatGPT and the links below helped with this code
+# Set seed for reproducibility
+set.seed(rngseed)
+
+# Create new recipe for random forest tuning model
+mavo_recipe_rf_tune <- recipe(Y ~ ., data = mavo_ml)
+
+#Define model specification using ranger
+rf_spec <-
+  rand_forest(mode = "regression",
+              mtry = tune(),
+              min_n = tune(),
+              trees = 300) %>% # number of trees
+  set_engine("ranger", seed = rngseed)
+
+# Create workflow for tuning
+rf_tune_wf <- workflow() %>%
+  add_model(rf_spec) %>%
+  add_recipe(mavo_recipe_rf_tune)
+
+# Define the parameter mtry and create a grid for tuning, Used this website: https://dials.tidymodels.org/reference/mtry.html
+mtry_grid <- mtry(range = c(1, 7)) %>%
+             grid_regular(levels = 7)
+
+# Define the parameter min_n and create a grid for tuning. Used this website: https://dials.tidymodels.org/reference/trees.html
+min_n_grid <- min_n(range = c(1, 21)) %>%
+             grid_regular(levels = 7)
+
+# Combine grids
+param_grid <- expand_grid(mtry_grid, min_n_grid)
+
+# Create resamples object using apparent
+#apparent_resamples <- apparent(mavo_ml)
+
+# Tune with control parameters
+rf_tune_results <- rf_tune_wf %>% tune_grid(
+  resamples = apparent_resamples,
+  grid = param_grid,
+  metrics = metric_set(rmse)
+)
+
+# Observe process
+rf_tune_results %>% autoplot()
+
+# Get RMSE from tuning results
+rmse_values <- collect_metrics(rf_tune_results) %>%
+  filter(.metric == "rmse")
+rmse_values
+
+# Define the file path
+figure_file <- here("ml-models-exercise", "rf_tune_plot.png")
+ggsave(filename = figure_file, plot=autoplot(rf_tune_results), bg="white")
+```
+We can see here that a higher value of `mtry` and a lower one for `min_n` lead to the best results. Nonetheless, the model isn't as easy to interpret as the linear and LASSO models. This is a drawback of complex machine learning or AI models.
+
+# Tuning with CV
+
+Now we will tune the LASSO and RF models using cross-validation. This will help us to avoid overfitting the data. We will use real samples using a 5-fold cross-validation, 5 times repeated. We will use the `vfold_cv()` function to create a resample object with these specifications, and we will re-set the random number seed.
+
+Let's start with the LASSO model.
+
+```{r, message=FALSE,  warning=FALSE}
+#ChatGPT and GitHub CoPilot helped with this code
+
+# Set seed for reproducibility
+set.seed(rngseed)
+
+# Tune LASSO model with CV
+
+# Create recipe for LASSO tune model
+mavo_recipe_LASSO_tune_CV <- recipe(Y ~ ., data = mavo_ml) %>%
+   step_normalize(all_numeric_predictors()) %>%
+  step_dummy(all_nominal_predictors())
+
+# Define LASSO model
+mavo_LASSO_tune_CV <- linear_reg(penalty = tune(), mixture = 1) %>%
+  set_engine("glmnet") %>%
+  set_mode("regression")
+
+# Define search grid for tuning
+lasso_grid_CV <- grid_regular(penalty(range = c(log10(1e-5), log10(1e2))), levels = 50)
+
+# Create real CV samples
+real_resamples <- vfold_cv(mavo_ml, v = 5, repeats = 5)
+
+# Create workflow for tuning
+LASSO_tune_wf_CV <- workflow() %>%
+  add_recipe(mavo_recipe_LASSO_tune_CV) %>%
+  add_model(mavo_LASSO_tune_CV)
+
+# Tune the LASSO model
+LASSO_tune_results_CV <- tune_grid(
+  object = LASSO_tune_wf_CV,
+  resamples = real_resamples,
+  grid = lasso_grid_CV,
+  metrics = metric_set(rmse)
+)
+
+autoplot(LASSO_tune_results_CV)
+
+# Get RMSE from tuning results
+rmse_values <- collect_metrics(LASSO_tune_results_CV) %>%
+  filter(.metric == "rmse")
+rmse_values
+
+# Save file
+figure_file <- here("ml-models-exercise", "LASSO_tune_plot2.png")
+ggsave(filename = figure_file, plot=autoplot(LASSO_tune_results_CV), bg="white")
+```
+Here, we can see that our lowest RMSE is around 611 and our highest is at 637. These are higher than our previous models, but we are now using cross-validation to avoid overfitting. CV is leading to a higher RMSE because it is using actual samples to train and test the data, creating a more generalizable model that is less likely to overfit. This model, even though it has a higher RMSE, is probably a better model since it is not overfitting.
+
+Now let's do the random forest model.
+
+```{r, message=FALSE,  warning=FALSE}
+# Set seed for reproducibility
+set.seed(rngseed)
+
+# Create new recipe for random forest tuning model with CV
+mavo_recipe_rf_tune_CV <- recipe(Y ~ ., data = mavo_ml)
+
+#Define model specification using ranger
+rf_spec_CV <-
+  rand_forest(mode = "regression",
+              mtry = tune(),
+              min_n = tune(),
+              trees = 300) %>% # number of trees
+  set_engine("ranger", seed = rngseed)
+
+# Create workflow for tuning
+rf_tune_wf_CV <- workflow() %>%
+  add_model(rf_spec_CV) %>%
+  add_recipe(mavo_recipe_rf_tune_CV)
+
+# Define parameter grids
+param_grid2 <- grid_regular(
+  mtry(range = c(1, 7)),
+  min_n(range = c(1, 21)),
+  levels = 7)
+
+# Define the parameter mtry and create a grid for tuning, Used this website: https://dials.tidymodels.org/reference/mtry.html
+#mtry_grid <- mtry(range = c(1, 7)) %>%
+            # grid_regular(levels = 7)
+
+# Define the parameter min_n and create a grid for tuning. Used this website: https://dials.tidymodels.org/reference/trees.html
+#min_n_grid <- min_n(range = c(1, 21)) %>%
+            # grid_regular(levels = 7)
+
+# Combine grids
+#param_grid <- expand_grid(mtry_grid, min_n_grid)
+
+# Create CV samples
+real_resamples2 <- vfold_cv(mavo_ml, v = 5, repeats = 5)
+
+# Tune with control parameters
+rf_tune_results_CV <- rf_tune_wf_CV %>% tune_grid(
+  resamples = real_resamples2,
+  grid = param_grid2,
+  metrics = metric_set(rmse)
+)
+
+# Observe process
+rf_tune_results_CV %>% autoplot()
+
+# Get RMSE from tuning results
+rmse_values <- collect_metrics(rf_tune_results_CV) %>%
+  filter(.metric == "rmse")
+rmse_values
+
+# Define the file path
+figure_file <- here("ml-models-exercise", "rf_tune_plot2.png")
+ggsave(filename = figure_file, plot=autoplot(rf_tune_results_CV), bg="white")
+```
+
+The RMSE for the random forest model also increased, with the lowest at 673 and the highest at 769. Now, our CV-tuned LASSO has a lower RMSE than our random forest CV-tuned model. This makes sense given that one of the main disadvantages of tree models are that they have reduced performance compared to other models like LASSO. They are not good at high-performance prediction, which is what we were testing with the cross-validation. When using "fake" samples, the tree did better, but when faced with data it had not been trained on, the tree model fared worse than LASSO.

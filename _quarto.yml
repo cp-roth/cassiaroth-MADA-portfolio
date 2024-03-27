@@ -24,6 +24,8 @@ website:
             file: cdcdata-exercise/cdcdata-exercise.qmd
           - text: "Fitting Exercise - Module 8"
             file: fitting-exercise/fitting-exercise.qmd
+          - text: "Machine Learning Exercise - Module 11"
+            file: ml-models-exercise/ml-models-exercise.qmd
     right:
       - icon: github 
         href: https://github.com/cp-roth/cassiaroth-MADA-portfolio.git     
