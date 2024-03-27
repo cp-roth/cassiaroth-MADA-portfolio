@@ -4,6 +4,7 @@ author: "Cassia Roth"
 date: "2024-03-25"
 editor: visual
 ---
+
 Load the data and set the seed for reproducibility.
 
 ```{r, message=FALSE,  warning=FALSE}
@@ -28,7 +29,7 @@ rngseed = 1234
 
 # More processing
 
-Just by looking at the paper for which these data were collected, in which around 88% of all participants were Caucasian males, it appears that the `7` and `88` categories could be some form of non-white race for the `RACE` variable. Regardless, here we will recode so that `RACE` has three levels: 1, 2, and 3. 
+Just by looking at the paper for which these data were collected, in which around 88% of all participants were Caucasian males, it appears that the `7` and `88` categories could be some form of non-white race for the `RACE` variable. Regardless, here we will recode so that `RACE` has three levels: 1, 2, and 3.
 
 ```{r, message=FALSE,  warning=FALSE}
 # Define "3" as a new level if it doesn't exist
@@ -42,7 +43,7 @@ mavo_ml
 
 # Pairwise correlations
 
-We will now make pairwise correlations for the continuous variables, removing any variables that show very strong correlations. 
+We will now make pairwise correlations for the continuous variables, removing any variables that show very strong correlations.
 
 ```{r, message=FALSE,  warning=FALSE}
 # Check continuous variables (Y, DOSE, AGE, WT, HT). Even though DOSE could be considered categorical...
@@ -64,7 +65,7 @@ corrplot(correlation_matrix, method = "color", type = "upper")
 dev.off()
 ```
 
-Some variables appear to be strongly correlated, but nothing is excessive (|>0.9|). 
+Some variables appear to be strongly correlated, but nothing is excessive (\|\>0.9\|).
 
 # Feature Engineering
 
@@ -79,7 +80,7 @@ mavo_ml
 
 # Model Building
 
-Now we will explore 3 different models: 1) a linear model with all predictors; 2) a LASSO regression; 3) a random forest (RF). 
+Now we will explore 3 different models: 1) a linear model with all predictors; 2) a LASSO regression; 3) a random forest (RF).
 
 First, let's make sure we have the `glmnet` and `ranger` packages installed and loaded.
 
@@ -204,7 +205,7 @@ rf_rmse
 print(paste("Linear Model RMSE: ", linear_rmse[[3]]))
 print(paste("LASSO Model RMSE: ", LASSO_rmse[[3]]))
 print(paste("Random Forest Model RMSE: ", rf_rmse[[3]]))
-``` 
+```
 
 ```{r, message=FALSE,  warning=FALSE}
 # Create observed versus predicted plots
@@ -297,6 +298,7 @@ rmse_values
 figure_file <- here("ml-models-exercise", "LASSO_tune_plot.png")
 ggsave(filename = figure_file, plot=autoplot(LASSO_tune_results), bg="white")
 ```
+
 As the penalty parameter increases, the lambda in the cost function is increasing. Since it uses the absolute values of the coefficients, the sum of the coefficients is always positive. Therefore, as the lambda increases the value of the regularization term increases, which makes the RMSE larger.
 
 Now let's repeat this with the random forest model.
@@ -355,6 +357,7 @@ rmse_values
 figure_file <- here("ml-models-exercise", "rf_tune_plot.png")
 ggsave(filename = figure_file, plot=autoplot(rf_tune_results), bg="white")
 ```
+
 We can see here that a higher value of `mtry` and a lower one for `min_n` lead to the best results. Nonetheless, the model isn't as easy to interpret as the linear and LASSO models. This is a drawback of complex machine learning or AI models.
 
 # Tuning with CV
@@ -411,6 +414,7 @@ rmse_values
 figure_file <- here("ml-models-exercise", "LASSO_tune_plot2.png")
 ggsave(filename = figure_file, plot=autoplot(LASSO_tune_results_CV), bg="white")
 ```
+
 Here, we can see that our lowest RMSE is around 611 and our highest is at 637. These are higher than our previous models, but we are now using cross-validation to avoid overfitting. CV is leading to a higher RMSE because it is using actual samples to train and test the data, creating a more generalizable model that is less likely to overfit. This model, even though it has a higher RMSE, is probably a better model since it is not overfitting.
 
 Now let's do the random forest model.
