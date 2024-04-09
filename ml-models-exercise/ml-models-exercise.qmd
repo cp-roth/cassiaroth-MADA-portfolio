@@ -1,11 +1,13 @@
 ---
-title: "ml-models-exercise"
-author: "Cassia Roth"
-date: "2024-03-25"
+title: "ML Models Exercise"
+author: Cassia Roth
+date: "`r Sys.Date()`"
 editor: visual
 ---
 
-Load the data and set the seed for reproducibility.
+This exercise implements some of the Machine Learning (ML) models covered in MADA.
+
+First, we will load the data and set the seed for reproducibility.
 
 ```{r, message=FALSE,  warning=FALSE}
 

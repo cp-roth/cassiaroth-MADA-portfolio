@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Cassia Roth">
-<meta name="dcterms.date" content="2024-01-18">
+<meta name="dcterms.date" content="2024-04-08">
 
 <title>Cassia Roth’s Data Analysis Portfolio - Manuscript/Report Template for a Data Analysis Project</title>
 <style>
@@ -137,19 +137,19 @@ div.csl-indent {
   </li>  
         <li>
     <a class="dropdown-item" href="../../../data-exercise/data-exercise.html">
- <span class="dropdown-text">Complex Data Exercise - Module 4</span></a>
+ <span class="dropdown-text">Complex Data Exercise</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../../../cdcdata-exercise/cdcdata-exercise.html">
- <span class="dropdown-text">CDC Data Exercise - Module 5</span></a>
+ <span class="dropdown-text">CDC Data Exercise</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../../../fitting-exercise/fitting-exercise.html">
- <span class="dropdown-text">Fitting Exercise - Module 8</span></a>
+ <span class="dropdown-text">Fitting Exercise</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../../../ml-models-exercise/ml-models-exercise.html">
- <span class="dropdown-text">Machine Learning - Module 11</span></a>
+ <span class="dropdown-text">Machine Learning</span></a>
   </li>  
     </ul>
   </li>
@@ -194,7 +194,7 @@ div.csl-indent {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">January 18, 2024</p>
+      <p class="date">April 8, 2024</p>
     </div>
   </div>
   
@@ -206,53 +206,93 @@ div.csl-indent {
 </header>
 
 
+<p>This exercise implements usage of GitHub and some basic data analysis. This is the basic structure of a data analysis project.</p>
 <p><strong>Rachel Robertson</strong> contributed to this exercise.</p>
+<section id="class-exercise" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Class Exercise</h1>
+<p>This dataset comprises heights, weights, and gender identification of nine individuals. In my additions, I included two new column variables with the age and political party affiliation of these individuals.</p>
+<p><a href="#fig-result2" class="quarto-xref">Figure&nbsp;1</a> shows a boxplot figure produced by one of the R scripts.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-result2" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-result2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../../results/figures/party-height.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-result2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Boxplot of political party affiliation and height.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Democratic party affiliation appears to be overrepresented in our sample, as Green party and Republican party affiliations are fewer, and thus don’t have enough datapoints to fully show a boxplot. Nonetheless, it appears that the more conservative the party affiliation, Libertarian and Republican, the taller the person. It would be interesting to further differentiate this boxplot based on sex, as males tend to be taller and also tend to affiliate with the Republican party.</p>
+<p><a href="#fig-result3" class="quarto-xref">Figure&nbsp;2</a> shows a scatterplot figure produced by one of the R scripts.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-result3" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-result3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../../results/figures/weight-age.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-result3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Scatterplot of weight by age.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>It appears that there is an inverse relationship between age and weight, with older individuals weighing less and younger individuals weighing more. This is not what we would normally expect, so perhaps our sampling methods have resulted in a biased sample. Perhaps we have a group of obese children and malnourished adults.</p>
+</section>
+<section id="manuscript-template-for-a-data-analysis-project" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Manuscript Template for a Data Analysis Project</h1>
+<p>Below is a template for a manuscript if the above exercise were actually part of a true data analysis project.</p>
 <p>This uses MS Word as output format. <a href="https://quarto.org/docs/output-formats/ms-word.html">See here</a> for more information. You can switch to other formats, like html or pdf. See <a href="https://quarto.org/">the Quarto documentation</a> for other formats.</p>
-<section id="summaryabstract" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> Summary/Abstract</h1>
-<p><em>Write a summary of your project.</em></p>
+</section>
+<section id="summaryabstract" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Summary/Abstract</h1>
+<p><em>In a true data analysis project, this is where your summary/abstract would go. A good format is the IMRaD format: Introduction, Methods, Results, and Discussion. See <a href="https://writingcenter.gmu.edu/writing-resources/imrad/writing-an-imrad-report#">George Mason’s website</a> for more information.</em></p>
+<div style="page-break-after: always;"></div>
+<p><em>The following sections could be part of your final paper.</em></p>
+</section>
+<section id="introduction" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Introduction</h1>
+<section id="general-background-information" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="general-background-information"><span class="header-section-number">4.1</span> General Background Information</h2>
+<p><em>In this section, you would provide enough background on your topic that others can understand the why and how of your analysis.</em></p>
+</section>
+<section id="description-of-data-and-data-source" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="description-of-data-and-data-source"><span class="header-section-number">4.2</span> Description of data and data source</h2>
+<p><em>Here you would describe what the data is, what it contains, where it is from, etc. Eventually this might be part of a methods section.</em></p>
+</section>
+<section id="questionshypotheses-to-be-addressed" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="questionshypotheses-to-be-addressed"><span class="header-section-number">4.3</span> Questions/Hypotheses to be addressed</h2>
+<p><em>Here you would state in plain language the research questions you plan to answer with this analysis.</em></p>
 <div style="page-break-after: always;"></div>
 </section>
-<section id="introduction" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> Introduction</h1>
-<section id="general-background-information" class="level2" data-number="2.1">
-<h2 data-number="2.1" class="anchored" data-anchor-id="general-background-information"><span class="header-section-number">2.1</span> General Background Information</h2>
-<p><em>Provide enough background on your topic that others can understand the why and how of your analysis</em></p>
 </section>
-<section id="description-of-data-and-data-source" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="description-of-data-and-data-source"><span class="header-section-number">2.2</span> Description of data and data source</h2>
-<p><em>Describe what the data is, what it contains, where it is from, etc. Eventually this might be part of a methods section.</em></p>
-</section>
-<section id="questionshypotheses-to-be-addressed" class="level2" data-number="2.3">
-<h2 data-number="2.3" class="anchored" data-anchor-id="questionshypotheses-to-be-addressed"><span class="header-section-number">2.3</span> Questions/Hypotheses to be addressed</h2>
-<p><em>State the research questions you plan to answer with this analysis.</em></p>
-<p>To cite other work (important everywhere, but likely happens first in introduction), make sure your references are in the bibtex file specified in the YAML header above (here <code>dataanalysis_template_references.bib</code>) and have the right bibtex key. Then you can include like this:</p>
-<p>Examples of reproducible research projects can for instance be found in <span class="citation" data-cites="mckay2020 mckay2020a">(<a href="#ref-mckay2020" role="doc-biblioref">McKay, Ebell, Billings, et al., 2020</a>; <a href="#ref-mckay2020a" role="doc-biblioref">McKay, Ebell, Dale, Shen, &amp; Handel, 2020</a>)</span></p>
-<div style="page-break-after: always;"></div>
-</section>
-</section>
-<section id="methods" class="level1" data-number="3">
-<h1 data-number="3"><span class="header-section-number">3</span> Methods</h1>
-<p><em>Describe your methods. That should describe the data, the cleaning processes, and the analysis approaches. You might want to provide a shorter description here and all the details in the supplement.</em></p>
-<section id="data-aquisition" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="data-aquisition"><span class="header-section-number">3.1</span> Data aquisition</h2>
+<section id="methods" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Methods</h1>
+<p><em>Here you would describe your methods. That should describe the data, the cleaning processes, and the analysis approaches. You might want to provide a shorter description here and all the details in the supplement.</em></p>
+<section id="data-aquisition" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="data-aquisition"><span class="header-section-number">5.1</span> Data aquisition</h2>
 <p><em>As applicable, explain where and how you got the data. If you directly import the data from an online source, you can combine this section with the next.</em></p>
 </section>
-<section id="data-import-and-cleaning" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="data-import-and-cleaning"><span class="header-section-number">3.2</span> Data import and cleaning</h2>
-<p><em>Write code that reads in the file and cleans it so it’s ready for analysis. Since this will be fairly long code for most datasets, it might be a good idea to have it in one or several R scripts. If that is the case, explain here briefly what kind of cleaning/processing you do, and provide more details and well documented code somewhere (e.g.&nbsp;as supplement in a paper). All materials, including files that contain code, should be commented well so everyone can follow along.</em></p>
+<section id="data-import-and-cleaning" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="data-import-and-cleaning"><span class="header-section-number">5.2</span> Data import and cleaning</h2>
+<p><em>Here you would write code that reads in the file and cleans it so it’s ready for analysis. Since this will be fairly long code for most datasets, it might be a good idea to have it in one or several R scripts. If that is the case, explain here briefly what kind of cleaning/processing you do, and provide more details and well documented code somewhere (e.g.&nbsp;as supplement in a paper). All materials, including files that contain code, should be commented well so everyone can follow along.</em></p>
 </section>
-<section id="statistical-analysis" class="level2" data-number="3.3">
-<h2 data-number="3.3" class="anchored" data-anchor-id="statistical-analysis"><span class="header-section-number">3.3</span> Statistical analysis</h2>
-<p><em>Explain anything related to your statistical analyses.</em></p>
+<section id="statistical-analysis" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="statistical-analysis"><span class="header-section-number">5.3</span> Statistical analysis</h2>
+<p><em>Here you would explain anything related to your statistical analyses.</em></p>
 <div style="page-break-after: always;"></div>
 </section>
 </section>
-<section id="results" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> Results</h1>
-<section id="exploratorydescriptive-analysis" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="exploratorydescriptive-analysis"><span class="header-section-number">4.1</span> Exploratory/Descriptive analysis</h2>
-<p><em>Use a combination of text/tables/figures to explore and describe your data. Show the most important descriptive results here. Additional ones should go in the supplement. Even more can be in the R and Quarto files that are part of your project.</em></p>
+<section id="results" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Results</h1>
+<section id="exploratorydescriptive-analysis" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="exploratorydescriptive-analysis"><span class="header-section-number">6.1</span> Exploratory/Descriptive analysis</h2>
+<p><em>Here you would use a combination of text/tables/figures to explore and describe your data. Show the most important descriptive results here. Additional ones should go in the supplement. Even more can be in the R and Quarto files that are part of your project.</em></p>
 <p><a href="#tbl-summarytable" class="quarto-xref">Table&nbsp;1</a> shows a summary of the data.</p>
 <p>Note the loading of the data providing a <strong>relative</strong> path using the <code>../../</code> notation. (Two dots means a folder up). You never want to specify an <strong>absolute</strong> path like <code>C:\ahandel\myproject\results\</code> because if you share this with someone, it won’t work for them since they don’t have that path. You can also use the <code>here</code> R package to create paths. See examples of that below. <strong>I recommend the <code>here</code> package, but I’m showing the other approach here just in case you encounter it.</strong></p>
 <div class="cell">
@@ -394,10 +434,10 @@ Table&nbsp;1: Data summary table.
 </div>
 </div>
 </section>
-<section id="basic-statistical-analysis" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="basic-statistical-analysis"><span class="header-section-number">4.2</span> Basic statistical analysis</h2>
+<section id="basic-statistical-analysis" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="basic-statistical-analysis"><span class="header-section-number">6.2</span> Basic statistical analysis</h2>
 <p><em>To get some further insight into your data, if reasonable you could compute simple statistics (e.g.&nbsp;simple models with 1 predictor) to look for associations between your outcome(s) and each individual predictor variable. Though note that unless you pre-specified the outcome and main exposure, any “p&lt;0.05 means statistical significance” interpretation is not valid.</em></p>
-<p><a href="#fig-result" class="quarto-xref">Figure&nbsp;1</a> shows a scatterplot figure produced by one of the R scripts.</p>
+<p><a href="#fig-result" class="quarto-xref">Figure&nbsp;3</a> shows a scatterplot figure produced by one of the R scripts.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-result" class="quarto-figure quarto-figure-center quarto-float anchored">
@@ -406,16 +446,16 @@ Table&nbsp;1: Data summary table.
 <img src="../../results/figures/height-weight-stratified.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-result-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: Height and weight stratified by gender.
+Figure&nbsp;3: Height and weight stratified by gender.
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
 </section>
-<section id="full-analysis" class="level2" data-number="4.3">
-<h2 data-number="4.3" class="anchored" data-anchor-id="full-analysis"><span class="header-section-number">4.3</span> Full analysis</h2>
-<p><em>Use one or several suitable statistical/machine learning methods to analyze your data and to produce meaningful figures, tables, etc. This might again be code that is best placed in one or several separate R scripts that need to be well documented. You want the code to produce figures and data ready for display as tables, and save those. Then you load them here.</em></p>
+<section id="full-analysis" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="full-analysis"><span class="header-section-number">6.3</span> Full analysis</h2>
+<p><em>Here yo uwould use one or several suitable statistical/machine learning methods to analyze your data and to produce meaningful figures, tables, etc. This might again be code that is best placed in one or several separate R scripts that need to be well documented. You want the code to produce figures and data ready for display as tables, and save those. Then you load them here.</em></p>
 <p>Example <a href="#tbl-resulttable2" class="quarto-xref">Table&nbsp;2</a> shows a summary of a linear model fit.</p>
 <div class="cell">
 <div id="tbl-resulttable2" class="cell quarto-float anchored">
@@ -474,61 +514,30 @@ Table&nbsp;2: Linear model fit table.
 <div style="page-break-after: always;"></div>
 </section>
 </section>
-<section id="discussion" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> Discussion</h1>
-<section id="summary-and-interpretation" class="level2" data-number="5.1">
-<h2 data-number="5.1" class="anchored" data-anchor-id="summary-and-interpretation"><span class="header-section-number">5.1</span> Summary and Interpretation</h2>
-<p><em>Summarize what you did, what you found and what it means.</em></p>
+<section id="discussion" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Discussion</h1>
+<section id="summary-and-interpretation" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="summary-and-interpretation"><span class="header-section-number">7.1</span> Summary and Interpretation</h2>
+<p><em>Here you summarize what you did, what you found and what it means.</em></p>
 </section>
-<section id="strengths-and-limitations" class="level2" data-number="5.2">
-<h2 data-number="5.2" class="anchored" data-anchor-id="strengths-and-limitations"><span class="header-section-number">5.2</span> Strengths and Limitations</h2>
-<p><em>Discuss what you perceive as strengths and limitations of your analysis.</em></p>
+<section id="strengths-and-limitations" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="strengths-and-limitations"><span class="header-section-number">7.2</span> Strengths and Limitations</h2>
+<p><em>Here you discuss what you perceive as strengths and limitations of your analysis.</em></p>
 </section>
-<section id="conclusions" class="level2" data-number="5.3">
-<h2 data-number="5.3" class="anchored" data-anchor-id="conclusions"><span class="header-section-number">5.3</span> Conclusions</h2>
-<p><em>What are the main take-home messages?</em></p>
+<section id="conclusions" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="conclusions"><span class="header-section-number">7.3</span> Conclusions</h2>
+<p><em>Here you state the main take-home messages.</em></p>
 <p><em>Include citations in your Rmd file using bibtex, the list of references will automatically be placed at the end</em></p>
 <p>This paper <span class="citation" data-cites="leek2015">(<a href="#ref-leek2015" role="doc-biblioref">Leek &amp; Peng, 2015</a>)</span> discusses types of analyses.</p>
-<p>These papers <span class="citation" data-cites="mckay2020 mckay2020a">(<a href="#ref-mckay2020" role="doc-biblioref">McKay, Ebell, Billings, et al., 2020</a>; <a href="#ref-mckay2020a" role="doc-biblioref">McKay, Ebell, Dale, et al., 2020</a>)</span> are good examples of papers published using a fully reproducible setup similar to the one shown in this template.</p>
+<p>These papers <span class="citation" data-cites="mckay2020 mckay2020a">(<a href="#ref-mckay2020" role="doc-biblioref">McKay, Ebell, Billings, et al., 2020</a>; <a href="#ref-mckay2020a" role="doc-biblioref">McKay, Ebell, Dale, Shen, &amp; Handel, 2020</a>)</span> are good examples of papers published using a fully reproducible setup similar to the one shown in this template.</p>
 <p>Note that this cited reference will show up at the end of the document, the reference formatting is determined by the CSL file specified in the YAML header. Many more style files for almost any journal <a href="https://www.zotero.org/styles">are available</a>. You also specify the location of your bibtex reference file in the YAML. You can call your reference file anything you like, I just used the generic word <code>references.bib</code> but giving it a more descriptive name is probably better.</p>
+</section>
+</section>
+<section id="references" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> References</h1>
+<p>To cite other work (important everywhere, but likely happens first in introduction), make sure your references are in the bibtex file specified in the YAML header above (here <code>dataanalysis_template_references.bib</code>) and have the right bibtex key. Then you can include like this:</p>
+<p>Examples of reproducible research projects can for instance be found in <span class="citation" data-cites="mckay2020 mckay2020a">(<a href="#ref-mckay2020" role="doc-biblioref">McKay, Ebell, Billings, et al., 2020</a>; <a href="#ref-mckay2020a" role="doc-biblioref">McKay, Ebell, Dale, et al., 2020</a>)</span></p>
 <div style="page-break-after: always;"></div>
-</section>
-</section>
-<section id="class-exercise" class="level1" data-number="6">
-<h1 data-number="6"><span class="header-section-number">6</span> Class Exercise</h1>
-<p>This dataset comprises heights, weights, and gender identification of nine individuals. In my additions, I included two new column variables with the age and political party affiliation of these individuals.</p>
-<p><a href="#fig-result2" class="quarto-xref">Figure&nbsp;2</a> shows a boxplot figure produced by one of the R scripts.</p>
-<div class="cell">
-<div class="cell-output-display">
-<div id="fig-result2" class="quarto-figure quarto-figure-center quarto-float anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-result2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="../../results/figures/party-height.png" class="img-fluid figure-img">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-result2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: Boxplot of political party affiliation and height.
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<p>Democratic party affiliation appears to be overrepresented in our sample, as Green party and Republican party affiliations are fewer, and thus don’t have enough datapoints to fully show a boxplot. Nonetheless, it appears that the more conservative the party affiliation, Libertarian and Republican, the taller the person. It would be interesting to further differentiate this boxplot based on sex, as males tend to be taller and also tend to affiliate with the Republican party.</p>
-<p><a href="#fig-result3" class="quarto-xref">Figure&nbsp;3</a> shows a scatterplot figure produced by one of the R scripts.</p>
-<div class="cell">
-<div class="cell-output-display">
-<div id="fig-result3" class="quarto-figure quarto-figure-center quarto-float anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-result3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="../../results/figures/weight-age.png" class="img-fluid figure-img">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-result3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3: Scatterplot of weight by age.
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<p>It appears that there is an inverse relationship between age and weight, with older individuals weighing less and younger individuals weighing more. This is not what we would normally expect, so perhaps our sampling methods have resulted in a biased sample. Perhaps we have a group of obese children and malnourished adults. # References</p>
 
 
 

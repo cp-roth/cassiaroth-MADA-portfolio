@@ -1,8 +1,10 @@
 ---
-title: "fitting-exercise"
-author: "Cassia Roth"
-editor: visual
+title: "Fitting Exercise"
+author: Cassia Roth
+date: "`r Sys.Date()`"
 ---
+
+This exercise practices model fitting using the `tidymodels` framework. 
 
 Here, we are going to fit a model using the `nlmixr2data` package and data. First, let's read in the .csv file and check its structure.
 

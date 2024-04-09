@@ -1,5 +1,7 @@
 ---
 title: "Presentation Exercise"
+author: Cassia Roth
+date: "`r Sys.Date()`"
 ---
 # Data source
 

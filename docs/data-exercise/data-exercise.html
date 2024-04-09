@@ -6,6 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Cassia Roth">
+<meta name="dcterms.date" content="2024-04-08">
 
 <title>Cassia Roth’s Data Analysis Portfolio - Complex Data Exercise</title>
 <style>
@@ -149,19 +151,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
         <li>
     <a class="dropdown-item" href="../data-exercise/data-exercise.html">
- <span class="dropdown-text">Complex Data Exercise - Module 4</span></a>
+ <span class="dropdown-text">Complex Data Exercise</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../cdcdata-exercise/cdcdata-exercise.html">
- <span class="dropdown-text">CDC Data Exercise - Module 5</span></a>
+ <span class="dropdown-text">CDC Data Exercise</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../fitting-exercise/fitting-exercise.html">
- <span class="dropdown-text">Fitting Exercise - Module 8</span></a>
+ <span class="dropdown-text">Fitting Exercise</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../ml-models-exercise/ml-models-exercise.html">
- <span class="dropdown-text">Machine Learning - Module 11</span></a>
+ <span class="dropdown-text">Machine Learning</span></a>
   </li>  
     </ul>
   </li>
@@ -196,7 +198,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Cassia Roth </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">April 8, 2024</p>
+    </div>
+  </div>
   
     
   </div>
@@ -409,9 +423,33 @@ Table: Book Titles
 </div>
 </div>
 <p>We can see that “John Watson” appears only twice, when he is writing about his own experiences. The phrase “Elementary, my dear Watson,” appears <em>zero</em> times. So, it’s a myth that Sherlock Holmes ever said this phrase in the original texts.</p>
-<p>I was going to try to create a word cloud, but I was having trouble loading the package; RStudio kept crashing. Despite this not showing that much information, I’ve spent almost 3 hours on the exercise. I need to get better with R!</p>
+<p>Now let’s visualize some of the words in a word cloud using the <code>wordcloud2</code> package.</p>
+<section id="install-and-load-the-wordcloud2-package" class="level1">
+<h1>Install and load the wordcloud2 package</h1>
+</section>
+<section id="install.packageswordcloud2" class="level1">
+<h1>install.packages(“wordcloud2”)</h1>
+<p>library(wordcloud2)</p>
+</section>
+<section id="load-stopwords" class="level1">
+<h1>Load stopwords</h1>
+<p>stop_words &lt;- tidytext::stop_words$word</p>
+</section>
+<section id="remove-stopwords-from-the-text-data" class="level1">
+<h1>Remove stopwords from the text data</h1>
+<p>holmes_wc &lt;- holmes %&gt;% unnest_tokens(word, text) %&gt;% filter(!word %in% stop_words)</p>
+</section>
+<section id="create-word-frequency-table" class="level1">
+<h1>Create word frequency table</h1>
+<p>word_freq_table &lt;- holmes_wc %&gt;% count(word, sort = TRUE)</p>
+</section>
+<section id="visualize-word-cloud" class="level1">
+<h1>Visualize word cloud</h1>
+<p>wordcloud2(word_freq_table, size = 1.5) ``````</p>
+<p>We can see that the word “Holmes” is the most frequent word in the dataset, appearing 2403 times. This is expected, as the dataset is about Sherlock Holmes. Watson (appearing 809 times) is also quite frequent, as he is the narrator of the stories. other words that stood out to me include “London” (340 times), “police” (283 times), and “Sherlock” (383 times).</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

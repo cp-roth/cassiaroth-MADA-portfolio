@@ -1,9 +1,14 @@
 ---
 title: "R Coding Exercise"
+author: Cassia Roth
+date: "`r Sys.Date()`"
 ---
-In this first section I am making sure the main package is installed by trying to refresh my memory on how to do that in R.
 
-```{r}
+This exercise explores how to write code in `R` to perform simple data analysis. 
+
+In this first section, I am making sure the main package is installed by trying to refresh my memory on how to do that in R.
+
+```{r, message=FALSE}
 #Getting started
 
 #Check to see that dslabs package is installed
@@ -17,8 +22,10 @@ print(is_installed)
 
 #In this chunk of code I used ChatGPT to help with the installed.packages command. I am still very new to R.
 ```
+
 In this second section, I am loading the appropriate packages and checking the data.
-```{r}
+
+```{r, message=FALSE}
 #Loading and checking data
 
 #Choosing a CRAN mirror URL based on your location
@@ -28,15 +35,10 @@ cran_mirror <- "https://cloud.r-project.org"
 options(repos = c(CRAN = cran_mirror))
 
 # Install the 'renv' package
-install.packages("renv")
+#install.packages("renv")
 
 # Load the 'renv' package
 library(renv)
-
-#Installing renv to help keep track of packages
-install.packages("renv")
-
-#Loading dslabs and dplyr packages
 library(dslabs)
 library(dplyr)
 library(ggplot2)
@@ -55,9 +57,9 @@ summary(gapminder)
 class(gapminder)
 ```
 
-
 In this third section, I am learning to create new objects.
-```{r}
+
+```{r, message=FALSE}
 #Processing data
 
 #Writing code that assigns only African countries to a new object/variable called africadata
@@ -93,8 +95,10 @@ summary(population_life)
 #For this chunk of code, I first incorrectly used the filter() command, and I had to troubleshoot my code with ChatGPT, which pointed me to the select() command.
 
 ```
+
 Now I will plot life expectancy as a function of infant mortality and as a function of population size.
-```{r}
+
+```{r, message=FALSE}
 #Plotting
 
 #Plotting life expectancy as a function of infant mortality
@@ -131,7 +135,7 @@ ggsave(filename = figure_file, plot=plot_2)
 
 It appears there is clustering of data by country and year, since the original dataset had information between 1960 and 2016.
 
-```{r}
+```{r, message=FALSE}
 #More data processing
 
 #Identifying years with missing data for infant mortality
@@ -145,11 +149,11 @@ str(data_2000)
 summary(data_2000)
 
 #In this chunk, I used ChatGPT to help with my coding. I used the following prompt: Write code that figures out which years have missing data for infant mortality. Create a new object by extracting only the data for the year 2000 from the africadata object. You should end up with 51 observations and 9 variables. Check it with str and summary.
-
-
 ```
+
 Here, we will plot infant mortality for the year 2000. Based on these plots, we still see a negative correlation between infant mortality and life expectancy. There is no noticeable correlation between poulation size and life expectancy.
-```{r}
+
+```{r, message=FALSE}
 #More plotting
 
 #Plotting life expectancy as a function of infant mortality for the year 2000
@@ -181,9 +185,10 @@ print(plot_4)
 figure_file = here("coding-exercise","results", "figures","life_exp_pop_2000.png")
 ggsave(filename = figure_file, plot=plot_4) 
 ```
+
 Now, we will us a linear model to fit the relationship between life expectancy (outcome) and infant mortality (predictor).
 
-```{r}
+```{r, message=FALSE}
 #Simple model fits1
 
 #Fitting linear regression model for life expectancy (outcome) and infant mortality (predictor)
@@ -203,6 +208,7 @@ summary(fit2)
 
 #For this chunk of code, I asked ChatGPT the following:Use the lm function and fit life expectancy as the outcome, and infant mortality as the predictor. Use the data_2000 dataframe.
 ```
+
 Based on the p-values for ```{fit1}``` of p = 2 x 10^-8 < p = 0.05, we can reject the null hypothesis for our first model, and conclude that life expectancy is correlated with infant mortality rates. For ``` {fit2}``` of p = 0.6159 > p = 0.05, we fail to reject the null hypothesis that life expectancy is not correlated with population size.
 
 # <span style="color:blue;"> This section contributed by Cora Hirst </span>
@@ -233,9 +239,6 @@ str(stars)
 
 # print a summary of the variables in the data frame `stars`
 summary(stars)
-
-
-
 ```
 
 `stars` is a data frame with 96 observations and 4 variables. Each observation is a star, and the name of the star is given by the factor variable `star`. For each observation of each star, the size, `magnitude`; temperature, `temp`; and type, `type`, are listed as variables. 

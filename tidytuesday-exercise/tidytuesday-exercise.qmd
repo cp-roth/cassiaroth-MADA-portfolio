@@ -1,5 +1,245 @@
 ---
 title: "Tidy Tuesday Exercise"
+author: Cassia Roth
+date: "`r Sys.Date()`"
 ---
 
-Placeholder file for the future Tidy Tuesday exercise.
+# Tidy Tuesday
+
+This week we will be engaging in a `TidyTuesday` Exercise. The datasets are available on [GitHub](https://github.com/rfordatascience/tidytuesday/tree/6f3c0fdf804a1b5f4047705be60668e5c8312806/data/2024/2024-04-09).
+
+There are two ways you can load the data:
+
+## Option 1: tidytuesdayR package
+
+```{r, message=FALSE, warning=FALSE}
+#install.packages("tidytuesdayR")
+tuesdata <- tidytuesdayR::tt_load('2024-04-09')
+## OR
+#tuesdata <- tidytuesdayR::tt_load(2024, week = 15)
+
+eclipse_annular_2023 <- tuesdata$eclipse_annular_2023
+eclipse_total_2024 <- tuesdata$eclipse_total_2024
+eclipse_partial_2023 <- tuesdata$eclipse_partial_2023
+eclipse_partial_2024 <- tuesdata$eclipse_partial_2024
+```
+
+## Option 2: Read directly from GitHub
+
+```{r, message=FALSE, warning=FALSE}
+eclipse_annular_2023 <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2024/2024-04-09/eclipse_annular_2023.csv')
+eclipse_total_2024 <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2024/2024-04-09/eclipse_total_2024.csv')
+eclipse_partial_2023 <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2024/2024-04-09/eclipse_partial_2023.csv')
+eclipse_partial_2024 <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2024/2024-04-09/eclipse_partial_2024.csv')
+```
+
+## Cleaning Script
+
+This script comes directly from the GitHub repository. This helps us clean the data and prepare it for analysis.
+
+```{r, message=FALSE, warning=FALSE}
+#install.packages("janitor")
+#install.packages("jsonlite")
+#install.packages("fs")
+
+library(tidyverse)
+library(jsonlite)
+library(janitor)
+library(here)
+library(fs)
+library(ggplot2)
+
+working_dir <- here::here("tidytuesday-exercise", "data")
+
+eclipse_cities_url_2024 <- "https://svs.gsfc.nasa.gov/vis/a000000/a005000/a005073/cities-eclipse-2024.json"
+eclipse_cities_url_2023 <- "https://svs.gsfc.nasa.gov/vis/a000000/a005000/a005073/cities-eclipse-2023.json"
+
+eclipse_cities_2024 <- jsonlite::fromJSON(eclipse_cities_url_2024) |> 
+  tibble::as_tibble() |> 
+  janitor::clean_names() |> 
+  tidyr::unnest_wider(eclipse, names_sep = "_")
+
+eclipse_total_2024 <- eclipse_cities_2024 |> 
+  dplyr::filter(!is.na(eclipse_6))
+
+eclipse_partial_2024 <- eclipse_cities_2024 |> 
+  dplyr::filter(is.na(eclipse_6)) |> 
+  dplyr::select(-eclipse_6)
+
+eclipse_cities_2023 <- jsonlite::fromJSON(eclipse_cities_url_2023) |> 
+  tibble::as_tibble() |> 
+  janitor::clean_names() |> 
+  tidyr::unnest_wider(eclipse, names_sep = "_")
+
+eclipse_annular_2023 <- eclipse_cities_2023 |> 
+  dplyr::filter(!is.na(eclipse_6))
+
+eclipse_partial_2023 <- eclipse_cities_2023 |> 
+  dplyr::filter(is.na(eclipse_6)) |> 
+  dplyr::select(-eclipse_6)
+
+readr::write_csv(
+  eclipse_total_2024,
+  fs::path(working_dir, "eclipse_total_2024.csv")
+)
+readr::write_csv(
+  eclipse_partial_2024,
+  fs::path(working_dir, "eclipse_partial_2024.csv")
+)
+
+readr::write_csv(
+  eclipse_annular_2023,
+  fs::path(working_dir, "eclipse_annular_2023.csv")
+)
+readr::write_csv(
+  eclipse_partial_2023,
+  fs::path(working_dir, "eclipse_partial_2023.csv")
+)
+```
+
+## Exploratory Data Analysis 
+
+I am interested in the 2024 eclipse, since that is the one that just occurred. I have decided to run my exploratory data analysis with these two datasets `eclipse_total_2024` and `eclipse_partial_2024`. 
+
+First, we will run some simple scatterplot visualizations of the data for the `eclipse_total_2024` and `eclipse_partial_2024` datasets. There are two observations that are skewing data in the "lon" variable since they are > 0, which means they are not in the Western Hemisphere. There could be parts of Alaska not in the Western Hemisphere, but for ease of visualization, we will drop all "lon" observations that are >0.
+
+```{r, message=FALSE, warning=FALSE}
+# eclipse_total_2024 dataset
+
+# View the data
+head(eclipse_total_2024)
+
+#Check the variables
+str(eclipse_total_2024)
+
+# Drop incorrect observations in lon
+eclipse_total_2024 <- subset(eclipse_total_2024, lon <= 0)
+
+# Create scatterplot of Latitude vs. Longitude
+plot1 <- ggplot(data = eclipse_total_2024, aes(x = lon, y = lat)) +
+  geom_point() +
+  labs(x = "Longitude", y = "Latitude", title = "Eclipse Locations - 2024")
+plot1
+
+#Saving figure
+figure_file <- here("tidytuesday-exercise", "figures", "LatLong_2024_total.png")
+ggsave(filename = figure_file, plot=plot1, bg = "white")
+
+# Create scatterplot of Eclipse Time vs. Latitude
+plot2 <- ggplot(data = eclipse_total_2024, aes(x = eclipse_1, y = lat)) +
+  geom_point() +
+  labs(x = "Eclipse Time", y = "Latitude", title = "Eclipse Time vs. Latitude - 2024") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 4)) # Rotate labels by 45 degrees
+plot2
+
+#Saving figure
+figure_file <- here("tidytuesday-exercise", "figures", "EclipseLat_2024_total.png")
+ggsave(filename = figure_file, plot=plot2, bg = "white")
+
+# Calculate Eclipse Duration
+eclipse_total_2024$eclipse_duration <- as.numeric(difftime(strptime(eclipse_total_2024$eclipse_2, "%H:%M:%S"), 
+                                                           strptime(eclipse_total_2024$eclipse_1, "%H:%M:%S"), 
+                                                           units = "secs"))
+
+# Create scatterplot of Eclipse Duration vs. Latitude
+plot3 <- ggplot(data = eclipse_total_2024, aes(x = eclipse_duration, y = lat)) +
+  geom_point() +
+  labs(x = "Eclipse Duration (seconds)", y = "Latitude", title = "Eclipse Duration vs. Latitude - 2024")
+plot3
+
+#Saving figure
+figure_file <- here("tidytuesday-exercise", "figures", "LatDuration_2024_total.png")
+ggsave(filename = figure_file, plot=plot3, bg = "white")
+
+# Create scatterplot with multiple variables and colors
+plot4 <- ggplot(data = eclipse_total_2024, aes(x = lon, y = lat, color = state)) +
+  geom_point(size = 1) +
+  labs(x = "Longitude", y = "Latitude", color = "State",
+       title = "Eclipse Locations - 2024") +
+  scale_color_manual(values = rainbow(length(unique(eclipse_total_2024$state)))) +
+  scale_shape_manual(values = 1:length(unique(eclipse_total_2024$name))) +
+  theme_minimal()
+plot4
+
+#Saving figure
+figure_file <- here("tidytuesday-exercise", "figures", "LonLatState_2024_total.png")
+ggsave(filename = figure_file, plot=plot4, bg = "white")
+```
+Now let's do more or less the same visualizations with the `eclipse_partial_2024` dataset.FIX
+
+```{r, message=FALSE, warning=FALSE}
+# eclipse_partial_2024 dataset
+# View the data
+head(eclipse_partial_2024)
+
+#Check the variables
+str(eclipse_partial_2024)
+
+sort(eclipse_partial_2024$lon)
+
+# Drop incorrect observations in lon
+eclipse_partial_2024 <- subset(eclipse_partial_2024, lon <= 0)
+
+# Create scatterplot of Latitude vs. Longitude
+plot5 <- ggplot(data = eclipse_partial_2024, aes(x = lon, y = lat)) +
+  geom_point() +
+  labs(x = "Longitude", y = "Latitude", title = "Eclipse Locations - 2024")
+plot5
+
+#Saving figure
+figure_file <- here("tidytuesday-exercise", "figures", "EclipseLat_2024_partial.png")
+ggsave(filename = figure_file, plot=plot5, bg = "white")
+
+# Create scatterplot of Eclipse Time vs. Latitude
+plot6 <- ggplot(data = eclipse_partial_2024, aes(x = eclipse_1, y = lat)) +
+  geom_point() +
+  labs(x = "Eclipse Time", y = "Latitude", title = "Eclipse Time vs. Latitude - 2024") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 4)) # Rotate labels by 45 degrees
+plot6
+
+#Saving figure
+figure_file <- here("tidytuesday-exercise", "figures", "TimeLat_2024_partial.png")
+ggsave(filename = figure_file, plot=plot6, bg = "white")
+
+# Calculate Eclipse Duration
+eclipse_partial_2024$eclipse_duration <- as.numeric(difftime(strptime(eclipse_partial_2024$eclipse_2, "%H:%M:%S"), 
+                                                           strptime(eclipse_partial_2024$eclipse_1, "%H:%M:%S"), 
+                                                           units = "secs"))
+
+# Create scatterplot with multiple variables and colors
+plot7 <- ggplot(data = eclipse_partial_2024, aes(x = lon, y = lat, color = state)) +
+  geom_point(size = 1) +
+  labs(x = "Longitude", y = "Latitude", color = "State",
+       title = "Eclipse Locations - 2024") +
+  scale_color_manual(values = rainbow(length(unique(eclipse_partial_2024$state)))) +
+  scale_shape_manual(values = 1:length(unique(eclipse_partial_2024$name))) +
+  theme_minimal()
+plot7
+
+#Saving figure
+figure_file <- here("tidytuesday-exercise", "figures", "LonLatState_2024_partial.png")
+ggsave(filename = figure_file, plot=plot7, bg = "white")
+```
+
+Since we are supposed to formulate a question or hypothesis with the data, and these data are somewhat difficult to do that with since it is a physical phenomenon that's deterministic (i.e., we know when and where eclipses will happen), I will create some synthetic data to augment the existing data. This new variable will be our outcome of interest.
+
+I was in New Haven, CT for the 2024 total solar eclipse, where we had 92% to 94% coverage. Before we went outside with our special eclipse glasses, my husband turned on CNN to see their "eclipse coverage," and they had a reporter in Dallas, where there was totality, claiming that the eclipse had perhaps caused an ostrich to lay an egg. You can see a screenshot [here](https://x.com/ShawnReynolds_/status/1777406190495916128). I thought this was hilarious and decided to make a variable that would be whether or not the eclipse caused ostriches to lay an egg. This categorical outcome (no = 0, yes = 1) will be my outcome of interest. Since we need to work with solar eclipses that have totality (annular), I will use one dataset for this exercise, `eclipse_total_2024`.
+
+## Create Synthetic Data
+
+```{r, message=FALSE, warning=FALSE}
+# Generate synthetic data for 'OstrichReproduction'
+eclipse_total_2024 <- eclipse_total_2024 %>%
+  mutate(OstrichReproduction = ifelse(runif(nrow(eclipse_total_2024)) < 0.5, 0, 1))
+
+# View the updated dataset
+head(eclipse_total_2024)
+```
+Now we have a new variable, `OstrichReproduction`, which is a binary variable indicating whether or not the eclipse caused ostriches to lay an egg.
+
+# Train/Test split
+
+Now we will split the data into a train/test set. We will use 80% of the data for training and 20% for testing.
+
+```{r, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE}

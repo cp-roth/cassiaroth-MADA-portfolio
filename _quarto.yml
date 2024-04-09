@@ -18,13 +18,13 @@ website:
             file: presentation-exercise/presentation-exercise.qmd
           - text: "Tidy Tuesday Exercise"
             file: tidytuesday-exercise/tidytuesday-exercise.qmd
-          - text: "Complex Data Exercise - Module 4"
+          - text: "Complex Data Exercise"
             file: data-exercise/data-exercise.qmd
-          - text: "CDC Data Exercise - Module 5"
+          - text: "CDC Data Exercise"
             file: cdcdata-exercise/cdcdata-exercise.qmd
-          - text: "Fitting Exercise - Module 8"
+          - text: "Fitting Exercise"
             file: fitting-exercise/fitting-exercise.qmd
-          - text: "Machine Learning - Module 11"
+          - text: "Machine Learning"
             file: ml-models-exercise/ml-models-exercise.qmd
     right:
       - icon: github 

@@ -1,5 +1,7 @@
 ---
 title: "Complex Data Exercise"
+author: Cassia Roth
+date: "`r Sys.Date()`"
 ---
 
 This exercise is designed to give you practice with exploring text datasets (a _complex data type_). We will load, process, and engage in some discriptive/exploratory analysis of the data.
@@ -29,7 +31,7 @@ library(knitr)
 library(here)
 ```
 Next, we will explore the dataset. We will start by looking at the structure.
-```{r}
+```{r, message=FALSE, warning=FALSE}
 #Exploring the dataset
 dplyr::glimpse(holmes)
 
@@ -77,4 +79,27 @@ print(holmes_filtered)
 ```
 We can see that "John Watson" appears only twice, when he is writing about his own experiences. The phrase "Elementary, my dear Watson," appears *zero* times. So, it's a myth that Sherlock Holmes ever said this phrase in the original texts.
 
-I was going to try to create a word cloud, but I was having trouble loading the package; RStudio kept crashing. Despite this not showing that much information, I've spent almost 3 hours on the exercise. I need to get better with R!
+Now let's visualize some of the words in a word cloud using the `wordcloud2` package.
+
+```{r}
+# Install and load the wordcloud2 package
+# install.packages("wordcloud2")
+library(wordcloud2)
+
+# Load stopwords
+stop_words <- tidytext::stop_words$word
+
+# Remove stopwords from the text data
+holmes_wc <- holmes %>%
+  unnest_tokens(word, text) %>%
+  filter(!word %in% stop_words)
+
+# Create word frequency table
+word_freq_table <- holmes_wc %>%
+  count(word, sort = TRUE)
+
+# Visualize word cloud
+wordcloud2(word_freq_table, size = 1.5)
+``````
+
+We can see that the word "Holmes" is the most frequent word in the dataset, appearing 2403 times. This is expected, as the dataset is about Sherlock Holmes. Watson (appearing 809 times) is also quite frequent, as he is the narrator of the stories. other words that stood out to me include "London" (340 times), "police" (283 times), and "Sherlock" (383 times).
