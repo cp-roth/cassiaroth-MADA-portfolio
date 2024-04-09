@@ -51,7 +51,7 @@ print(table1)
 ```
 
 Now let's see how many times some of the most important people's names appears in the texts.
-```{r}
+```{r, message=FALSE, warning=FALSE}
 #Searching for specific words
 specific_words <- c("sherlock", "holmes", "moriarty", "watson", "john")
 
@@ -81,7 +81,7 @@ We can see that "John Watson" appears only twice, when he is writing about his o
 
 Now let's visualize some of the words in a word cloud using the `wordcloud2` package.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 # Install and load the wordcloud2 package
 # install.packages("wordcloud2")
 library(wordcloud2)
@@ -100,6 +100,6 @@ word_freq_table <- holmes_wc %>%
 
 # Visualize word cloud
 wordcloud2(word_freq_table, size = 1.5)
-``````
+```
 
 We can see that the word "Holmes" is the most frequent word in the dataset, appearing 2403 times. This is expected, as the dataset is about Sherlock Holmes. Watson (appearing 809 times) is also quite frequent, as he is the narrator of the stories. other words that stood out to me include "London" (340 times), "police" (283 times), and "Sherlock" (383 times).
