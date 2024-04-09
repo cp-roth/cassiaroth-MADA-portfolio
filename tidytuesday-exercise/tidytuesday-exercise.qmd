@@ -235,11 +235,12 @@ eclipse_total_2024 <- eclipse_total_2024 %>%
 # View the updated dataset
 head(eclipse_total_2024)
 ```
-Now we have a new variable, `OstrichReproduction`, which is a binary variable indicating whether or not the eclipse caused ostriches to lay an egg.
+Now we have a new categorical variable, `OstrichReproduction`, which indicates whether or not an ostrich laid an egg during totality.
 
 # Train/Test split
 
 Now we will split the data into a train/test set. We will use 80% of the data for training and 20% for testing.
 
 ```{r, message=FALSE, warning=FALSE}
-```{r, message=FALSE, warning=FALSE}
+```
+
