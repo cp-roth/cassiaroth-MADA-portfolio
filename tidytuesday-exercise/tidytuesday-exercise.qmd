@@ -13,6 +13,7 @@ There are two ways you can load the data:
 ## Option 1: tidytuesdayR package
 
 ```{r, message=FALSE, warning=FALSE}
+
 #install.packages("tidytuesdayR")
 tuesdata <- tidytuesdayR::tt_load('2024-04-09')
 ## OR
@@ -27,10 +28,10 @@ eclipse_partial_2024 <- tuesdata$eclipse_partial_2024
 ## Option 2: Read directly from GitHub
 
 ```{r, message=FALSE, warning=FALSE}
-eclipse_annular_2023 <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2024/2024-04-09/eclipse_annular_2023.csv')
-eclipse_total_2024 <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2024/2024-04-09/eclipse_total_2024.csv')
-eclipse_partial_2023 <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2024/2024-04-09/eclipse_partial_2023.csv')
-eclipse_partial_2024 <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2024/2024-04-09/eclipse_partial_2024.csv')
+#eclipse_annular_2023 <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2024/2024-04-09/eclipse_annular_2023.csv')
+#eclipse_total_2024 <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2024/2024-04-09/eclipse_total_2024.csv')
+#eclipse_partial_2023 <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2024/2024-04-09/eclipse_partial_2023.csv')
+#eclipse_partial_2024 <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2024/2024-04-09/eclipse_partial_2024.csv')
 ```
 
 ## Cleaning Script
@@ -41,6 +42,7 @@ This script comes directly from the GitHub repository. This helps us clean the d
 #install.packages("janitor")
 #install.packages("jsonlite")
 #install.packages("fs")
+install.packages("class")
 
 library(tidyverse)
 library(jsonlite)
@@ -48,6 +50,8 @@ library(janitor)
 library(here)
 library(fs)
 library(ggplot2)
+library(tidymodels)
+library(class)
 
 working_dir <- here::here("tidytuesday-exercise", "data")
 
@@ -137,7 +141,7 @@ figure_file <- here("tidytuesday-exercise", "figures", "EclipseLat_2024_total.pn
 ggsave(filename = figure_file, plot=plot2, bg = "white")
 
 # Calculate Eclipse Duration
-eclipse_total_2024$eclipse_duration <- as.numeric(difftime(strptime(eclipse_total_2024$eclipse_2, "%H:%M:%S"), 
+eclipse_total_2024$eclipse_duration <- as.numeric(difftime(strptime(eclipse_total_2024$eclipse_5, "%H:%M:%S"), 
                                                            strptime(eclipse_total_2024$eclipse_1, "%H:%M:%S"), 
                                                            units = "secs"))
 
@@ -202,7 +206,7 @@ figure_file <- here("tidytuesday-exercise", "figures", "TimeLat_2024_partial.png
 ggsave(filename = figure_file, plot=plot6, bg = "white")
 
 # Calculate Eclipse Duration
-eclipse_partial_2024$eclipse_duration <- as.numeric(difftime(strptime(eclipse_partial_2024$eclipse_2, "%H:%M:%S"), 
+eclipse_partial_2024$eclipse_duration <- as.numeric(difftime(strptime(eclipse_partial_2024$eclipse_5, "%H:%M:%S"), 
                                                            strptime(eclipse_partial_2024$eclipse_1, "%H:%M:%S"), 
                                                            units = "secs"))
 
@@ -227,20 +231,502 @@ I was in New Haven, CT for the 2024 total solar eclipse, where we had 92% to 94%
 
 ## Create Synthetic Data
 
+First, we will create a new variable with synthetic data called `OstrichReproduction`, which indicates whether or not an ostrich laid an egg during totality.
+
 ```{r, message=FALSE, warning=FALSE}
-# Generate synthetic data for 'OstrichReproduction'
+# Generate synthetic data for 'OstrichReproduction' as factor variable
 eclipse_total_2024 <- eclipse_total_2024 %>%
-  mutate(OstrichReproduction = ifelse(runif(nrow(eclipse_total_2024)) < 0.5, 0, 1))
+  mutate(OstrichReproduction = factor(ifelse(runif(nrow(eclipse_total_2024)) < 0.5, 0, 1)))
 
 # View the updated dataset
 head(eclipse_total_2024)
+
+# New variable for totality
+eclipse_total_2024$totality <- as.numeric(as.POSIXct(eclipse_total_2024$eclipse_4, format="%H:%M:%S")) - 
+                              as.numeric(as.POSIXct(eclipse_total_2024$eclipse_3, format="%H:%M:%S"))
+
+# View the new variable
+head(eclipse_total_2024$totality)
 ```
 Now we have a new categorical variable, `OstrichReproduction`, which indicates whether or not an ostrich laid an egg during totality.
 
-# Train/Test split
-
-Now we will split the data into a train/test set. We will use 80% of the data for training and 20% for testing.
+Let's do a simple vizualization to see how often ostriches laid egg during totality, or between the times in variable `eclipse_3` and `eclipse_4`.
 
 ```{r, message=FALSE, warning=FALSE}
+# Data visualization on new variable
+
+# Create a subset of the data where eclipse_3 is less than eclipse_4
+subset_eclipse_total_2024 <- subset(eclipse_total_2024, eclipse_3 < eclipse_4)
+
+# Bar plot of OstrichReproduction between eclipse_3 and eclipse_4
+plot8 <- ggplot(subset_eclipse_total_2024, aes(x = factor(OstrichReproduction), fill = factor(OstrichReproduction))) +
+  geom_bar() +
+  labs(x = "Ostrich Reproduction", y = "Count", fill = "Ostrich Reproduction") +
+  ggtitle("Occurrence of Ostrich Reproduction")
+plot8
+
+# Saving figure
+figure_file <- here("tidytuesday-exercise", "figures", "OstrichReproduction.png")
+ggsave(filename = figure_file, plot=plot8, bg = "white")
+```
+And let's run some models.
+
+Before we do that, we will need to split our data into train and test data. 
+
+## Train/Test split
+
+Now we will split the data into a train/test set. We will use 75% of the data for training and 25% for testing.
+
+```{r, message=FALSE, warning=FALSE}
+# Create train/test data
+# Fix the random numbers by setting the seed 
+# This enables the analysis to be reproducible when random numbers are used 
+rngseed = 1234
+set.seed(rngseed)
+
+# Create training data
+# Put 3/4 of the data into the training set 
+data_split <- initial_split(
+  eclipse_total_2024, prop = 3/4)
+
+# Create data frames for the two sets:
+train_data <- training(data_split)
+test_data  <- testing(data_split)
 ```
 
+## Model 1: Simple Logistic Regression
+
+Now let's run a simple logistic model to see if we can predict if the duration of totality in minutes was related to whether or not an ostrich laid an egg. We will be using our train data.
+
+```{r, message=FALSE, warning=FALSE}
+# Simple logistic regression model
+# Create recipe
+# Create recipe simple logistic model (creating dummy variables and standardizing continuous variables)
+log1_recipe <- recipe(OstrichReproduction ~ totality, data = train_data) %>%
+  step_dummy(all_nominal(), -all_outcomes()) %>%
+  step_normalize(all_predictors())
+
+# Define model specification
+log1_spec <- logistic_reg() %>%
+  set_engine("glm") %>%
+  set_mode("classification")
+
+# Create workflow
+log1_wf <- workflow() %>%
+  add_recipe(log1_recipe) %>%
+  add_model(log1_spec)
+
+# Fit model
+log1_fit <- log1_wf %>%
+fit(data = train_data)
+
+# Tidy results
+log1_results <- tidy(log1_fit, fmt = "decimal")
+log1_results
+```
+
+We can see from our model output that our results are not significant (with a p-value of 0.6). This makes sense since we created a synthetic variable of whether or not an ostrich laid an egg during totality. As Dr. Handel said on Discord, "Remember that synthetic data is 'made up' so any conclusions you draw from it are also 'fictional'." Of course, we can use it to test models and explore codes. so let's continue with CNN's fantasy.
+
+### Model 1: Performance Assessment 1
+
+Next, we will create a confusion matrix for our simple logistic model.
+
+```{r, message=FALSE, warning=FALSE}
+# Predicting outcome categories
+class_preds <- log1_fit %>% predict(new_data = test_data, type = 'class') # New_data specifies dataset on which to predict new values; type class provides categorical predictions; standardized output from predict()
+class_preds
+
+# Estimating probabilities. Set type to prob to provide estimated probabilities for each outcome category
+prob_preds <- log1_fit %>% predict(new_data = test_data, type = 'prob')
+prob_preds
+
+# Combining results using model evaluation with yardstick package
+log1_test_results <- test_data %>% 
+  select(OstrichReproduction) %>% 
+  bind_cols(as.data.frame(class_preds), as.data.frame(prob_preds)) # Bind columns of two datasets together and convert to data frame
+
+# Confusion matrix with yardstick
+confusion_matrix <- conf_mat(log1_test_results, truth = OstrichReproduction, estimate = .pred_class)
+
+# View confusion matrix
+confusion_matrix
+```
+
+Now let's check the performance on this model. 
+
+```{r, message=FALSE, warning=FALSE}
+# Classification accuracy (generally not the best metric)
+accuracy <- accuracy(log1_test_results, truth = OstrichReproduction, estimate = .pred_class)
+accuracy
+
+# ROC (ROC used to visualize performance across probability thresholds)
+roc <- log1_test_results %>%
+  roc_curve(truth = OstrichReproduction, .pred_1)
+roc
+
+# Plot ROC curve
+log1_roc <- log1_test_results %>%
+  roc_curve(truth = OstrichReproduction, .pred_1) %>%
+  autoplot()
+log1_roc
+
+# Calculate ROC AUC
+roc_auc <- roc_auc(log1_test_results, truth = OstrichReproduction, .pred_1)
+print(roc_auc)
+```
+
+Here we can see that accuracy is 0.5, which is not great. The ROC curve is also not great, with an AUC of 0.5, which equals random guessing. This is not surprising since we created a synthetic variable.
+
+### Model 1: Performance Assessment 2
+
+Now we will test the model using cross-validation.
+
+```{r, message=FALSE, warning=FALSE}
+# Fix the random numbers by setting the seed 
+# This enables the analysis to be reproducible when random numbers are used 
+rngseed = 1234
+set.seed(rngseed)
+
+# Create 10-fold cross-validation
+folds <- vfold_cv(train_data, v = 10)
+folds
+
+# Set model specification
+log1_cv_spec <- logistic_reg() %>%
+  set_engine("glm") %>%
+  set_mode("classification")
+
+# Create and initialize workflow that bundles together model specification and formula
+log1_cv_wf <- workflow() %>% 
+  add_model(log1_cv_spec) %>% 
+  add_formula(OstrichReproduction ~ totality)
+
+# Fit model to each fold
+log1_wf_rs1 <- fit_resamples(log1_cv_wf, resamples = folds)
+
+# Get model metrics
+metrics <- collect_metrics(log1_wf_rs1)
+metrics
+```
+When doing cross-validation, we can see that the both accuracy and ROC_AUC remain more or less the same, equal to random guessing.
+
+### Model 1: Test Data
+
+Finally, let's see how our model does with our test data, `test_data`.
+
+```{r, message=FALSE, warning=FALSE}
+# Predicting outcome categories
+class_preds <- log1_fit %>% 
+  predict(new_data = test_data, type = 'class') 
+
+# Estimating probabilities
+prob_preds <- log1_fit %>% 
+  predict(new_data = test_data, type = 'prob')
+
+# Combining results
+log1_test_results <- test_data %>% 
+  select(OstrichReproduction) %>% 
+  bind_cols(as.data.frame(class_preds), as.data.frame(prob_preds))
+
+# Confusion matrix
+confusion_matrix <- conf_mat(log1_test_results, truth = OstrichReproduction, estimate = .pred_class)
+confusion_matrix
+
+# Classification accuracy
+accuracy <- accuracy(log1_test_results, truth = OstrichReproduction, estimate = .pred_class)
+accuracy
+
+# ROC (Receiver Operating Characteristic) curve
+roc <- log1_test_results %>%
+  roc_curve(truth = OstrichReproduction, .pred_1)
+roc
+
+# Plot ROC curve
+log1_roc <- roc %>%
+  autoplot()
+log1_roc
+
+# Calculate ROC AUC (Area Under the ROC Curve)
+roc_auc <- roc_auc(log1_test_results, truth = OstrichReproduction, .pred_1)
+roc_auc
+```
+Well, our test data performs just as well as our train data, which means very poorly. But, it doesn't perform worse.
+
+### Model 2: Complex Logistic Regression
+
+Perhaps if we include more predictors, we will see different model performance. So, let's try another logistic regression model with more predictors. We will use our train data to begin with. Then, we will check the performance, then check again with cross-validation, then run our test data.
+
+```{r, message=FALSE, warning=FALSE}
+# Complex logistic regression model
+# Create recipe
+# Create recipe simple logistic model (creating dummy variables and standardizing continuous variables)
+log2_recipe <- recipe(OstrichReproduction ~ totality + state + eclipse_duration, data = train_data) %>%
+  step_dummy(all_nominal(), -all_outcomes()) %>%
+  step_normalize(all_predictors())
+
+# Define model specification
+log2_spec <- logistic_reg() %>%
+  set_engine("glm") %>%
+  set_mode("classification")
+
+# Create workflow
+log2_wf <- workflow() %>%
+  add_recipe(log2_recipe) %>%
+  add_model(log2_spec)
+
+# Fit model
+log2_fit <- log2_wf %>%
+fit(data = train_data)
+
+# Tidy results
+log2_results <- tidy(log2_fit, fmt = "decimal")
+log2_results
+```
+
+Like the simple logistic model, none of our predictors are statistically significant. It appears that total solar eclipses don't have much to do with ostrich reproduction, if we take my synthetic data as `truth`. However, let's see how the model performs.
+
+### Model 2: Peformance Assessment 1
+
+We'll go through the same steps as with the simple logistic regression. First, we'll create a confusion matrix.
+
+```{r, message=FALSE, warning=FALSE}
+# Predicting outcome categories
+class_preds <- log2_fit %>% predict(new_data = test_data, type = 'class') # New_data specifies dataset on which to predict new values; type class provides categorical predictions; standardized output from predict()
+class_preds
+
+# Estimating probabilities. Set type to prob to provide estimated probabilities for each outcome category
+prob_preds <- log2_fit %>% predict(new_data = test_data, type = 'prob')
+prob_preds
+
+# Combining results using model evaluation with yardstick package
+log2_test_results <- test_data %>% 
+  select(OstrichReproduction) %>% 
+  bind_cols(as.data.frame(class_preds), as.data.frame(prob_preds)) # Bind columns of two datasets together and convert to data frame
+
+# Confusion matrix with yardstick
+confusion_matrix <- conf_mat(log2_test_results, truth = OstrichReproduction, estimate = .pred_class)
+
+# View confusion matrix
+confusion_matrix
+```
+Then, we'll check model performance using `ROC-AUC`.
+
+```{r, message=FALSE, warning=FALSE}
+# Classification accuracy (generally not the best metric)
+accuracy2 <- accuracy(log2_test_results, truth = OstrichReproduction, estimate = .pred_class)
+accuracy
+
+# ROC (ROC used to visualize performance across probability thresholds)
+roc2 <- log2_test_results %>%
+  roc_curve(truth = OstrichReproduction, .pred_1)
+roc2
+
+# Plot ROC curve
+log2_roc <- log2_test_results %>%
+  roc_curve(truth = OstrichReproduction, .pred_1) %>%
+  autoplot()
+log2_roc
+
+# Calculate ROC AUC
+roc_auc2 <- roc_auc(log2_test_results, truth = OstrichReproduction, .pred_1)
+print(roc_auc2)
+```
+
+In this model, our `accuracy` metric remains the same as the simple logistic model, but our `ROC-AUC` measure is **slightly** higher at `0.53` rather than `0.5`. It's still not performing well.
+
+### Model 2: Performance Assessment 2
+
+Now we will test the model using cross-validation.
+
+```{r, message=FALSE, warning=FALSE}
+# Fix the random numbers by setting the seed 
+# This enables the analysis to be reproducible when random numbers are used 
+rngseed = 1234
+set.seed(rngseed)
+
+# Create 10-fold cross-validation
+folds <- vfold_cv(train_data, v = 10)
+folds
+
+# Set model specification
+log2_cv_spec <- logistic_reg() %>%
+  set_engine("glm") %>%
+  set_mode("classification")
+
+# Create and initialize workflow that bundles together model specification and formula
+log2_cv_wf <- workflow() %>% 
+  add_model(log2_cv_spec) %>% 
+  add_formula(OstrichReproduction ~ totality + state + eclipse_duration)
+
+# Fit model to each fold
+log2_wf_rs <- fit_resamples(log2_cv_wf, resamples = folds)
+
+# Get model metrics
+metrics <- collect_metrics(log2_wf_rs)
+metrics
+```
+From our cross-validation, we can see that both `accuracy` and `ROC-AUC` slightly decline (to `0.49`), demonstrating that our model is not performing well when estimating the performance of this predictive model.
+
+### Model 2: Test Data
+
+Finally, let's see how the model performs on our test data set, `test_data`.
+
+```{r, message=FALSE, warning=FALSE}
+# Predicting outcome categories
+class_preds <- log2_fit %>% 
+  predict(new_data = test_data, type = 'class') 
+
+# Estimating probabilities
+prob_preds <- log2_fit %>% 
+  predict(new_data = test_data, type = 'prob')
+
+# Combining results
+log2_test_results <- test_data %>% 
+  select(OstrichReproduction) %>% 
+  bind_cols(as.data.frame(class_preds), as.data.frame(prob_preds))
+
+# Confusion matrix
+confusion_matrix <- conf_mat(log2_test_results, truth = OstrichReproduction, estimate = .pred_class)
+confusion_matrix
+
+# Classification accuracy
+accuracy <- accuracy(log2_test_results, truth = OstrichReproduction, estimate = .pred_class)
+accuracy
+
+# ROC (Receiver Operating Characteristic) curve
+roc <- log2_test_results %>%
+  roc_curve(truth = OstrichReproduction, .pred_1)
+roc
+
+# Plot ROC curve
+log2_roc <- roc %>%
+  autoplot()
+log2_roc
+
+# Calculate ROC AUC (Area Under the ROC Curve)
+roc_auc <- roc_auc(log2_test_results, truth = OstrichReproduction, .pred_1)
+roc_auc
+```
+
+Here, our accuracy decreases to `0.46`, and our `ROC-AUC` remains the same at `0.53`. This model is not performing well. I guess we can't predict ostrich reproduction during a solar eclipse using synthetic data.
+
+### Model 3: Simple Linear Model
+
+Now, this doesn't really make sense, but my previous models also didn't make sense with ostriches, so let's run a linear regression model in which the duration of totality is the outcome variable and whether the ostrich laid an egg during totality is the predictor variable. This defies the laws of physics and the universe, but we'll do this to have another model type to work with: linear regression.
+
+```{r, message=FALSE, warning=FALSE}
+# Simple linear model
+# Create Recipe
+ln_recipe <- recipe(totality ~ OstrichReproduction, data = eclipse_total_2024)
+
+# Specify Model
+ln_spec <- linear_reg()
+
+# Create Workflow
+ln_wf <- workflow() %>%
+  add_model(ln_spec) %>%
+  add_recipe(ln_recipe)
+
+# Fit the Model
+ln_fit <- ln_wf %>%
+  fit(data = eclipse_total_2024)
+
+# Tidy Results
+ln_results <- ln_fit %>%
+  tidy()
+ln_results
+```
+Again, we see that our predictor variable is not statistically significant. Let's check the performance of this model.
+
+### Model 3: Peformance Assessment 1
+
+The metric we will optimize first is `RMSE`. We will also check `R-squared` and `MAE` for fun.
+
+```{r, message=FALSE, warning=FALSE}
+# Produce predictions for RMSE and R-squared
+ln_pred <- predict(ln_fit, new_data = train_data %>% select(-totality))
+ln_pred
+
+# Predicted numeric outcome named .pred. Now we will match predicted values with corresponding observed outcome values
+ln_pred <- bind_cols(ln_pred, train_data %>% select(totality))
+ln_pred
+
+# Create metric set including RMSE and R-squared
+ln_metrics <- metric_set(rmse, rsq, mae) # MAE for fun
+ln_metrics(ln_pred, truth = totality, estimate = .pred)
+```
+Here, we can see we have an `RMSE` of 62.6. `RMSE` is in the unit of the dependent variable, here length of `totality` in seconds, which ranges from 2 to 269. That means our `RMSE` is showing a poorly performing model. `R-squared` is 0.00003, which is very low. `MAE` is 62.6, which is the same as `RMSE` since the model is not predicting well.
+
+### Model 3: Performance Assessment 2
+
+Now, just like with our logistic models, we will test our linear model with cross-validation.
+
+```{r, message=FALSE, warning=FALSE}
+# Fix the random numbers by setting the seed 
+# This enables the analysis to be reproducible when random numbers are used 
+rngseed = 1234
+set.seed(rngseed)
+
+# Create 10-fold cross-validation
+folds <- vfold_cv(train_data, v = 10)
+folds
+
+# Set model specification
+ln_cv_spec <- linear_reg()
+
+# Create and initialize workflow that bundles together model specification and formula
+ln_cv_wf <- workflow() %>% 
+  add_model(ln_cv_spec) %>% 
+  add_formula(totality ~ OstrichReproduction)
+
+# Fit model to each fold
+ln_wf_rs <- fit_resamples(ln_cv_wf, resamples = folds)
+
+# Get model metrics
+metrics <- collect_metrics(ln_wf_rs)
+metrics
+```
+After testing using CV, our `RMSE` is only slightly lower than our original model, at 62.5. `R-squared` is still very low at 0.002, although this is slightly higher than in our previous model. Guess what, ostrich reproduction remains a mystery.
+
+### Model 3: Test Data
+
+Finally, let's see how our model performs on our test data, `test_data`.
+
+```{r, message=FALSE, warning=FALSE}
+
+# Make predictions on training data
+train_pred <- predict(ln_fit, new_data = train_data)
+print(train_pred)
+
+# Make predictions on test data
+test_pred <- predict(ln_fit, new_data = test_data)
+print(test_pred)
+
+# Create dataframes for plotting
+train_data_plot <- data.frame(
+  Observed = train_data$totality,
+  Predicted = train_pred$.pred
+)
+
+test_data_plot <- data.frame(
+  Observed = test_data$totality,
+  Predicted = test_pred$.pred
+)
+
+# Combine dataframes
+combined_data <- rbind(cbind(train_data_plot, Data = "Train"), cbind(test_data_plot, Data = "Test"))
+
+# Plot combined data
+finalplot <- ggplot(combined_data, aes(x = Observed, y = Predicted, color = Data)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
+  labs(x = "Observed", y = "Predicted", title = "Observed vs Predicted") +
+  scale_color_manual(values = c("red", "blue"))  # Custom colors for train and test data
+finalplot
+
+# Save figure
+figure_file <- here("tidytuesday-exercise", "finalplot.png")
+ggsave(filename = figure_file, plot=finalplot, bg="white")
+````
+
+Basically, none of these models were statistically significant (i.e. found something that couldn't be attributed to random chance), and they all performed very poorly on various performance metrics. I think the moral of the story is that CNN should quit doing 24-hour coverage of things, like an eclipse, that really only lasts a few minutes. If darkness causes ostriches to lay eggs, maybe we should just wait until night falls. According to [AmericanOstrich Farms](https://www.americanostrichfarms.com/blogs/news/all-about-ostrich-eggs-and-what-you-can-do-with-them), ostriches lay eggs from April to September, so we are in the right season, but they don't mention whether this happens at night--or during eclipses.

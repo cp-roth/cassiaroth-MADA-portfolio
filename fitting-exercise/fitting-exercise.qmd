@@ -4,7 +4,7 @@ author: Cassia Roth
 date: "`r Sys.Date()`"
 ---
 
-This exercise practices model fitting using the `tidymodels` framework. 
+This exercise practices model fitting using the `tidymodels` framework.
 
 Here, we are going to fit a model using the `nlmixr2data` package and data. First, let's read in the .csv file and check its structure.
 
@@ -245,7 +245,7 @@ metrics_lm1 <- metric_set(rmse, rsq, mae) # MAE for fun
 metrics_lm1(mavo_lm1_pred, truth = Y, estimate = .pred)
 ```
 
-Here, we can see from our R-squared statistic, that the independent variables explain about 63% of the model, although this doesn't necessarily tell us if our model is good for the data at hand. Our RMSE, which is the square root of the average of squared differences between observed and predicted values, is usually supposed to be lower (less distance between observed and predicted). Here, our RMSE is quite high, 583 (if I did this correctly!)
+Here, we can see from our R-squared statistic, that the independent variables explain about 63% of the model, although this doesn't necessarily tell us if our model is good for the data at hand. Our RMSE, which is the square root of the average of squared differences between observed and predicted values, is usually supposed to be lower (less distance between observed and predicted). Here, our RMSE is quite high, 583.
 
 Next, let's fit a linear model to the continuous outcome `Y` using all predictors. Then we will go through the same process and get RMSE and R-squared.
 
@@ -449,7 +449,7 @@ metrics_lm3(mavo_lm3_pred, truth = Y, estimate = .pred)
 mavo_lm4 <- linear_reg() %>% set_engine("lm") %>% fit(Y ~ ., data = train_data)
 tidy(mavo_lm4)
 
-# Compute the RMSE and R squared for model 4 using Dr. Handel's Code
+# Compute the RMSE and R squared for null model using Dr. Handel's Code
 metrics_lm4 <- mavo_lm4 %>% 
   predict(train_data) %>% 
   bind_cols(train_data) %>% 
@@ -461,7 +461,7 @@ mavo_lm0 <- null_model(mode = "regression") %>%
     set_engine("parsnip") %>%
     fit(Y ~ 1, data = train_data)
 
-# Compute the RMSE and R squared for model 4 using Dr. Handel's Code
+# Compute the RMSE and R squared for null model using Dr. Handel's Code
 metrics_lm0 <- mavo_lm0 %>% 
   predict(train_data) %>% 
   bind_cols(train_data) %>% 
