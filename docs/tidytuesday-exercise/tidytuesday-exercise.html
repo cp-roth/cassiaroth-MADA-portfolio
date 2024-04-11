@@ -269,7 +269,7 @@ These packages will be installed into "~/Documents/GitHub/MADARoth/cassiaroth-MA
 
 # Installing packages --------------------------------------------------------
 - Installing class ...                          OK [linked from cache]
-Successfully installed 1 package in 5.7 milliseconds.</code></pre>
+Successfully installed 1 package in 5.8 milliseconds.</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(jsonlite)</span>
@@ -5459,8 +5459,8 @@ Successfully installed 1 package in 5.7 milliseconds.</code></pre>
 <pre><code># A tibble: 2 × 5
   term        estimate std.error statistic p.value
   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
-1 (Intercept)   0.0361    0.0400     0.901   0.368
-2 totality     -0.0244    0.0401    -0.610   0.542</code></pre>
+1 (Intercept)  0.00242    0.0400    0.0605   0.952
+2 totality    -0.0559     0.0401   -1.39     0.163</code></pre>
 </div>
 </div>
 <p>We can see from our model output that our results are not significant (with a p-value of 0.6). This makes sense since we created a synthetic variable of whether or not an ostrich laid an egg during totality. As Dr.&nbsp;Handel said on Discord, “Remember that synthetic data is ‘made up’ so any conclusions you draw from it are also ‘fictional’.” Of course, we can use it to test models and explore codes. so let’s continue with CNN’s fantasy.</p>
@@ -5475,15 +5475,15 @@ Successfully installed 1 package in 5.7 milliseconds.</code></pre>
 <pre><code># A tibble: 833 × 1
    .pred_class
    &lt;fct&gt;      
- 1 1          
+ 1 0          
  2 1          
  3 1          
  4 1          
  5 1          
- 6 1          
- 7 1          
+ 6 0          
+ 7 0          
  8 1          
- 9 1          
+ 9 0          
 10 1          
 # ℹ 823 more rows</code></pre>
 </div>
@@ -5494,16 +5494,16 @@ Successfully installed 1 package in 5.7 milliseconds.</code></pre>
 <pre><code># A tibble: 833 × 2
    .pred_0 .pred_1
      &lt;dbl&gt;   &lt;dbl&gt;
- 1   0.497   0.503
- 2   0.487   0.513
- 3   0.486   0.514
- 4   0.483   0.517
- 5   0.489   0.511
- 6   0.495   0.505
- 7   0.498   0.502
- 8   0.478   0.522
- 9   0.494   0.506
-10   0.486   0.514
+ 1   0.512   0.488
+ 2   0.491   0.509
+ 3   0.489   0.511
+ 4   0.482   0.518
+ 5   0.494   0.506
+ 6   0.509   0.491
+ 7   0.515   0.485
+ 8   0.470   0.530
+ 9   0.505   0.495
+10   0.489   0.511
 # ℹ 823 more rows</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Combining results using model evaluation with yardstick package</span></span>
@@ -5519,8 +5519,8 @@ Successfully installed 1 package in 5.7 milliseconds.</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>          Truth
 Prediction   0   1
-         0   0   0
-         1 425 408</code></pre>
+         0 243 252
+         1 174 164</code></pre>
 </div>
 </div>
 <p>Now let’s check the performance on this model.</p>
@@ -5532,7 +5532,7 @@ Prediction   0   1
 <pre><code># A tibble: 1 × 3
   .metric  .estimator .estimate
   &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;
-1 accuracy binary         0.490</code></pre>
+1 accuracy binary         0.489</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ROC (ROC used to visualize performance across probability thresholds)</span></span>
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>roc <span class="ot">&lt;-</span> log1_test_results <span class="sc">%&gt;%</span></span>
@@ -5543,15 +5543,15 @@ Prediction   0   1
    .threshold specificity sensitivity
         &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;
  1   -Inf         0             1    
- 2      0.501     0             1    
- 3      0.501     0             0.998
- 4      0.501     0.00245       0.998
- 5      0.501     0.00490       0.993
- 6      0.501     0.00980       0.986
- 7      0.502     0.0147        0.981
- 8      0.502     0.0172        0.981
- 9      0.502     0.0294        0.974
-10      0.502     0.0294        0.969
+ 2      0.482     0             1    
+ 3      0.482     0             0.998
+ 4      0.483     0.00240       0.998
+ 5      0.483     0.00721       0.995
+ 6      0.483     0.0144        0.990
+ 7      0.484     0.0168        0.983
+ 8      0.484     0.0192        0.983
+ 9      0.484     0.0312        0.976
+10      0.484     0.0337        0.974
 # ℹ 211 more rows</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot ROC curve</span></span>
@@ -5573,7 +5573,7 @@ Prediction   0   1
 <pre><code># A tibble: 1 × 3
   .metric .estimator .estimate
   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
-1 roc_auc binary         0.507</code></pre>
+1 roc_auc binary         0.520</code></pre>
 </div>
 </div>
 <p>Here we can see that accuracy is 0.5, which is not great. The ROC curve is also not great, with an AUC of 0.5, which equals random guessing. This is not surprising since we created a synthetic variable.</p>
@@ -5626,8 +5626,8 @@ Prediction   0   1
 <pre><code># A tibble: 2 × 6
   .metric  .estimator  mean     n std_err .config             
   &lt;chr&gt;    &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;               
-1 accuracy binary     0.494    10 0.00808 Preprocessor1_Model1
-2 roc_auc  binary     0.506    10 0.0123  Preprocessor1_Model1</code></pre>
+1 accuracy binary     0.506    10  0.0100 Preprocessor1_Model1
+2 roc_auc  binary     0.512    10  0.0136 Preprocessor1_Model1</code></pre>
 </div>
 </div>
 <p>When doing cross-validation, we can see that the both accuracy and ROC_AUC remain more or less the same, equal to random guessing.</p>
@@ -5655,8 +5655,8 @@ Prediction   0   1
 <div class="cell-output cell-output-stdout">
 <pre><code>          Truth
 Prediction   0   1
-         0   0   0
-         1 425 408</code></pre>
+         0 243 252
+         1 174 164</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Classification accuracy</span></span>
 <span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>accuracy <span class="ot">&lt;-</span> <span class="fu">accuracy</span>(log1_test_results, <span class="at">truth =</span> OstrichReproduction, <span class="at">estimate =</span> .pred_class)</span>
@@ -5665,7 +5665,7 @@ Prediction   0   1
 <pre><code># A tibble: 1 × 3
   .metric  .estimator .estimate
   &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;
-1 accuracy binary         0.490</code></pre>
+1 accuracy binary         0.489</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ROC (Receiver Operating Characteristic) curve</span></span>
 <span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>roc <span class="ot">&lt;-</span> log1_test_results <span class="sc">%&gt;%</span></span>
@@ -5676,15 +5676,15 @@ Prediction   0   1
    .threshold specificity sensitivity
         &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;
  1   -Inf         0             1    
- 2      0.501     0             1    
- 3      0.501     0             0.998
- 4      0.501     0.00245       0.998
- 5      0.501     0.00490       0.993
- 6      0.501     0.00980       0.986
- 7      0.502     0.0147        0.981
- 8      0.502     0.0172        0.981
- 9      0.502     0.0294        0.974
-10      0.502     0.0294        0.969
+ 2      0.482     0             1    
+ 3      0.482     0             0.998
+ 4      0.483     0.00240       0.998
+ 5      0.483     0.00721       0.995
+ 6      0.483     0.0144        0.990
+ 7      0.484     0.0168        0.983
+ 8      0.484     0.0192        0.983
+ 9      0.484     0.0312        0.976
+10      0.484     0.0337        0.974
 # ℹ 211 more rows</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot ROC curve</span></span>
@@ -5705,7 +5705,7 @@ Prediction   0   1
 <pre><code># A tibble: 1 × 3
   .metric .estimator .estimate
   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
-1 roc_auc binary         0.507</code></pre>
+1 roc_auc binary         0.520</code></pre>
 </div>
 </div>
 <p>Well, our test data performs just as well as our train data, which means very poorly. But, it doesn’t perform worse.</p>
@@ -5742,22 +5742,22 @@ Prediction   0   1
 <pre><code># A tibble: 16 × 5
    term             estimate std.error statistic p.value
    &lt;chr&gt;               &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
- 1 (Intercept)       0.0362     0.0401    0.902   0.367 
- 2 totality         -0.0295     0.0413   -0.715   0.475 
- 3 eclipse_duration -0.159      0.222    -0.718   0.473 
- 4 state_IL         -0.124      0.0604   -2.06    0.0397
- 5 state_IN         -0.123      0.0978   -1.25    0.210 
- 6 state_KY         -0.0730     0.0442   -1.65    0.0985
- 7 state_ME         -0.0373     0.0891   -0.418   0.676 
- 8 state_MI         -0.0138     0.0414   -0.332   0.740 
- 9 state_MO          0.0162     0.0495    0.327   0.744 
-10 state_NH         -0.0209     0.0454   -0.460   0.646 
-11 state_NY         -0.166      0.177    -0.937   0.349 
-12 state_OH         -0.178      0.139    -1.28    0.202 
-13 state_OK         -0.0126     0.0421   -0.300   0.764 
-14 state_PA         -0.0522     0.0723   -0.722   0.470 
-15 state_TX         -0.00372    0.0656   -0.0567  0.955 
-16 state_VT         -0.0769     0.122    -0.631   0.528 </code></pre>
+ 1 (Intercept)       0.0209     0.430     0.0485  0.961 
+ 2 totality         -0.0619     0.0414   -1.50    0.134 
+ 3 eclipse_duration  0.245      0.222     1.10    0.270 
+ 4 state_IL          0.0648     0.0603    1.08    0.282 
+ 5 state_IN          0.0862     0.0977    0.882   0.378 
+ 6 state_KY         -0.0618     0.0455   -1.36    0.174 
+ 7 state_ME          0.0715     0.0889    0.804   0.421 
+ 8 state_MI          0.393     10.7       0.0367  0.971 
+ 9 state_MO          0.0830     0.0494    1.68    0.0929
+10 state_NH          0.407     10.7       0.0381  0.970 
+11 state_NY          0.217      0.177     1.23    0.220 
+12 state_OH          0.186      0.139     1.34    0.181 
+13 state_OK         -0.0208     0.0423   -0.491   0.623 
+14 state_PA          0.141      0.0730    1.94    0.0526
+15 state_TX          0.00608    0.0656    0.0927  0.926 
+16 state_VT          0.0896     0.122     0.735   0.462 </code></pre>
 </div>
 </div>
 <p>Like the simple logistic model, none of our predictors are statistically significant. It appears that total solar eclipses don’t have much to do with ostrich reproduction, if we take my synthetic data as <code>truth</code>. However, let’s see how the model performs.</p>
@@ -5773,16 +5773,16 @@ Prediction   0   1
 <pre><code># A tibble: 833 × 1
    .pred_class
    &lt;fct&gt;      
- 1 1          
- 2 1          
+ 1 0          
+ 2 0          
  3 1          
  4 1          
- 5 1          
- 6 1          
- 7 1          
+ 5 0          
+ 6 0          
+ 7 0          
  8 1          
- 9 1          
-10 1          
+ 9 0          
+10 0          
 # ℹ 823 more rows</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimating probabilities. Set type to prob to provide estimated probabilities for each outcome category</span></span>
@@ -5792,16 +5792,16 @@ Prediction   0   1
 <pre><code># A tibble: 833 × 2
    .pred_0 .pred_1
      &lt;dbl&gt;   &lt;dbl&gt;
- 1   0.469   0.531
- 2   0.451   0.549
- 3   0.461   0.539
- 4   0.448   0.552
- 5   0.461   0.539
- 6   0.463   0.537
- 7   0.470   0.530
- 8   0.438   0.562
- 9   0.454   0.546
-10   0.448   0.552
+ 1   0.525   0.475
+ 2   0.512   0.488
+ 3   0.492   0.508
+ 4   0.498   0.502
+ 5   0.501   0.499
+ 6   0.528   0.472
+ 7   0.528   0.472
+ 8   0.492   0.508
+ 9   0.534   0.466
+10   0.513   0.487
 # ℹ 823 more rows</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Combining results using model evaluation with yardstick package</span></span>
@@ -5817,8 +5817,8 @@ Prediction   0   1
 <div class="cell-output cell-output-stdout">
 <pre><code>          Truth
 Prediction   0   1
-         0 188 173
-         1 237 235</code></pre>
+         0 205 208
+         1 212 208</code></pre>
 </div>
 </div>
 <p>Then, we’ll check model performance using <code>ROC-AUC</code>.</p>
@@ -5830,7 +5830,7 @@ Prediction   0   1
 <pre><code># A tibble: 1 × 3
   .metric  .estimator .estimate
   &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;
-1 accuracy binary         0.490</code></pre>
+1 accuracy binary         0.489</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ROC (ROC used to visualize performance across probability thresholds)</span></span>
 <span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>roc2 <span class="ot">&lt;-</span> log2_test_results <span class="sc">%&gt;%</span></span>
@@ -5841,15 +5841,15 @@ Prediction   0   1
    .threshold specificity sensitivity
         &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;
  1   -Inf         0             1    
- 2      0.405     0             1    
- 3      0.405     0.00245       1    
- 4      0.412     0.00490       1    
- 5      0.414     0.00735       0.998
- 6      0.420     0.00735       0.995
- 7      0.434     0.00980       0.995
- 8      0.436     0.00980       0.993
- 9      0.437     0.00980       0.991
-10      0.437     0.0123        0.991
+ 2      0.328     0             1    
+ 3      0.346     0.00240       1    
+ 4      0.351     0.00240       0.998
+ 5      0.364     0.00481       0.998
+ 6      0.365     0.00721       0.995
+ 7      0.411     0.00721       0.993
+ 8      0.414     0.00721       0.990
+ 9      0.418     0.00962       0.990
+10      0.418     0.0120        0.990
 # ℹ 770 more rows</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot ROC curve</span></span>
@@ -5871,7 +5871,7 @@ Prediction   0   1
 <pre><code># A tibble: 1 × 3
   .metric .estimator .estimate
   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
-1 roc_auc binary         0.494</code></pre>
+1 roc_auc binary         0.531</code></pre>
 </div>
 </div>
 <p>In this model, our <code>accuracy</code> metric remains the same as the simple logistic model, but our <code>ROC-AUC</code> measure is <strong>slightly</strong> higher at <code>0.53</code> rather than <code>0.5</code>. It’s still not performing well.</p>
@@ -5924,8 +5924,8 @@ Prediction   0   1
 <pre><code># A tibble: 2 × 6
   .metric  .estimator  mean     n std_err .config             
   &lt;chr&gt;    &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;               
-1 accuracy binary     0.504    10 0.00826 Preprocessor1_Model1
-2 roc_auc  binary     0.507    10 0.0111  Preprocessor1_Model1</code></pre>
+1 accuracy binary     0.500    10  0.0106 Preprocessor1_Model1
+2 roc_auc  binary     0.504    10  0.0144 Preprocessor1_Model1</code></pre>
 </div>
 </div>
 <p>From our cross-validation, we can see that both <code>accuracy</code> and <code>ROC-AUC</code> slightly decline (to <code>0.49</code>), demonstrating that our model is not performing well when estimating the performance of this predictive model.</p>
@@ -5953,8 +5953,8 @@ Prediction   0   1
 <div class="cell-output cell-output-stdout">
 <pre><code>          Truth
 Prediction   0   1
-         0 188 173
-         1 237 235</code></pre>
+         0 205 208
+         1 212 208</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Classification accuracy</span></span>
 <span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>accuracy <span class="ot">&lt;-</span> <span class="fu">accuracy</span>(log2_test_results, <span class="at">truth =</span> OstrichReproduction, <span class="at">estimate =</span> .pred_class)</span>
@@ -5963,7 +5963,7 @@ Prediction   0   1
 <pre><code># A tibble: 1 × 3
   .metric  .estimator .estimate
   &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;
-1 accuracy binary         0.508</code></pre>
+1 accuracy binary         0.496</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ROC (Receiver Operating Characteristic) curve</span></span>
 <span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a>roc <span class="ot">&lt;-</span> log2_test_results <span class="sc">%&gt;%</span></span>
@@ -5974,15 +5974,15 @@ Prediction   0   1
    .threshold specificity sensitivity
         &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;
  1   -Inf         0             1    
- 2      0.405     0             1    
- 3      0.405     0.00245       1    
- 4      0.412     0.00490       1    
- 5      0.414     0.00735       0.998
- 6      0.420     0.00735       0.995
- 7      0.434     0.00980       0.995
- 8      0.436     0.00980       0.993
- 9      0.437     0.00980       0.991
-10      0.437     0.0123        0.991
+ 2      0.328     0             1    
+ 3      0.346     0.00240       1    
+ 4      0.351     0.00240       0.998
+ 5      0.364     0.00481       0.998
+ 6      0.365     0.00721       0.995
+ 7      0.411     0.00721       0.993
+ 8      0.414     0.00721       0.990
+ 9      0.418     0.00962       0.990
+10      0.418     0.0120        0.990
 # ℹ 770 more rows</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot ROC curve</span></span>
@@ -6003,7 +6003,7 @@ Prediction   0   1
 <pre><code># A tibble: 1 × 3
   .metric .estimator .estimate
   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
-1 roc_auc binary         0.494</code></pre>
+1 roc_auc binary         0.531</code></pre>
 </div>
 </div>
 <p>Here, our accuracy decreases to <code>0.46</code>, and our <code>ROC-AUC</code> remains the same at <code>0.53</code>. This model is not performing well. I guess we can’t predict ostrich reproduction during a solar eclipse using synthetic data.</p>
@@ -6036,8 +6036,8 @@ Prediction   0   1
 <pre><code># A tibble: 2 × 5
   term                 estimate std.error statistic p.value
   &lt;chr&gt;                   &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
-1 (Intercept)           185.         1.54   120.      0    
-2 OstrichReproduction1   -0.776      2.17    -0.357   0.721</code></pre>
+1 (Intercept)           186.         1.54   121.      0    
+2 OstrichReproduction1   -0.984      2.17    -0.453   0.650</code></pre>
 </div>
 </div>
 <p>Again, we see that our predictor variable is not statistically significant. Let’s check the performance of this model.</p>
@@ -6053,13 +6053,13 @@ Prediction   0   1
 <pre><code># A tibble: 2,497 × 1
    .pred
    &lt;dbl&gt;
- 1  185.
- 2  185.
+ 1  186.
+ 2  186.
  3  185.
- 4  185.
+ 4  186.
  5  185.
  6  185.
- 7  185.
+ 7  186.
  8  185.
  9  185.
 10  185.
@@ -6072,13 +6072,13 @@ Prediction   0   1
 <pre><code># A tibble: 2,497 × 2
    .pred totality
    &lt;dbl&gt;    &lt;dbl&gt;
- 1  185.       92
- 2  185.      151
+ 1  186.       92
+ 2  186.      151
  3  185.      170
- 4  185.      201
+ 4  186.      201
  5  185.      214
  6  185.      114
- 7  185.      236
+ 7  186.      236
  8  185.      250
  9  185.      140
 10  185.      227
@@ -6092,7 +6092,7 @@ Prediction   0   1
   .metric .estimator .estimate
   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
 1 rmse    standard   62.6     
-2 rsq     standard    0.000149
+2 rsq     standard    0.000779
 3 mae     standard   49.9     </code></pre>
 </div>
 </div>
@@ -6144,8 +6144,8 @@ Prediction   0   1
 <pre><code># A tibble: 2 × 6
   .metric .estimator     mean     n std_err .config             
   &lt;chr&gt;   &lt;chr&gt;         &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;               
-1 rmse    standard   62.5        10 1.24    Preprocessor1_Model1
-2 rsq     standard    0.00282    10 0.00117 Preprocessor1_Model1</code></pre>
+1 rmse    standard   62.5        10 1.25    Preprocessor1_Model1
+2 rsq     standard    0.00454    10 0.00264 Preprocessor1_Model1</code></pre>
 </div>
 </div>
 <p>After testing using CV, our <code>RMSE</code> is only slightly lower than our original model, at 62.5. <code>R-squared</code> is still very low at 0.002, although this is slightly higher than in our previous model. Guess what, ostrich reproduction remains a mystery.</p>
@@ -6161,13 +6161,13 @@ Prediction   0   1
 <pre><code># A tibble: 2,497 × 1
    .pred
    &lt;dbl&gt;
- 1  185.
- 2  185.
+ 1  186.
+ 2  186.
  3  185.
- 4  185.
+ 4  186.
  5  185.
  6  185.
- 7  185.
+ 7  186.
  8  185.
  9  185.
 10  185.
@@ -6183,13 +6183,13 @@ Prediction   0   1
  1  185.
  2  185.
  3  185.
- 4  185.
+ 4  186.
  5  185.
- 6  185.
+ 6  186.
  7  185.
- 8  185.
- 9  185.
-10  185.
+ 8  186.
+ 9  186.
+10  186.
 # ℹ 823 more rows</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb106"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create dataframes for plotting</span></span>
