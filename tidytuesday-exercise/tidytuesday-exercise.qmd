@@ -727,6 +727,6 @@ finalplot
 # Save figure
 figure_file <- here("tidytuesday-exercise", "finalplot.png")
 ggsave(filename = figure_file, plot=finalplot, bg="white")
-````
+```
 
 Basically, none of these models were statistically significant (i.e. found something that couldn't be attributed to random chance), and they all performed very poorly on various performance metrics. I think the moral of the story is that CNN should quit doing 24-hour coverage of things, like an eclipse, that really only lasts a few minutes. If darkness causes ostriches to lay eggs, maybe we should just wait until night falls. According to [AmericanOstrich Farms](https://www.americanostrichfarms.com/blogs/news/all-about-ostrich-eggs-and-what-you-can-do-with-them), ostriches lay eggs from April to September, so we are in the right season, but they don't mention whether this happens at night--or during eclipses.
