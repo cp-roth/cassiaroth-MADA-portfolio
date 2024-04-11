@@ -231,7 +231,7 @@ I was in New Haven, CT for the 2024 total solar eclipse, where we had 92% to 94%
 
 ## Create Synthetic Data
 
-First, we will create a new variable with synthetic data called `OstrichReproduction`, which indicates whether or not an ostrich laid an egg during totality.
+First, we will create a new variable with synthetic data called `OstrichReproduction`, which indicates whether or not an ostrich laid an egg during `totality`, which is also a new variable for the time of total eclipse duration in seconds.
 
 ```{r, message=FALSE, warning=FALSE}
 # Generate synthetic data for 'OstrichReproduction' as factor variable
